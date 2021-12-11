@@ -1,73 +1,124 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+## Requirement
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+- Database
+  - [PostgreSQL](https://www.postgresql.org/download/)
+- Tools
+  - [Nodejs](https://nodejs.org/en/download/)
+  - [Yarn](https://yarnpkg.com/getting-started/install)
+  - [Table Plus](https://tableplus.com)
+  - [Gitkraken](https://www.gitkraken.com)
+    - get **FREE PRO** License [Here](https://education.github.com/pack)
+  - [Postman](https://www.postman.com/downloads/)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Clone project to directory
 
-## Description
+- run command
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+```bash
+  # Select Directory
+  $ cd <your directory that want project to install>
+
+  # Clone project
+  $ git clone -b master https://github.com/FECampChulalongkornUniversity/FE-2021-Backend.git
+```
+
+## Setup Database
+
+### Connect database with table plus
+
+1. เปิด Table Plus กดปุ่ม "Create a new connection"
+2. ใส่ทุกช่องตามที่ Setup ไว้ตอน install database (name=อะไรก็ได้แล้วแต่, host=localhost, port=5432, database เว้นว่างไว้)
+3. ลองกดปุ่ม Test (ถ้าไม่มีอะไรผิดจะขึ้น connection is OK)
+4. แล้วกด connnect
+
+### Create database with table plus
+
+1. หลังจาก connect เรียบร้อยแล้วกดปุ่ม SQL (อยู่มุมซ้ายบนเป็นรูปสี่เหลี่ยมมีคำว่า SQL อยู่ข้างใน)
+2. ใส่ SQL Command `CREATE DATABASE <NAME>;` **แก้ <NAME> เป็นชื่ออะไรก็ได้แต่อย่าลบ ";" ออกก**
+3. กด Ctrl + Enter (mac น่าจะเป็น command + Enter)
+4. มันควรจะขึ้นว่า Query 1 OK
+5. แล้วกดที่รูป database (รูปทรงกระบอกที่เป็นแบ่งท่อนๆ 3 ท่อนข้างๆปุ่ม SQL)
+6. แล้วเลือก database ที่พึ่งสร้างเมื่อกี้
+
+## Setup ENV File
+
+- **Rename** **_.env.example_** เป็น **_.env.development_** + **Copy** และเปลี่ยนชื่อเป็น **_.env.production_** อีกอันนึง
+- Setup .env file (เติมตัวแปรในช่องว่าง)
+  <br/>
+  - **PORT** ใส่เลขอะไรก็ได้ (default 8000)<br/>
+  - **MODE_ENV**
+    - .env.development -> development<br/>
+    - .env.production -> production<br/>
+  
+  - **DATABASE_NAME** ใส่ชื่อ database ที่จะเอาข้อมูลไปเก็บ<br/>
+  - **DATABASE_USERNAME** username ที่ใส่ตอน setup database (default root)<br/>
+  - **DATABASE_PASSWORD** password ที่ใส่ตอน setup database (default ไม่มี)
+  <br/>
 
 ## Installation
 
-```bash
-$ npm install
-```
+- **ถ้าไม่เคยใช้ nestjs มาก่อนให้ run คำสั่งนี้ด้วย**
+  ```bash
+  $ yarn global add @nestjs/cli
+  ```
+- run คำสั่ง
+  ```bash
+  $ yarn install
+  ```
 
 ## Running the app
 
-```bash
-# development
-$ npm run start
+- ก่อน run start ให้ run คำสั่งนี้ก่อน
+  ```bash
+  # complie typescript to javascript
+  $ yarn build
+  ```
+- start the service
 
-# watch mode
-$ npm run start:dev
+  ```bash
+  # watch mode (Dev mode)
+  $ yarn run start:dev
 
-# production mode
-$ npm run start:prod
-```
+  # production mode
+  $ yarn run start:prod
+  ```
 
-## Test
+## Etc Command
 
-```bash
-# unit tests
-$ npm run test
+  ```bash
+  # format code template
+  $ yarn format
 
-# e2e tests
-$ npm run test:e2e
+  # format fix code to be as the eslint rule in .eslintrc.js
+  $ yarn lint
 
-# test coverage
-$ npm run test:cov
-```
+  # create nest resource
+  $ nest g res <name>
 
-## Support
+  # automatically create a migration file
+  $ yarn typeorm:auto-create
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+  # create empty migration file
+  $ yarn typeorm:create
 
-## Stay in touch
+  # run migrations files
+  $ yarn typeorm:run
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+  # show config (typeorm config)
+  $ yarn seed:config
 
-## License
+  # run seeds and factorires files
+  $ yarn seed:run
+  ```
 
-Nest is [MIT licensed](LICENSE).
+## Doc List
+
+- NestJS
+  - [Official Doc](https://docs.nestjs.com)
+- Typeorm
+  - [Model Relationship](https://typeorm.io/#/relations)
+  - [Column Type](https://typeorm.io/#/entities/#Column%20types)
+  - [Querybuilder](https://typeorm.io/#/select-query-builder)
+  - [Decorator Refereneces](https://typeorm.io/#/decorator-reference)
+- Eslint
+  - [Rules](https://eslint.org/docs/rules/)
