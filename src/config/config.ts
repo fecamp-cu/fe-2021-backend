@@ -5,7 +5,7 @@ const envType = process.env.MODE_ENV || 'development';
 dotenv.config({ path: `.env.${envType}` });
 
 export default () => ({
-  port: parseInt(process.env.PORT) || 3000,
+  port: parseInt(process.env.PORT) || 8000,
   mode: process.env.MODE_ENV,
   secret: process.env.SECRET,
   database: {
