@@ -5,9 +5,14 @@ const envType = process.env.MODE_ENV || 'development';
 
 dotenv.config({ path: `.env.${envType}` });
 
-const options: ConnectionOptions = {
+type ConnectionOptionsWithSeed = ConnectionOptions & {
+  seeds: string[];
+  factories: string[];
+};
+
+const options: ConnectionOptionsWithSeed = {
   type: 'postgres',
-  host: process.env.DATABSE_HOST,
+  host: process.env.DATABASE_HOST,
   port: parseInt(process.env.DATABSE_PORT) || 5432,
   database: process.env.DATABASE_NAME,
   username: process.env.DATABASE_USERNAME,
@@ -15,6 +20,8 @@ const options: ConnectionOptions = {
   synchronize: false,
   entities: ['src/**/entities/*.entity{.ts,.js}'],
   migrations: ['src/database/migrations/*{.ts,.js}'],
+  seeds: ['src/database/seeds/*{.ts,.js}'],
+  factories: ['src/database/factories/*{.ts,.js}'],
   cli: {
     migrationsDir: 'src/database/migrations',
   },
