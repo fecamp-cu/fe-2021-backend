@@ -1,12 +1,12 @@
 import * as dotenv from 'dotenv';
 
-const envType = process.env.MODE_ENV || 'development';
+const envType = process.env.NODE_ENV || 'development';
 
 dotenv.config({ path: `.env.${envType}` });
 
 export default () => ({
   port: parseInt(process.env.PORT) || 8000,
-  mode: process.env.MODE_ENV,
+  mode: process.env.NODE_ENV,
   secret: process.env.SECRET,
   database: {
     type: process.env.DATABASE_TYPE,
