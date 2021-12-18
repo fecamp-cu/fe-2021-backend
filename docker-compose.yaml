@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
-      - /volumes/postgresql/data
+      - ./volumes/postgresql/data
     ports:
       - ${DATABASE_PORT}:${DATABASE_PORT}
     command: -p ${DATABASE_PORT}
