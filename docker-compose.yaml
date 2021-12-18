@@ -18,8 +18,8 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
-    container_name: nitad-poll-pgadmin
-    restart: always
+    container_name: fecamp-pgadmin
+    restart: unless-stopped
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
@@ -27,4 +27,4 @@ services:
     ports:
       - ${PGADMIN_PORT}:${PGADMIN_PORT}
     volumes:
-      - ./pgadmin/servers.json:/pgadmin4/servers.json
+      - /pgadmin/servers.json
