@@ -11,20 +11,42 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
-      - /volumes/postgresql/data
+      - ./volumes/postgres:/volumes/postgresql/data
+    networks:
+      - fecamp-2021
     ports:
       - ${DATABASE_PORT}:${DATABASE_PORT}
     command: -p ${DATABASE_PORT}
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: fecamp-pgadmin
+  directus:
+    image: directus/directus:9.4
+    container_name: fecamp-directus
     restart: unless-stopped
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
-      PGADMIN_LISTEN_PORT: ${PGADMIN_PORT}
     ports:
-      - ${PGADMIN_PORT}:${PGADMIN_PORT}
+      - ${DIRECTUS_PORT}:${DIRECTUS_PORT}
     volumes:
-      - /pgadmin/servers.json
+      - ./volumes/upload:/directus/uploads
+      - ./directus/hooks:/directus/extendsion/hooks
+    environment:
+      KEY: ${DIRECTUS_KEY}
+      SECRET: ${DIRECTUS_SECRET}
+      PORT: ${DIRECTUS_PORT}
+
+      DB_CLIENT: 'pg'
+      DB_HOST: 'db'
+      DB_PORT: ${DATABASE_PORT}
+      DB_DATABASE: ${DATABASE_NAME}
+      DB_USER: ${DATABASE_USERNAME}
+      DB_PASSWORD: ${DATABASE_PASSWORD}
+      CACHE_ENABLED: 'false'
+
+      ADMIN_EMAIL: ${DIRECTUS_ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${DIRECTUS_ADMIN_PASSWORD}
+
+      PUBLIC_URL: ${DIRECTUS_PUBLIC_URL}
+    networks:
+      - fecamp-2021
+
+networks:
+  fecamp-2021:
+    name: fecamp-2021
