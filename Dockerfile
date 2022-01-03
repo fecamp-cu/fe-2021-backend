@@ -33,4 +33,4 @@ COPY --from=build /usr/src/app/src /usr/src/app/src
 EXPOSE 8000
 
 # Starting scripts
-CMD node dist/main
+CMD yarn typeorm:prod | yarn start:prod
