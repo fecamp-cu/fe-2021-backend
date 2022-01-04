@@ -18,38 +18,8 @@ export class User {
   @Column({ select: false })
   password: string;
 
-  @Column({ name: 'first_name' })
-  firstName: string;
-
-  @Column({ name: 'last_name' })
-  lastName: string;
-
-  @Column()
-  tel: number;
-
   @Column({ unique: true })
   email: string;
-
-  @Column()
-  grade: string;
-
-  @Column()
-  school: string;
-
-  @Column()
-  address: string;
-
-  @Column({ name: 'sub_district' })
-  subdistrict: string;
-
-  @Column()
-  district: string;
-
-  @Column()
-  province: string;
-
-  @Column()
-  postcode: number;
 
   @CreateDateColumn({ name: 'created_date', select: false })
   createdDate: Date;
