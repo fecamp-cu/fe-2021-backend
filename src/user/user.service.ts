@@ -1,4 +1,4 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { editProfileDto } from 'src/auth/dto/edit-profile.dto';
@@ -17,7 +17,14 @@ export class UserService {
     if (findUser) {
       throw new UnprocessableEntityException({
         reason: 'INVALID_INPUT',
-        message: 'User already existex',
+        message: 'User already existed',
+      });
+    }
+    const findUserByEmail = await this.userRepositary.findOne({ email: registerDto.email });
+    if (findUserByEmail) {
+      throw new UnprocessableEntityException({
+        reason: 'INVALID_INPUT',
+        message: 'Email already existed',
       });
     }
     const SALTROUND = 10;
@@ -28,23 +35,38 @@ export class UserService {
     return new User({
       id: createdUser.id,
       username: createdUser.username,
-      email: createdUser.email,
     });
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findAll() {
+    const users = await this.userRepositary.find();
+    return users.map(
+      user =>
+        new User({
+          id: user.id,
+          username: user.username,
+        }),
+    );
   }
 
-  findOne(loginDto: LoginDto) {
-    return `This action returns a #user`;
+  async findOne(loginDto: LoginDto) {
+    const user = await this.userRepositary.findOne({ username: loginDto.username });
+    if (!user) {
+      throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found user' });
+    }
+    return new User({
+      id: user.id,
+      username: user.username,
+    });
   }
 
-  update(id: number, editProfileDto: editProfileDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, editProfileDto: editProfileDto) {
+    const update = await this.userRepositary.update(id, editProfileDto);
+    return update;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    const deleted = await this.userRepositary.softDelete(id);
+    return deleted;
   }
 }
