@@ -30,7 +30,7 @@ export class AuthController {
   }
   @Post('login')
   async login(@Body() loginDto: LoginDto, @Res() res: Response): Promise<Response> {
-    const user = await this.userService.findOne(loginDto);
+    const user = await this.userService.Login(loginDto);
     const token: string = await this.authService.createToken(user);
     res.cookie('access_token', token, { httpOnly: true, secure: false });
     return res.status(HttpStatus.OK).json(user);
@@ -38,7 +38,7 @@ export class AuthController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   async profile(@Req() req, @Res() res: Response): Promise<Response> {
-    const user = await this.userService.findById(req.user.id);
+    const user = await this.userService.findOne(req.user.id);
     return res.status(HttpStatus.OK).json(user);
   }
   @Delete('logout')
