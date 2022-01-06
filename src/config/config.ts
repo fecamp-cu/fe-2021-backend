@@ -17,4 +17,9 @@ export default () => ({
     username: process.env.DATABASE_USERNAME,
     password: process.env.DATABASE_PASSWORD,
   },
+  gcs: {
+    serviceAccountKey: process.env.GCS_SA_KEY,
+    bucketName: process.env.GCS_BUCKET_NAME,
+    secret: process.env.IMG_FILE_NAME_SECRET,
+  },
 });
