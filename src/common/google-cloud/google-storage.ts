@@ -1,4 +1,5 @@
 import { Bucket, Storage } from '@google-cloud/storage';
+import { StreamableFile } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto-js';
 import { MetaData } from '../types/google-cloud-storage';
@@ -24,7 +25,14 @@ export class GoogleCloudStorage {
     return this.configService.get<string>('gcs.publicURL') + '/' + imgName;
   }
 
-  private getImageFileName(name: string): string {
+  public async uploadImage(uid: number, img: Buffer): Promise<string> {
+    const imgStream = new StreamableFile(img);
+    const imgName = this.getImageFileName(uid);
+    const file = this.bucket.file(imgName);
+    await imgStream.getStream().pipe(file.createWriteStream());
+    return await this.getImageURL(imgName);
+  }
+
   private getImageFileName(id: number): string {
     const secret = this.configService.get<string>('gcs.secret');
     return 'profile-' + id + '-' + `${crypto.SHA256(id + secret)}.jpg`;
