@@ -1,6 +1,9 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Post, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { RequestWithUserId } from 'src/common/types/auth';
 import { ProfileService } from './profile.service';
 
+// @UseGuards(JwtAuthGuard)
 @Controller('profile')
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
@@ -29,4 +32,16 @@ export class ProfileController {
   // remove(@Param('id') id: string) {
   //   return this.profileService.remove(+id);
   // }
+
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('avatar'))
+  async uploadImage(
+    @Req() req: RequestWithUserId,
+    @UploadedFile() avatar: Express.Multer.File,
+  ): Promise<string> {
+    const { buffer } = avatar;
+    req.user = { id: 1 };
+    const imageURL = await this.profileService.uploadImage(req.user.id, buffer);
+    return imageURL;
+  }
 }
