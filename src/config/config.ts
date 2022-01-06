@@ -8,6 +8,7 @@ export default () => ({
   port: parseInt(process.env.PORT) || 8000,
   mode: process.env.NODE_ENV,
   secret: process.env.SECRET,
+  tokenDuration: process.env.TOKEN_DURATION || '3600s',
   database: {
     type: process.env.DATABASE_TYPE,
     host: process.env.DATABASE_HOST || 'localhost',

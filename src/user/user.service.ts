@@ -16,16 +16,16 @@ import { User } from './entities/user.entity';
 const SALTROUND = 10;
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(User) private userRepositary: Repository<User>) {}
+  constructor(@InjectRepository(User) private userRepository: Repository<User>) {}
   async create(registerDto: RegisterDto): Promise<UserDto> {
-    const findUser = await this.userRepositary.findOne({ username: registerDto.username });
+    const findUser = await this.userRepository.findOne({ username: registerDto.username });
     if (findUser) {
       throw new UnprocessableEntityException({
         reason: 'INVALID_INPUT',
         message: 'User already existed',
       });
     }
-    const findUserByEmail = await this.userRepositary.findOne({ email: registerDto.email });
+    const findUserByEmail = await this.userRepository.findOne({ email: registerDto.email });
     if (findUserByEmail) {
       throw new UnprocessableEntityException({
         reason: 'INVALID_INPUT',
@@ -34,8 +34,8 @@ export class UserService {
     }
     registerDto.password = await bcrypt.hash(registerDto.password, SALTROUND);
 
-    const user = this.userRepositary.create(registerDto);
-    const createdUser = await this.userRepositary.save(user);
+    const user = this.userRepository.create(registerDto);
+    const createdUser = await this.userRepository.save(user);
     return new UserDto({
       id: createdUser.id,
       username: createdUser.username,
@@ -43,7 +43,7 @@ export class UserService {
   }
 
   async findAll(): Promise<UserDto[]> {
-    const users = await this.userRepositary.find();
+    const users = await this.userRepository.find();
     return users.map(
       user =>
         new UserDto({
@@ -54,9 +54,13 @@ export class UserService {
   }
 
   async Login(loginDto: LoginDto): Promise<UserDto> {
-    const user = await this.userRepositary.findOne({ username: loginDto.username });
-    const passwordcompare = await bcrypt.compare(loginDto.password, user.password);
+    const user: User = await this.userRepository
+      .createQueryBuilder('user')
+      .where({ username: loginDto.username })
+      .addSelect('user.password')
+      .getOne();
 
+    const passwordcompare = await bcrypt.compare(loginDto.password, user.password);
     if (!user || !passwordcompare) {
       throw new UnauthorizedException({
         reason: 'INVALID_INPUT',
@@ -70,7 +74,7 @@ export class UserService {
   }
 
   async findOne(id: number): Promise<UserDto> {
-    const user = await this.userRepositary.findOne({ id: id });
+    const user = await this.userRepository.findOne({ id: id });
 
     if (!user) {
       throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found user' });
@@ -82,7 +86,7 @@ export class UserService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<UserDto> {
-    const update: UpdateResult = await this.userRepositary.update(id, updateUserDto);
+    const update: UpdateResult = await this.userRepository.update(id, updateUserDto);
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, SALTROUND);
     }
@@ -98,7 +102,7 @@ export class UserService {
   }
 
   async remove(id: number): Promise<UserDto> {
-    const deleted: DeleteResult = await this.userRepositary.softDelete(id);
+    const deleted: DeleteResult = await this.userRepository.softDelete(id);
     if (deleted.affected === 0) {
       throw new NotFoundException({
         reason: 'NOT_FOUND',
