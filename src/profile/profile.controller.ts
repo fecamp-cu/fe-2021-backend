@@ -1,9 +1,10 @@
-import { Controller, Post, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RequestWithUserId } from 'src/common/types/auth';
 import { ProfileService } from './profile.service';
 
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('profile')
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
