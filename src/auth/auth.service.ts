@@ -1,26 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { JwtService } from '@nestjs/jwt';
+import { UserData } from 'src/common/types/user';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
+  constructor(private userService: UserService, private jwtService: JwtService) {}
 
-  findAll() {
-    return `This action returns all auth`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
-
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+  async createToken(user: UserData) {
+    const payload = {
+      id: user.id,
+    };
+    return this.jwtService.sign(payload);
   }
 }

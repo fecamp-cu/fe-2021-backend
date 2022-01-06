@@ -1,34 +1,51 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import { Response } from 'express';
+import { UserData } from 'src/common/types/user';
+import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
-
-  @Post()
-  create(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.create(createAuthDto);
+  constructor(private readonly authService: AuthService, private userService: UserService) {}
+  @Post('register')
+  async register(@Body() registerDto: RegisterDto, @Res() res: Response): Promise<Response> {
+    const user: UserData = await this.userService.create(registerDto);
+    return res
+      .status(HttpStatus.CREATED)
+      .json({ message: 'Successfully registered user', ...user });
   }
-
-  @Get()
-  findAll() {
-    return this.authService.findAll();
+  @Post('login')
+  async login(@Body() loginDto: LoginDto, @Res() res: Response): Promise<Response> {
+    const user = await this.userService.findOne(loginDto);
+    const token: string = await this.authService.createToken(user);
+    res.cookie('access_token', token, { httpOnly: true, secure: false });
+    return res.status(HttpStatus.OK).json(user);
   }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  async profile(@Req() req, @Res() res: Response): Promise<Response> {
+    const user = await this.userService.findById(req.user.id);
+    return res.status(HttpStatus.OK).json(user);
   }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
+  @Delete('logout')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(JwtAuthGuard)
+  logout(@Res() res: Response): Response {
+    res.clearCookie('access_token');
+    return res.send();
   }
 }
