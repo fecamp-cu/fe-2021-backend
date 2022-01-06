@@ -40,7 +40,6 @@ export class UserService {
     return new User({
       id: createdUser.id,
       username: createdUser.username,
-      password: createdUser.password,
     });
   }
 
@@ -51,12 +50,11 @@ export class UserService {
         new User({
           id: user.id,
           username: user.username,
-          password: user.password,
         }),
     );
   }
 
-  async findOne(loginDto: LoginDto) {
+  async Login(loginDto: LoginDto) {
     const user = await this.userRepositary.findOne({ username: loginDto.username });
     const passwordcompare = await bcrypt.compare(loginDto.password, user.password);
 
@@ -69,11 +67,10 @@ export class UserService {
     return new User({
       id: user.id,
       username: user.username,
-      password: user.password,
     });
   }
 
-  async findById(id: number) {
+  async findOne(id: number) {
     const user = await this.userRepositary.findOne({ id: id });
 
     if (!user) {
@@ -82,7 +79,6 @@ export class UserService {
     return new User({
       id: user.id,
       username: user.username,
-      password: user.password,
     });
   }
 
