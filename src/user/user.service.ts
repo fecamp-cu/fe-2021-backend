@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { editProfileDto } from 'src/auth/dto/edit-profile.dto';
@@ -35,6 +40,7 @@ export class UserService {
     return new User({
       id: createdUser.id,
       username: createdUser.username,
+      password: createdUser.password,
     });
   }
 
@@ -45,18 +51,38 @@ export class UserService {
         new User({
           id: user.id,
           username: user.username,
+          password: user.password,
         }),
     );
   }
 
   async findOne(loginDto: LoginDto) {
     const user = await this.userRepositary.findOne({ username: loginDto.username });
+    const passwordcompare = await bcrypt.compare(loginDto.password, user.password);
+
+    if (!user || !passwordcompare) {
+      throw new UnauthorizedException({
+        reason: 'INVALID_INPUT',
+        message: 'username or password wrong',
+      });
+    }
+    return new User({
+      id: user.id,
+      username: user.username,
+      password: user.password,
+    });
+  }
+
+  async findById(id: number) {
+    const user = await this.userRepositary.findOne({ id: id });
+
     if (!user) {
       throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found user' });
     }
     return new User({
       id: user.id,
       username: user.username,
+      password: user.password,
     });
   }
 
