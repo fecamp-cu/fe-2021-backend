@@ -1,8 +1,11 @@
+import { Profile } from 'src/profile/entities/profile.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -33,4 +36,8 @@ export class User {
   constructor(partial: Partial<User>) {
     Object.assign(this, partial);
   }
+
+  @OneToOne(() => Profile)
+  @JoinColumn()
+  profle: Profile;
 }
