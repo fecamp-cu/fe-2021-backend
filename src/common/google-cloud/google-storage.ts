@@ -20,12 +20,13 @@ export class GoogleCloudStorage {
     return metadata;
   }
 
-  public getImageURL(name: string): string {
-    return this.configService.get<string>('gcs.publicURL') + '/' + this.getImageFileName(name);
+  public getImageURL(imgName: string): string {
+    return this.configService.get<string>('gcs.publicURL') + '/' + imgName;
   }
 
   private getImageFileName(name: string): string {
+  private getImageFileName(id: number): string {
     const secret = this.configService.get<string>('gcs.secret');
-    return 'profile-' + name + '-' + `${crypto.SHA256(name + secret)}.jpg`;
+    return 'profile-' + id + '-' + `${crypto.SHA256(id + secret)}.jpg`;
   }
 }
