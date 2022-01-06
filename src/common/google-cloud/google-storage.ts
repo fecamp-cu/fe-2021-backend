@@ -1,5 +1,6 @@
 import { Bucket, Storage } from '@google-cloud/storage';
 import { ConfigService } from '@nestjs/config';
+import { MetaData } from '../types/google-cloud-storage';
 
 export class GoogleCloudStorage {
   private bucket: Bucket;
@@ -11,5 +12,11 @@ export class GoogleCloudStorage {
     });
     this.bucketName = this.configService.get<string>('gcs.bucketName');
     this.bucket = this.storage.bucket(this.bucketName);
+  }
+
+  public async getFileMataData(fileName: string): Promise<MetaData> {
+    const [metadata] = await this.storage.bucket(this.bucketName).file(fileName).getMetadata();
+    console.log(metadata);
+    return metadata;
   }
 }
