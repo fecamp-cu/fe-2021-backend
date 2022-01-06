@@ -6,18 +6,18 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import { editProfileDto } from 'src/auth/dto/edit-profile.dto';
 import { LoginDto } from 'src/auth/dto/login.dto';
 import { RegisterDto } from 'src/auth/dto/register.dto';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
 
-// import { UserData } from 'src/common/types/user';
-
+const SALTROUND = 10;
 @Injectable()
 export class UserService {
   constructor(@InjectRepository(User) private userRepositary: Repository<User>) {}
-  async create(registerDto: RegisterDto) {
+  async create(registerDto: RegisterDto): Promise<UserDto> {
     const findUser = await this.userRepositary.findOne({ username: registerDto.username });
     if (findUser) {
       throw new UnprocessableEntityException({
@@ -32,29 +32,28 @@ export class UserService {
         message: 'Email already existed',
       });
     }
-    const SALTROUND = 10;
     registerDto.password = await bcrypt.hash(registerDto.password, SALTROUND);
 
     const user = this.userRepositary.create(registerDto);
     const createdUser = await this.userRepositary.save(user);
-    return new User({
+    return new UserDto({
       id: createdUser.id,
       username: createdUser.username,
     });
   }
 
-  async findAll() {
+  async findAll(): Promise<UserDto[]> {
     const users = await this.userRepositary.find();
     return users.map(
       user =>
-        new User({
+        new UserDto({
           id: user.id,
           username: user.username,
         }),
     );
   }
 
-  async Login(loginDto: LoginDto) {
+  async Login(loginDto: LoginDto): Promise<UserDto> {
     const user = await this.userRepositary.findOne({ username: loginDto.username });
     const passwordcompare = await bcrypt.compare(loginDto.password, user.password);
 
@@ -64,31 +63,49 @@ export class UserService {
         message: 'username or password wrong',
       });
     }
-    return new User({
+    return new UserDto({
       id: user.id,
       username: user.username,
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<UserDto> {
     const user = await this.userRepositary.findOne({ id: id });
 
     if (!user) {
       throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found user' });
     }
-    return new User({
+    return new UserDto({
       id: user.id,
       username: user.username,
     });
   }
 
-  async update(id: number, editProfileDto: editProfileDto) {
-    const update = await this.userRepositary.update(id, editProfileDto);
-    return update;
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<UserDto> {
+    const update: UpdateResult = await this.userRepositary.update(id, updateUserDto);
+    if (updateUserDto.password) {
+      updateUserDto.password = await bcrypt.hash(updateUserDto.password, SALTROUND);
+    }
+
+    if (update.affected === 0) {
+      throw new NotFoundException({
+        reason: 'NOT_FOUND',
+        message: 'user not found',
+      });
+    }
+    const user = await this.findOne(id);
+    return user;
   }
 
-  async remove(id: number) {
-    const deleted = await this.userRepositary.softDelete(id);
-    return deleted;
+  async remove(id: number): Promise<UserDto> {
+    const deleted: DeleteResult = await this.userRepositary.softDelete(id);
+    if (deleted.affected === 0) {
+      throw new NotFoundException({
+        reason: 'NOT_FOUND',
+        message: 'user not found',
+      });
+    }
+    const user = await this.findOne(id);
+    return user;
   }
 }

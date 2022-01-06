@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { UserData } from 'src/common/types/user';
+import { UserDto } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -23,7 +23,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService, private userService: UserService) {}
   @Post('register')
   async register(@Body() registerDto: RegisterDto, @Res() res: Response): Promise<Response> {
-    const user: UserData = await this.userService.create(registerDto);
+    const user: UserDto = await this.userService.create(registerDto);
     return res
       .status(HttpStatus.CREATED)
       .json({ message: 'Successfully registered user', ...user });
