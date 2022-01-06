@@ -28,9 +28,13 @@ export class ProfileService {
   // }
 
   async uploadImage(uid: number, avatar: Buffer): Promise<string> {
-    const imageStorage = new GoogleCloudStorage(this.configService);
-    const imageURL = await imageStorage.uploadImage(uid, avatar);
     const user = await this.userRepository.findOne(uid, { relations: ['profile'] });
+    const imageStorage = new GoogleCloudStorage(this.configService);
+    const imageURL = await imageStorage.uploadImage(
+      user.profile.firstName,
+      user.profile.lastName,
+      avatar,
+    );
     user.profile.imageUrl = imageURL;
     await this.userRepository.save(user);
     return imageURL;

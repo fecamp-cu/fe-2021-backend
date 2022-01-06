@@ -41,7 +41,6 @@ export class ProfileController {
     @UploadedFile() avatar: Express.Multer.File,
   ): Promise<string> {
     const { buffer } = avatar;
-    req.user = { id: 1 };
     const imageURL = await this.profileService.uploadImage(req.user.id, buffer);
     return imageURL;
   }

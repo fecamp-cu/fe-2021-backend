@@ -21,9 +21,9 @@ export class GoogleCloudStorage {
     return metadata;
   }
 
-  public async uploadImage(uid: number, img: Buffer): Promise<string> {
+  public async uploadImage(firstName: string, lastName: string, img: Buffer): Promise<string> {
     const imgStream = new StreamableFile(img);
-    const imgName = this.getImageFileName(uid);
+    const imgName = this.getImageFileName(firstName + '-' + lastName);
     const file = this.bucket.file(imgName);
     await imgStream.getStream().pipe(file.createWriteStream());
     return await this.getImageURL(imgName);
@@ -41,9 +41,9 @@ export class GoogleCloudStorage {
     return this.configService.get<string>('gcs.publicURL') + '/' + imgName;
   }
 
-  private getImageFileName(id: number): string {
+  private getImageFileName(ownerName: string): string {
     const secret = this.configService.get<string>('gcs.secret');
-    return 'profile-' + id + '-' + `${crypto.SHA256(id + secret)}.jpg`;
+    return 'profile-' + ownerName + '-' + `${crypto.SHA256(ownerName + secret)}.jpg`;
   }
 
   private getFileURL(fileName: string): string {
