@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fecamp-2021-backend
+  namespace: master
+  labels:
+    app: fecamp-2021-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fecamp-2021-backend
+  template:
+    metadata:
+      labels:
+        app: fecamp-2021-backend
+    spec:
+      containers:
+        - name: fecamp-2021-backend
+          image: ghcr.io/fecamp-cu/fe-2021-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: fecamp-secret
+                  key: postgres-username
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fecamp-secret
+                  key: postgres-password
+            - name: DATABASE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: config
+                  key: database_name
+            - name: DATABASE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: config
+                  key: database_port
+            - name: DATABASE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: config
+                  key: database_host
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: config
+                  key: port
+            - name: SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: fecamp-secret
+                  key: secret
+            - name: TOKEN_DURATION
+              valueFrom:
+                configMapKeyRef:
+                  name: config
+                  key: token_duration
+            - name: ENTITY_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: config
+                  key: entity_path
+            - name: MIGRATION_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: config
+                  key: migration_path
