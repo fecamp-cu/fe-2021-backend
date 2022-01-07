@@ -112,4 +112,17 @@ export class UserService {
     const user = await this.findOne(id);
     return user;
   }
+
+  async findOneWithRelations(id: number, relations: string[]): Promise<UserDto> {
+    const user = await this.userRepository.findOne({ id: id }, { relations: relations });
+
+    if (!user) {
+      throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found user' });
+    }
+    return new UserDto({
+      id: user.id,
+      username: user.username,
+      profile: user.profile,
+    });
+  }
 }
