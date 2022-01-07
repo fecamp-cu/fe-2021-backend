@@ -1,3 +1,4 @@
+import { Role } from 'src/common/enums/role';
 import { Profile } from 'src/profile/entities/profile.entity';
 import {
   Column,
@@ -23,6 +24,9 @@ export class User {
 
   @Column({ unique: true })
   email: string;
+
+  @Column()
+  role: Role;
 
   @CreateDateColumn({ name: 'created_date', select: false })
   createdDate: Date;
