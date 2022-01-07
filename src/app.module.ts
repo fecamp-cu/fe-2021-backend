@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import config from './config/config';
 import { ProfileModule } from './profile/profile.module';
+import { TokenModule } from './token/token.module';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -31,6 +32,7 @@ import { UserModule } from './user/user.module';
     UserModule,
     AuthModule,
     ProfileModule,
+    TokenModule,
   ],
   controllers: [AppController],
   providers: [AppService],
