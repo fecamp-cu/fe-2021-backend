@@ -18,4 +18,9 @@ export class GoogleAuthentication {
       scope: scopes,
     });
   }
+
+  public async getTokens(code: string): Promise<string> {
+    const { tokens } = await this.client.getToken(code);
+    return tokens;
+  }
 }
