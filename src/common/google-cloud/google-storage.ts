@@ -2,7 +2,7 @@ import { Bucket, Storage } from '@google-cloud/storage';
 import { StreamableFile } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto-js';
-import { MetaData } from '../types/google-cloud-storage';
+import { MetaData } from '../types/google/google-cloud-storage';
 
 export class GoogleCloudStorage {
   private bucket: Bucket;
