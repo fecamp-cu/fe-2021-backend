@@ -61,15 +61,17 @@ export class AuthController {
 
   @Get('google')
   googleLogin(@Res() res: Response): void {
-    const url = this.client.getUrl(['profile', 'email', 'openid']);
-    console.log(url);
+    const url = this.googleClient.getUrl(['profile', 'email', 'openid']);
     res.status(HttpStatus.MOVED_PERMANENTLY).redirect(url);
   }
 
   @Get('google/callback')
   async OAuthCallback(@Query('code') code: string, @Res() res: Response): Promise<Response> {
-    const tokens = await this.client.getTokens(code);
+    const tokens: OAuthResponse = await this.googleClient.getTokens(code);
+    this.googleClient.setCredentials(tokens);
+    const userInfo: GoogleUserInfo = await this.googleClient.getUserInfo();
 
-    return res.status(HttpStatus.OK).json(tokens);
+    let user = await this.profileService.findByEmail(userInfo.email);
+    return res.status(HttpStatus.OK).json(await this.googleClient.getUserInfo());
   }
 }
