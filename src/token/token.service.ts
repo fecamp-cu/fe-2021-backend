@@ -1,10 +1,17 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { TokenDto } from './dto/token.dto';
+import { Token } from './entities/token.entity';
 
 @Injectable()
 export class TokenService {
-  create(tokenDto: TokenDto) {
-    return 'This action adds a new token';
+  constructor(@InjectRepository(Token) private tokenRepository: Repository<Token>) {}
+
+  async create(tokenDto: TokenDto): Promise<TokenDto> {
+    const token: Token = await this.tokenRepository.create(tokenDto);
+    const createdToken: Token = await this.tokenRepository.save(token);
+    return new TokenDto(createdToken);
   }
 
   findAll() {
