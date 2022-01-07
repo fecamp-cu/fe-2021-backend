@@ -9,7 +9,6 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from 'src/auth/dto/login.dto';
 import { RegisterDto } from 'src/auth/dto/register.dto';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
 
@@ -43,14 +42,7 @@ export class UserService {
   }
 
   async findAll(): Promise<UserDto[]> {
-    const users = await this.userRepository.find();
-    return users.map(
-      user =>
-        new UserDto({
-          id: user.id,
-          username: user.username,
-        }),
-    );
+    return await this.userRepository.find();
   }
 
   async Login(loginDto: LoginDto): Promise<UserDto> {
@@ -73,22 +65,22 @@ export class UserService {
     });
   }
 
-  async findOne(id: number): Promise<UserDto> {
+  async findOne(id: number): Promise<User> {
     const user = await this.userRepository.findOne({ id: id });
 
     if (!user) {
       throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found user' });
     }
-    return new UserDto({
+    return new User({
       id: user.id,
       username: user.username,
     });
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<UserDto> {
-    const update: UpdateResult = await this.userRepository.update(id, updateUserDto);
-    if (updateUserDto.password) {
-      updateUserDto.password = await bcrypt.hash(updateUserDto.password, SALTROUND);
+  async update(id: number, userDto: UserDto): Promise<UserDto> {
+    const update: UpdateResult = await this.userRepository.update(id, userDto);
+    if (userDto.password) {
+      userDto.password = await bcrypt.hash(userDto.password, SALTROUND);
     }
 
     if (update.affected === 0) {
@@ -111,5 +103,18 @@ export class UserService {
     }
     const user = await this.findOne(id);
     return user;
+  }
+
+  async findOneWithRelations(id: number, relations: string[]): Promise<UserDto> {
+    const user = await this.userRepository.findOne({ id: id }, { relations: relations });
+
+    if (!user) {
+      throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found user' });
+    }
+    return new UserDto({
+      id: user.id,
+      username: user.username,
+      profile: user.profile,
+    });
   }
 }
