@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Profile {
@@ -11,8 +18,11 @@ export class Profile {
   @Column({ name: 'last_name' })
   lastName: string;
 
+  @Column({ name: 'image_url', nullable: true })
+  imageUrl: string;
+
   @Column()
-  tel: number;
+  tel: string;
 
   @Column()
   grade: string;
@@ -33,5 +43,14 @@ export class Profile {
   province: string;
 
   @Column()
-  postcode: number;
+  postcode: string;
+
+  @CreateDateColumn({ name: 'created_date', select: false })
+  createdDate: Date;
+
+  @UpdateDateColumn({ name: 'updated_date', select: false })
+  updatedDate: Date;
+
+  @DeleteDateColumn({ name: 'deleted_date', select: false })
+  deletedDate: Date;
 }

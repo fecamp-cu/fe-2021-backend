@@ -37,7 +37,7 @@ export class User {
     Object.assign(this, partial);
   }
 
-  @OneToOne(() => Profile)
+  @OneToOne(() => Profile, { persistence: false, cascade: true })
   @JoinColumn()
-  profle: Profile;
+  profile: Profile;
 }
