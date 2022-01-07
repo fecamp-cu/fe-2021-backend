@@ -9,7 +9,6 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from 'src/auth/dto/login.dto';
 import { RegisterDto } from 'src/auth/dto/register.dto';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
 
@@ -85,10 +84,10 @@ export class UserService {
     });
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<UserDto> {
-    const update: UpdateResult = await this.userRepository.update(id, updateUserDto);
-    if (updateUserDto.password) {
-      updateUserDto.password = await bcrypt.hash(updateUserDto.password, SALTROUND);
+  async update(id: number, userDto: UserDto): Promise<UserDto> {
+    const update: UpdateResult = await this.userRepository.update(id, userDto);
+    if (userDto.password) {
+      userDto.password = await bcrypt.hash(userDto.password, SALTROUND);
     }
 
     if (update.affected === 0) {
