@@ -6,11 +6,14 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Query,
   Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
+import { GoogleAuthentication } from 'src/common/google-cloud/google-auth';
 import { UserDto } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
@@ -20,7 +23,14 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService, private userService: UserService) {}
+  private client: GoogleAuthentication;
+  constructor(
+    private readonly authService: AuthService,
+    private userService: UserService,
+    private configService: ConfigService,
+  ) {
+    this.client = new GoogleAuthentication(this.configService);
+  }
   @Post('register')
   async register(@Body() registerDto: RegisterDto, @Res() res: Response): Promise<Response> {
     const user: UserDto = await this.userService.create(registerDto);
@@ -47,5 +57,19 @@ export class AuthController {
   logout(@Res() res: Response): Response {
     res.clearCookie('access_token');
     return res.send();
+  }
+
+  @Get('google')
+  googleLogin(@Res() res: Response): void {
+    const url = this.client.getUrl(['profile', 'email', 'openid']);
+    console.log(url);
+    res.status(HttpStatus.MOVED_PERMANENTLY).redirect(url);
+  }
+
+  @Get('google/callback')
+  async OAuthCallback(@Query('code') code: string, @Res() res: Response): Promise<Response> {
+    const tokens = await this.client.getTokens(code);
+
+    return res.status(HttpStatus.OK).json(tokens);
   }
 }
