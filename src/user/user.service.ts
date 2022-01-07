@@ -39,6 +39,7 @@ export class UserService {
     return new UserDto({
       id: createdUser.id,
       username: createdUser.username,
+      role: createdUser.role,
     });
   }
 
@@ -49,6 +50,7 @@ export class UserService {
         new UserDto({
           id: user.id,
           username: user.username,
+          role: user.role,
         }),
     );
   }
@@ -70,19 +72,17 @@ export class UserService {
     return new UserDto({
       id: user.id,
       username: user.username,
+      role: user.role,
     });
   }
 
-  async findOne(id: number): Promise<UserDto> {
+  async findOne(id: number): Promise<User> {
     const user = await this.userRepository.findOne({ id: id });
 
     if (!user) {
       throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found user' });
     }
-    return new UserDto({
-      id: user.id,
-      username: user.username,
-    });
+    return user;
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<UserDto> {
