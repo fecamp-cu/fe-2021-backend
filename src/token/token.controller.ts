@@ -1,6 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { CreateTokenDto } from './dto/create-token.dto';
-import { UpdateTokenDto } from './dto/update-token.dto';
+import { TokenDto } from './dto/token.dto';
 import { TokenService } from './token.service';
 
 @Controller('token')
@@ -8,8 +7,8 @@ export class TokenController {
   constructor(private readonly tokenService: TokenService) {}
 
   @Post()
-  create(@Body() createTokenDto: CreateTokenDto) {
-    return this.tokenService.create(createTokenDto);
+  create(@Body() tokenDto: TokenDto) {
+    return this.tokenService.create(tokenDto);
   }
 
   @Get()
@@ -23,8 +22,8 @@ export class TokenController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTokenDto: UpdateTokenDto) {
-    return this.tokenService.update(+id, updateTokenDto);
+  update(@Param('id') id: string, @Body() tokenDto: TokenDto) {
+    return this.tokenService.update(+id, tokenDto);
   }
 
   @Delete(':id')

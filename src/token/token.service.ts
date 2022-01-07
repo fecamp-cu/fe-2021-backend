@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTokenDto } from './dto/create-token.dto';
-import { UpdateTokenDto } from './dto/update-token.dto';
+import { TokenDto } from './dto/token.dto';
 
 @Injectable()
 export class TokenService {
-  create(createTokenDto: CreateTokenDto) {
+  create(tokenDto: TokenDto) {
     return 'This action adds a new token';
   }
 
@@ -16,7 +15,7 @@ export class TokenService {
     return `This action returns a #${id} token`;
   }
 
-  update(id: number, updateTokenDto: UpdateTokenDto) {
+  update(id: number, tokenDto: TokenDto) {
     return `This action updates a #${id} token`;
   }
 
