@@ -42,14 +42,7 @@ export class UserService {
   }
 
   async findAll(): Promise<UserDto[]> {
-    const users = await this.userRepository.find();
-    return users.map(
-      user =>
-        new UserDto({
-          id: user.id,
-          username: user.username,
-        }),
-    );
+    return await this.userRepository.find();
   }
 
   async Login(loginDto: LoginDto): Promise<UserDto> {
@@ -72,13 +65,13 @@ export class UserService {
     });
   }
 
-  async findOne(id: number): Promise<UserDto> {
+  async findOne(id: number): Promise<User> {
     const user = await this.userRepository.findOne({ id: id });
 
     if (!user) {
       throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found user' });
     }
-    return new UserDto({
+    return new User({
       id: user.id,
       username: user.username,
     });
