@@ -17,10 +17,17 @@ export default () => ({
     username: process.env.DATABASE_USERNAME,
     password: process.env.DATABASE_PASSWORD,
   },
-  gcs: {
-    serviceAccountKey: process.env.GCS_SA_KEY,
-    bucketName: process.env.GCS_BUCKET_NAME,
-    publicURL: process.env.GCS_PUBLIC_IMAGE_URL,
-    secret: process.env.IMG_FILE_NAME_SECRET,
+  google: {
+    gcs: {
+      serviceAccountKey: process.env.GCS_SA_KEY,
+      bucketName: process.env.GCS_BUCKET_NAME,
+      publicURL: process.env.GCS_PUBLIC_IMAGE_URL,
+      secret: process.env.IMG_FILE_NAME_SECRET,
+    },
+    oauth: {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURI: process.env.GOOGLE_REDIRECT_URI,
+    },
   },
 });
