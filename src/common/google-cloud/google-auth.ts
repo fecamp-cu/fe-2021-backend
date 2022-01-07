@@ -10,4 +10,12 @@ export class GoogleAuthentication {
       redirectUri: this.configService.get<string>('google.oauth.callbackURI'),
     });
   }
+
+  public getUrl(scopes: string[]): string {
+    return this.client.generateAuthUrl({
+      access_type: 'offline',
+      prompt: 'consent',
+      scope: scopes,
+    });
+  }
 }
