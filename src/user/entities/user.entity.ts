@@ -1,10 +1,12 @@
 import { Profile } from 'src/profile/entities/profile.entity';
+import { Token } from 'src/token/entities/token.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -23,6 +25,9 @@ export class User {
 
   @Column({ unique: true })
   email: string;
+
+  @OneToMany(() => Token, token => token.user)
+  tokens: Token[];
 
   @CreateDateColumn({ name: 'created_date', select: false })
   createdDate: Date;

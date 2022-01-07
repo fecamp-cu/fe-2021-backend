@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -25,6 +26,9 @@ export class Token {
 
   @Column({ name: 'expires_date' })
   expiresDate: Date;
+
+  @ManyToOne(() => User, user => user.tokens)
+  user: User;
 
   @CreateDateColumn({ name: 'created_date', select: false })
   createdDate: Date;
