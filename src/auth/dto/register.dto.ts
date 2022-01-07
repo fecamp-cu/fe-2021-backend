@@ -1,4 +1,5 @@
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { Role } from 'src/common/enums/role';
 
 export class RegisterDto {
   @IsNotEmpty()
@@ -10,4 +11,7 @@ export class RegisterDto {
 
   @IsEmail()
   email: string;
+
+  @IsNotEmpty()
+  role: Role;
 }
