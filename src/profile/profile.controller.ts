@@ -39,9 +39,10 @@ export class ProfileController {
   async uploadImage(
     @Req() req: RequestWithUserId,
     @UploadedFile() avatar: Express.Multer.File,
-  ): Promise<string> {
+    @Res() res: Response,
+  ): Promise<Response> {
     const { buffer } = avatar;
     const imageURL = await this.profileService.uploadImage(req.user.id, buffer);
-    return imageURL;
+    return res.status(201).json({ message: 'Successfully uploaded profile avatar', profile });
   }
 }
