@@ -33,7 +33,6 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@casl/ability": "^5.4.3",
     "@google-cloud/storage": "^5.16.1",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^1.1.5",

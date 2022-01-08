@@ -38,7 +38,6 @@ export class UserService {
     return new UserDto({
       id: createdUser.id,
       username: createdUser.username,
-      role: createdUser.role,
     });
   }
 
@@ -63,7 +62,6 @@ export class UserService {
     return new UserDto({
       id: user.id,
       username: user.username,
-      role: user.role,
     });
   }
 
@@ -73,7 +71,10 @@ export class UserService {
     if (!user) {
       throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found user' });
     }
-    return user;
+    return new User({
+      id: user.id,
+      username: user.username,
+    });
   }
 
   async update(id: number, userDto: UserDto): Promise<UserDto> {
