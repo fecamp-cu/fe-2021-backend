@@ -100,6 +100,8 @@ export class AuthController {
 
     user = await this.authService.storeToken(tokens, 'google', user);
 
+    const token: string = await this.authService.createToken(user);
+    res.cookie('access_token', token, { httpOnly: true, secure: false });
     return res.status(HttpStatus.OK).json(user);
   }
 }
