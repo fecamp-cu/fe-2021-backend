@@ -21,7 +21,7 @@ export class Token {
   @Column({ name: 'access_token' })
   accessToken: string;
 
-  @Column({ name: 'refresh_token' })
+  @Column({ name: 'refresh_token', nullable: true })
   refreshToken: string;
 
   @Column({ name: 'expires_date' })
