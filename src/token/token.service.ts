@@ -11,7 +11,13 @@ export class TokenService {
   async create(tokenDto: TokenDto): Promise<TokenDto> {
     const token: Token = await this.tokenRepository.create(tokenDto);
     const createdToken: Token = await this.tokenRepository.save(token);
-    return new TokenDto(createdToken);
+    return new TokenDto({
+      id: createdToken.id,
+      serviceType: createdToken.serviceType,
+      accessToken: createdToken.accessToken,
+      refreshToken: createdToken.refreshToken,
+      expiresDate: createdToken.expiresDate,
+    });
   }
 
   findAll() {
