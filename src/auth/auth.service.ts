@@ -33,6 +33,10 @@ export class AuthService {
   }
 
   public async createUser(registerDto: RegisterDto): Promise<UserDto> {
+    const count = await this.userService.count({ username: registerDto.credentials.username });
+    if (count > 0) {
+      registerDto.credentials.username = registerDto.credentials.username + '#' + (count + 1);
+    }
     const profile: Profile = await this.profileService.create(registerDto.userInfo);
     const user = await this.userService.create(registerDto.credentials, profile);
 
@@ -57,6 +61,26 @@ export class AuthService {
       user,
     });
 
+    return await this.storeToken(tokenDto, user, serviceType);
+  }
+
+  public async storeFacebookToken(tokens: FacebookAuthData, user: UserDto): Promise<UserDto> {
+    const serviceType: ServiceType = 'facebook';
+    const tokenDto = new TokenDto({
+      accessToken: await crypto.AES.encrypt(
+        tokens.access_token,
+        this.configService.get<string>('encryptionKey'),
+      ).toString(),
+
+      expiresDate: new Date(tokens.expires_in * 1000 + Date.now()),
+      serviceType,
+      user,
+    });
+
+    return await this.storeToken(tokenDto, user, serviceType);
+  }
+
+  private async storeToken(tokenDto: TokenDto, user: UserDto, serviceType: ServiceType) {
     let token: TokenDto;
     if (user.tokens) {
       token = user.tokens.find(token => token.serviceType === serviceType);
@@ -75,6 +99,12 @@ export class AuthService {
     token = await this.tokenService.update(token.id, tokenDto);
     user.tokens.filter(token => token.serviceType !== serviceType).concat(token);
 
-    return await this.userRepository.save(user);
+    const savedUser = await this.userRepository.save(user);
+    return new UserDto({
+      id: savedUser.id,
+      email: savedUser.email,
+      username: savedUser.username,
+      profile: savedUser.profile,
+    });
   }
 }

@@ -13,9 +13,11 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import * as faker from 'faker';
+import { FacebookAuthentication } from 'src/common/facebook/facebook-auth';
 import { GoogleAuthentication } from 'src/common/google-cloud/google-auth';
+import { FacebookUserInfo } from 'src/common/types/facebook/facebook';
 import { GoogleUserInfo } from 'src/common/types/google/google-api';
-import { OAuthResponse } from 'src/common/types/token';
+import { GoogleAuthData } from 'src/common/types/token';
 import { ProfileDto } from 'src/profile/dto/profile.dto';
 import { UserDto } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
@@ -27,12 +29,14 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 @Controller('auth')
 export class AuthController {
   private googleClient: GoogleAuthentication;
+  private facebookClient: FacebookAuthentication;
   constructor(
     private readonly authService: AuthService,
     private userService: UserService,
     private configService: ConfigService,
   ) {
     this.googleClient = new GoogleAuthentication(this.configService);
+    this.facebookClient = new FacebookAuthentication(this.configService);
   }
 
   @Post('register')
@@ -73,8 +77,8 @@ export class AuthController {
   }
 
   @Get('google/callback')
-  async OAuthCallback(@Query('code') code: string, @Res() res: Response): Promise<Response> {
-    const tokens: OAuthResponse = await this.googleClient.getTokens(code);
+  async OAuthCallbackGoogle(@Query('code') code: string, @Res() res: Response): Promise<Response> {
+    const tokens: GoogleAuthData = await this.googleClient.getTokens(code);
     this.googleClient.setCredentials(tokens);
     const userInfo: GoogleUserInfo = await this.googleClient.getUserInfo();
 
@@ -98,7 +102,56 @@ export class AuthController {
       user = await this.authService.createUser(registerDto);
     }
 
-    user = await this.authService.storeToken(tokens, 'google', user);
+    user = await this.authService.storeGoogleToken(tokens, user);
+
+    const token: string = await this.authService.createToken(user);
+    res.cookie('access_token', token, { httpOnly: true, secure: false });
+    return res.status(HttpStatus.OK).json(user);
+  }
+
+  @Get('facebook')
+  facebookLogin(@Res() res: Response): void {
+    const url: string = this.facebookClient.getUrl(
+      this.configService.get<string[]>('facebook.scope'),
+    );
+    res.status(HttpStatus.MOVED_PERMANENTLY).redirect(url);
+  }
+
+  @Get('facebook/callback')
+  async OAuthCallbackFacebook(
+    @Query('code') code: string,
+    @Query('state') state: string,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const tokens = await this.facebookClient.redeemCode(state, code);
+    this.facebookClient.setCredentials(tokens);
+    const userInfo: FacebookUserInfo = await this.facebookClient.getUserInfo();
+
+    let user: UserDto = await this.userService.findByEmail(userInfo.email, ['profile', 'tokens']);
+
+    if (!user) {
+      const name = userInfo.name.split(' ');
+      const firstname = name[0];
+      const lastname = name[1];
+
+      const registerDto = new RegisterDto({
+        credentials: new UserDto({
+          username: firstname,
+          password: faker.datatype.string(16),
+          email: userInfo.email,
+        }),
+
+        userInfo: new ProfileDto({
+          firstName: firstname,
+          lastName: lastname,
+          imageUrl: userInfo.picture.data.url,
+        }),
+      });
+
+      user = await this.authService.createUser(registerDto);
+    }
+
+    user = await this.authService.storeFacebookToken(tokens, user);
 
     const token: string = await this.authService.createToken(user);
     res.cookie('access_token', token, { httpOnly: true, secure: false });
