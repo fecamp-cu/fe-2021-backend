@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsPhoneNumber, IsPostalCode } from 'class-validator';
+import { IsNotEmpty, IsPhoneNumber, IsPostalCode } from 'class-validator';
 
 export class ProfileDto {
   id: number;
@@ -8,10 +8,6 @@ export class ProfileDto {
 
   @IsNotEmpty()
   lastName: string;
-
-  @IsNotEmpty()
-  @IsEmail()
-  email: string;
 
   imageUrl: string;
 

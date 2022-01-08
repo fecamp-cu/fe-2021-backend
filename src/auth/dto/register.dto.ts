@@ -1,13 +1,15 @@
-import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
+import { ProfileDto } from 'src/profile/dto/profile.dto';
+import { UserDto } from 'src/user/dto/user.dto';
 
 export class RegisterDto {
   @IsNotEmpty()
-  username: string;
+  credentials: UserDto;
 
   @IsNotEmpty()
-  @MinLength(8, { message: 'Password must at least 8 character' })
-  password: string;
+  userInfo: ProfileDto;
 
-  @IsEmail()
-  email: string;
+  constructor(partial: Partial<RegisterDto>) {
+    Object.assign(this, partial);
+  }
 }

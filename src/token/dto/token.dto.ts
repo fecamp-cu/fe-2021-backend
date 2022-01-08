@@ -1,9 +1,8 @@
 import { IsNotEmpty } from 'class-validator';
 import { ServiceType } from 'src/common/types/token';
-import { User } from 'src/user/entities/user.entity';
+import { UserDto } from 'src/user/dto/user.dto';
 
 export class TokenDto {
-  @IsNotEmpty()
   id: number;
 
   @IsNotEmpty()
@@ -19,7 +18,7 @@ export class TokenDto {
   expiresDate: Date;
 
   @IsNotEmpty()
-  user: User;
+  user: UserDto;
 
   constructor(partial: Partial<TokenDto>) {
     Object.assign(this, partial);
