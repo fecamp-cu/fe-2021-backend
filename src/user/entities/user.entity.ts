@@ -26,7 +26,7 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @OneToMany(() => Token, token => token.user)
+  @OneToMany(() => Token, token => token.user, { persistence: false, cascade: true })
   tokens: Token[];
 
   @CreateDateColumn({ name: 'created_date', select: false })
