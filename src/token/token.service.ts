@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { TokenDto } from './dto/token.dto';
 import { Token } from './entities/token.entity';
 
@@ -24,12 +24,33 @@ export class TokenService {
     return `This action returns all token`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} token`;
+  async findOne(id: number, relations?: string[]): Promise<TokenDto> {
+    let token: Token;
+    if (!relations) {
+      token = await this.tokenRepository.findOne(id);
+    } else {
+      token = await this.tokenRepository.findOne(id, { relations });
+    }
+
+    if (!token) {
+      throw new NotFoundException({
+        reason: 'NOT_FOUND',
+        message: 'user not found',
+      });
+    }
+
+    return new TokenDto(token);
   }
 
-  update(id: number, tokenDto: TokenDto) {
-    return `This action updates a #${id} token`;
+  async update(id: number, tokenDto: TokenDto): Promise<TokenDto> {
+    const result: UpdateResult = await this.tokenRepository.update(id, tokenDto);
+    if (result.affected === 0) {
+      throw new NotFoundException({
+        reason: 'NOT_FOUND',
+        message: 'user not found',
+      });
+    }
+    return await this.findOne(id);
   }
 
   remove(id: number) {
