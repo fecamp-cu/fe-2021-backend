@@ -6,5 +6,5 @@ export type OAuthResponse = {
   scope: string;
   token_type: string;
   id_token: string;
-  expire_date: Date;
+  expiry_date: Date;
 };
