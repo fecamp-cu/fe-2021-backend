@@ -24,13 +24,8 @@ export class TokenService {
     return `This action returns all token`;
   }
 
-  async findOne(id: number, relations?: string[]): Promise<TokenDto> {
-    let token: Token;
-    if (!relations) {
-      token = await this.tokenRepository.findOne(id);
-    } else {
-      token = await this.tokenRepository.findOne(id, { relations });
-    }
+  async findOne(id: number, relations: string[] = []): Promise<TokenDto> {
+    const token = await this.tokenRepository.findOne(id, { relations });
 
     if (!token) {
       throw new NotFoundException({

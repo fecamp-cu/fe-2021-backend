@@ -1,21 +1,12 @@
-import {
-  Controller,
-  Post,
-  Req,
-  Res,
-  UploadedFile,
-  UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller, Post, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RequestWithUserId } from 'src/common/types/auth';
 import { UserService } from 'src/user/user.service';
 import { Profile } from './entities/profile.entity';
 import { ProfileService } from './profile.service';
 
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @Controller('profile')
 export class ProfileController {
   constructor(
@@ -55,7 +46,8 @@ export class ProfileController {
     @UploadedFile() avatar: Express.Multer.File,
     @Res() res: Response,
   ): Promise<Response> {
-    const user = await this.userService.findOneWithRelations(req.user.id, ['profile']);
+    const user = await this.userService.findOne(6, ['profile']);
+    console.log(await this.userService.findOne(6));
     const { buffer } = avatar;
     const profile: Profile = await this.profileService.uploadImage(user, buffer);
     return res.status(201).json({ message: 'Successfully uploaded profile avatar', profile });

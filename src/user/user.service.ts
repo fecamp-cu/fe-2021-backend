@@ -73,13 +73,8 @@ export class UserService {
     });
   }
 
-  async findOne(id: number, relations?: string[]): Promise<UserDto> {
-    let user: User;
-    if (!relations) {
-      user = await this.userRepository.findOne(id, { relations });
-    } else {
-      user = await this.userRepository.findOne({ id: id });
-    }
+  async findOne(id: number, relations: string[] = []): Promise<UserDto> {
+    const user: User = await this.userRepository.findOne(id, { relations });
 
     if (!user) {
       throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found user' });
@@ -93,7 +88,7 @@ export class UserService {
     });
   }
 
-  async update(id: number, userDto: UserDto, relations?: string[]): Promise<UserDto> {
+  async update(id: number, userDto: UserDto, relations: string[] = []): Promise<UserDto> {
     const update: UpdateResult = await this.userRepository.update(id, userDto);
     if (userDto.password) {
       userDto.password = await bcrypt.hash(userDto.password, SALTROUND);
@@ -106,9 +101,6 @@ export class UserService {
       });
     }
 
-    if (!relations) {
-      return await this.findOne(id);
-    }
     return await this.findOne(id, relations);
   }
 
@@ -124,22 +116,7 @@ export class UserService {
     return user;
   }
 
-  async findByEmail(email: string, relations?: string[]): Promise<UserDto | undefined> {
-    if (!relations) {
-      return await this.userRepository.findOne({ email });
-    }
+  async findByEmail(email: string, relations: string[] = []): Promise<UserDto | undefined> {
     return await this.userRepository.findOne({ email }, { relations });
-
-  async findOneWithRelations(id: number, relations: string[]): Promise<UserDto> {
-    const user = await this.userRepository.findOne({ id: id }, { relations: relations });
-
-    if (!user) {
-      throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found user' });
-    }
-    return new UserDto({
-      id: user.id,
-      username: user.username,
-      profile: user.profile,
-    });
   }
 }
