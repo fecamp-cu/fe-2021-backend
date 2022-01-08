@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as crypto from 'crypto-js';
-import { OAuthResponse, ServiceType } from 'src/common/types/token';
+import { FacebookAuthData, GoogleAuthData, ServiceType } from 'src/common/types/token';
 import { Profile } from 'src/profile/entities/profile.entity';
 import { ProfileService } from 'src/profile/profile.service';
 import { TokenDto } from 'src/token/dto/token.dto';
@@ -39,11 +39,8 @@ export class AuthService {
     return user;
   }
 
-  public async storeToken(
-    tokens: OAuthResponse,
-    serviceType: ServiceType,
-    user: UserDto,
-  ): Promise<UserDto> {
+  public async storeGoogleToken(tokens: GoogleAuthData, user: UserDto): Promise<UserDto> {
+    const serviceType: ServiceType = 'google';
     const tokenDto = new TokenDto({
       accessToken: await crypto.AES.encrypt(
         tokens.access_token,

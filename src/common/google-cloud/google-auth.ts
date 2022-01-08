@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { google } from 'googleapis';
 import { GoogleUserInfo } from '../types/google/google-api';
-import { OAuthResponse } from '../types/token';
+import { GoogleAuthData } from '../types/token';
 
 export class GoogleAuthentication {
   private client;
@@ -21,12 +21,12 @@ export class GoogleAuthentication {
     });
   }
 
-  public async getTokens(code: string): Promise<OAuthResponse> {
+  public async getTokens(code: string): Promise<GoogleAuthData> {
     const { tokens } = await this.client.getToken(code);
     return tokens;
   }
 
-  public setCredentials(tokens: OAuthResponse): void {
+  public setCredentials(tokens: GoogleAuthData): void {
     this.client.setCredentials(tokens);
   }
 
