@@ -93,7 +93,13 @@ export class AuthService {
       }
       user.tokens = user.tokens.concat(token);
 
-      return await this.userRepository.save(user);
+      const savedUser = await this.userRepository.save(user);
+      return new UserDto({
+        id: savedUser.id,
+        email: savedUser.email,
+        username: savedUser.username,
+        profile: savedUser.profile,
+      });
     }
 
     token = await this.tokenService.update(token.id, tokenDto);
