@@ -25,7 +25,7 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ default: 'user' })
   role: Role;
 
   @CreateDateColumn({ name: 'created_date', select: false })
