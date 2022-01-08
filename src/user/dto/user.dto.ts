@@ -12,7 +12,6 @@ export class UserDto {
   @MinLength(8, { message: 'Password must at least 8 character' })
   password: string;
 
-  @IsNotEmpty()
   @IsEmail()
   email: string;
 
