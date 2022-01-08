@@ -85,13 +85,13 @@ export class UserService {
     });
   }
 
-  async findOne(id: number, relations: string[] = []): Promise<UserDto> {
+  async findOne(id: number, relations: string[] = []): Promise<User> {
     const user: User = await this.userRepository.findOne(id, { relations });
 
     if (!user) {
       throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found user' });
     }
-    return new UserDto({
+    return new User({
       id: user.id,
       username: user.username,
       email: user.email,
@@ -99,7 +99,6 @@ export class UserService {
       tokens: user.tokens,
       role: user.role,
     });
-
   }
 
   async update(id: number, userDto: UserDto, relations: string[] = []): Promise<UserDto> {

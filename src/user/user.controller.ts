@@ -1,11 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { editProfileDto } from 'src/auth/dto/edit-profile.dto';
+import { RegisterDto } from 'src/auth/dto/register.dto';
 import { CaslAbilityFactory } from 'src/casl/casl-ability.factory';
 import { PoliciesGuard } from 'src/casl/policies.guard';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { RegisterDto } from 'src/auth/dto/register.dto';
 import { UserDto } from './dto/user.dto';
 import { UserService } from './user.service';
 
