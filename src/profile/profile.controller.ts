@@ -46,8 +46,7 @@ export class ProfileController {
     @UploadedFile() avatar: Express.Multer.File,
     @Res() res: Response,
   ): Promise<Response> {
-    const user = await this.userService.findOne(6, ['profile']);
-    console.log(await this.userService.findOne(6));
+    const user = await this.userService.findOne(req.user.id, ['profile']);
     const { buffer } = avatar;
     const profile: Profile = await this.profileService.uploadImage(user, buffer);
     return res.status(201).json({ message: 'Successfully uploaded profile avatar', profile });
