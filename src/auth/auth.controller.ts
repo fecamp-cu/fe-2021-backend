@@ -66,7 +66,9 @@ export class AuthController {
 
   @Get('google')
   googleLogin(@Res() res: Response): void {
-    const url: string = this.googleClient.getUrl(['profile', 'email', 'openid']);
+    const url: string = this.googleClient.getUrl(
+      this.configService.get<string[]>('google.oauth.scope'),
+    );
     res.status(HttpStatus.MOVED_PERMANENTLY).redirect(url);
   }
 

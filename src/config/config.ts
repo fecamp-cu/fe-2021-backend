@@ -28,9 +28,10 @@ export default () => ({
       secret: process.env.IMG_FILE_NAME_SECRET,
     },
     oauth: {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURI: process.env.GOOGLE_REDIRECT_URI,
+      clientID: process.env.GOOGLE_OAUTH_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
+      callbackURI: process.env.GOOGLE_OAUTH_REDIRECT_URI,
+      scope: process.env.GOOGLE_OAUTH_SCOPE.split(' '),
     },
   },
 });
