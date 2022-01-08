@@ -10,6 +10,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { UserDto } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
@@ -19,6 +20,7 @@ import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
+@ApiTags('Auth')
 export class AuthController {
   constructor(private readonly authService: AuthService, private userService: UserService) {}
   @Post('register')
