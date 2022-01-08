@@ -1,3 +1,4 @@
+import { Role } from 'src/common/enums/role';
 import { Profile } from 'src/profile/entities/profile.entity';
 import { Token } from 'src/token/entities/token.entity';
 import {
@@ -28,6 +29,9 @@ export class User {
 
   @OneToMany(() => Token, token => token.user, { persistence: false, cascade: true })
   tokens: Token[];
+
+  @Column()
+  role: Role;
 
   @CreateDateColumn({ name: 'created_date', select: false })
   createdDate: Date;

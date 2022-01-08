@@ -1,6 +1,8 @@
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { Role } from 'src/common/enums/role';
 import { ProfileDto } from 'src/profile/dto/profile.dto';
 import { TokenDto } from 'src/token/dto/token.dto';
+
 
 export class UserDto {
   id: number;
@@ -14,6 +16,8 @@ export class UserDto {
 
   @IsEmail()
   email: string;
+
+  role: Role;
 
   profile?: ProfileDto;
 

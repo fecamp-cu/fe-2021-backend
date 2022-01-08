@@ -11,6 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import * as faker from 'faker';
 import { FacebookAuthentication } from 'src/common/facebook/facebook-auth';
@@ -27,6 +28,7 @@ import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
+@ApiTags('Auth')
 export class AuthController {
   private googleClient: GoogleAuthentication;
   private facebookClient: FacebookAuthentication;

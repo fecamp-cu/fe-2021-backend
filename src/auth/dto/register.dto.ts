@@ -8,8 +8,4 @@ export class RegisterDto {
 
   @IsNotEmpty()
   userInfo: ProfileDto;
-
-  constructor(partial: Partial<RegisterDto>) {
-    Object.assign(this, partial);
-  }
 }

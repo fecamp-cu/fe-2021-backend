@@ -48,6 +48,7 @@ export class UserService {
       username: createdUser.username,
       email: createdUser.email,
       profile,
+      role: createdUser.role,
     });
   }
 
@@ -80,6 +81,7 @@ export class UserService {
     return new UserDto({
       id: user.id,
       username: user.username,
+      role: user.role,
     });
   }
 
@@ -89,14 +91,15 @@ export class UserService {
     if (!user) {
       throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found user' });
     }
-
     return new UserDto({
       id: user.id,
       username: user.username,
       email: user.email,
       profile: user.profile,
       tokens: user.tokens,
+      role: user.role,
     });
+
   }
 
   async update(id: number, userDto: UserDto, relations: string[] = []): Promise<UserDto> {
