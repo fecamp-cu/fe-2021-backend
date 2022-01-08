@@ -7,6 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from 'src/auth/dto/login.dto';
+import { FindUser } from 'src/common/types/user';
 import { Profile } from 'src/profile/entities/profile.entity';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { UserDto } from './dto/user.dto';
@@ -18,15 +19,15 @@ export class UserService {
   constructor(@InjectRepository(User) private userRepository: Repository<User>) {}
 
   async create(userDto: UserDto, profile?: Profile): Promise<UserDto> {
-    const findUser = await this.userRepository.findOne({ username: userDto.username });
-    if (findUser) {
+    const nFindUserByUsername = await this.count({ username: userDto.username });
+    if (nFindUserByUsername) {
       throw new UnprocessableEntityException({
         reason: 'INVALID_INPUT',
         message: 'User already existed',
       });
     }
-    const findUserByEmail = await this.userRepository.findOne({ email: userDto.email });
-    if (findUserByEmail) {
+    const nFindUserByEmail = await this.count({ email: userDto.email });
+    if (nFindUserByEmail) {
       throw new UnprocessableEntityException({
         reason: 'INVALID_INPUT',
         message: 'Email already existed',
@@ -45,6 +46,7 @@ export class UserService {
     return new UserDto({
       id: createdUser.id,
       username: createdUser.username,
+      email: createdUser.email,
       profile,
     });
   }
@@ -56,7 +58,7 @@ export class UserService {
   async Login(loginDto: LoginDto): Promise<UserDto> {
     const user: User = await this.userRepository
       .createQueryBuilder('user')
-      .where({ username: loginDto.username })
+      .where({ email: loginDto.email })
       .addSelect('user.password')
       .getOne();
 
@@ -118,5 +120,9 @@ export class UserService {
 
   async findByEmail(email: string, relations: string[] = []): Promise<UserDto | undefined> {
     return await this.userRepository.findOne({ email }, { relations });
+  }
+
+  async count(key: FindUser): Promise<number> {
+    return await this.userRepository.count(key);
   }
 }
