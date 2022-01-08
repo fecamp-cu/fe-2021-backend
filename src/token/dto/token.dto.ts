@@ -4,7 +4,6 @@ import { ServiceType } from 'src/common/types/token';
 import { UserDto } from 'src/user/dto/user.dto';
 
 export class TokenDto {
-  @ApiProperty()
   id: number;
 
   @ApiProperty()

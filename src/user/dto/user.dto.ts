@@ -5,7 +5,6 @@ import { ProfileDto } from 'src/profile/dto/profile.dto';
 import { TokenDto } from 'src/token/dto/token.dto';
 
 export class UserDto {
-  @ApiProperty()
   id: number;
 
   @ApiProperty()
@@ -27,7 +26,6 @@ export class UserDto {
   @ApiProperty()
   profile?: ProfileDto;
 
-  @ApiProperty()
   tokens?: TokenDto[];
 
   constructor(partial: Partial<UserDto>) {

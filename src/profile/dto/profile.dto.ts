@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsPhoneNumber, IsPostalCode } from 'class-validator';
 
 export class ProfileDto {
-  @ApiProperty()
   id: number;
 
   @ApiProperty()
