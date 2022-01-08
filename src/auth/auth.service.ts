@@ -1,14 +1,28 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
+import * as crypto from 'crypto-js';
+import { OAuthResponse, ServiceType } from 'src/common/types/token';
+import { Profile } from 'src/profile/entities/profile.entity';
 import { ProfileService } from 'src/profile/profile.service';
+import { TokenDto } from 'src/token/dto/token.dto';
+import { TokenService } from 'src/token/token.service';
 import { UserDto } from 'src/user/dto/user.dto';
+import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
+import { Repository } from 'typeorm';
+import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
+    private jwtService: JwtService,
     private userService: UserService,
     private profileService: ProfileService,
+    private tokenService: TokenService,
+    private configService: ConfigService,
+    @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
   async createToken(user: UserDto) {
