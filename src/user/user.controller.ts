@@ -8,6 +8,9 @@ import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UserService } from './user.service';
 
+@UseGuards(JwtAuthGuard,PoliciesGuard)
+
+@CheckPolicies(new ManagePolicyHandler())
 @Controller('user')
 @ApiTags('User')
 export class UserController {
@@ -22,9 +25,6 @@ export class UserController {
   }
 
   @Get()
-  @UseGuards(PoliciesGuard)
-  @CheckPolicies(new ManagePolicyHandler())
-  @UseGuards(JwtAuthGuard)
   findAll() {
     return this.userService.findAll();
   }
