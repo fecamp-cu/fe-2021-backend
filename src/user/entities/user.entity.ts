@@ -30,7 +30,7 @@ export class User {
   @OneToMany(() => Token, token => token.user, { persistence: false, cascade: true })
   tokens: Token[];
 
-  @Column()
+  @Column({ default: Role.USER })
   role: Role;
 
   @CreateDateColumn({ name: 'created_date', select: false })
