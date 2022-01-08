@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -13,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
+import * as faker from 'faker';
 import { GoogleAuthentication } from 'src/common/google-cloud/google-auth';
 import { GoogleUserInfo } from 'src/common/types/google/google-api';
 import { OAuthResponse } from 'src/common/types/token';
@@ -37,15 +37,13 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() registerDto: RegisterDto, @Res() res: Response): Promise<Response> {
-    const user: UserDto = await this.userService.create(registerDto);
-    return res
-      .status(HttpStatus.CREATED)
-      .json({ message: 'Successfully registered user', ...user });
+    const user: UserDto = await this.authService.createUser(registerDto);
+    return res.status(HttpStatus.CREATED).json({ message: 'Successfully registered user', user });
   }
 
   @Post('login')
   async login(@Body() loginDto: LoginDto, @Res() res: Response): Promise<Response> {
-    const user = await this.userService.Login(loginDto);
+    const user: UserDto = await this.userService.Login(loginDto);
     const token: string = await this.authService.createToken(user);
     res.cookie('access_token', token, { httpOnly: true, secure: false });
     return res.status(HttpStatus.OK).json(user);
@@ -54,11 +52,11 @@ export class AuthController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   async profile(@Req() req, @Res() res: Response): Promise<Response> {
-    const user = await this.userService.findOne(req.user.id);
+    const user: UserDto = await this.userService.findOne(req.user.id);
     return res.status(HttpStatus.OK).json(user);
   }
 
-  @Delete('logout')
+  @Get('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(JwtAuthGuard)
   logout(@Res() res: Response): Response {
@@ -68,7 +66,7 @@ export class AuthController {
 
   @Get('google')
   googleLogin(@Res() res: Response): void {
-    const url = this.googleClient.getUrl(['profile', 'email', 'openid']);
+    const url: string = this.googleClient.getUrl(['profile', 'email', 'openid']);
     res.status(HttpStatus.MOVED_PERMANENTLY).redirect(url);
   }
 
@@ -78,7 +76,28 @@ export class AuthController {
     this.googleClient.setCredentials(tokens);
     const userInfo: GoogleUserInfo = await this.googleClient.getUserInfo();
 
-    let user = await this.profileService.findByEmail(userInfo.email);
-    return res.status(HttpStatus.OK).json(await this.googleClient.getUserInfo());
+    let user: UserDto = await this.userService.findByEmail(userInfo.email, ['profile', 'tokens']);
+
+    if (!user) {
+      const registerDto = new RegisterDto({
+        credentials: new UserDto({
+          username: userInfo.given_name,
+          password: faker.datatype.string(16),
+          email: userInfo.email,
+        }),
+
+        userInfo: new ProfileDto({
+          firstName: userInfo.given_name,
+          lastName: userInfo.family_name,
+          imageUrl: userInfo.picture,
+        }),
+      });
+
+      user = await this.authService.createUser(registerDto);
+    }
+
+    user = await this.authService.storeToken(tokens, 'google', user);
+
+    return res.status(HttpStatus.OK).json(user);
   }
 }
