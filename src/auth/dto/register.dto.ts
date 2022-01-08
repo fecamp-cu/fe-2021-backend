@@ -1,17 +1,18 @@
-import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
-import { Role } from 'src/common/enums/role';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty } from 'class-validator';
+import { ProfileDto } from 'src/profile/dto/profile.dto';
+import { UserDto } from 'src/user/dto/user.dto';
 
 export class RegisterDto {
+  @ApiProperty()
   @IsNotEmpty()
-  username: string;
+  credentials: UserDto;
 
+  @ApiProperty()
   @IsNotEmpty()
-  @MinLength(8, { message: 'Password must at least 8 character' })
-  password: string;
+  userInfo: ProfileDto;
 
-  @IsEmail()
-  email: string;
-
-  @IsNotEmpty()
-  role: Role;
+  constructor(partial: Partial<RegisterDto>) {
+    Object.assign(this, partial);
+  }
 }

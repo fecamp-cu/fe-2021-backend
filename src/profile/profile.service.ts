@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { GoogleCloudStorage } from 'src/common/google-cloud/google-storage';
 import { UserDto } from 'src/user/dto/user.dto';
 import { Repository } from 'typeorm';
+import { ProfileDto } from './dto/profile.dto';
 import { Profile } from './entities/profile.entity';
 
 @Injectable()
@@ -12,9 +13,11 @@ export class ProfileService {
     private configService: ConfigService,
     @InjectRepository(Profile) private profileRepository: Repository<Profile>,
   ) {}
-  // create(createProfileDto: CreateProfileDto) {
-  //   return 'This action adds a new profile';
-  // }
+  async create(profileDto: ProfileDto): Promise<Profile> {
+    const profile: Profile = await this.profileRepository.create(profileDto);
+    return await this.profileRepository.save(profile);
+  }
+
   // findAll() {
   //   return `This action returns all profile`;
   // }

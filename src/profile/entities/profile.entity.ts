@@ -21,28 +21,28 @@ export class Profile {
   @Column({ name: 'image_url', nullable: true })
   imageUrl: string;
 
-  @Column()
+  @Column({ nullable: true })
   tel: string;
 
-  @Column()
+  @Column({ nullable: true })
   grade: string;
 
-  @Column()
+  @Column({ nullable: true })
   school: string;
 
-  @Column()
+  @Column({ nullable: true })
   address: string;
 
-  @Column({ name: 'sub_district' })
+  @Column({ name: 'sub_district', nullable: true })
   subdistrict: string;
 
-  @Column()
+  @Column({ nullable: true })
   district: string;
 
-  @Column()
+  @Column({ nullable: true })
   province: string;
 
-  @Column()
+  @Column({ nullable: true })
   postcode: string;
 
   @CreateDateColumn({ name: 'created_date', select: false })

@@ -2,7 +2,7 @@ import { Bucket, Storage } from '@google-cloud/storage';
 import { StreamableFile } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto-js';
-import { MetaData } from '../types/google-cloud-storage';
+import { MetaData } from '../types/google/google-cloud-storage';
 
 export class GoogleCloudStorage {
   private bucket: Bucket;
@@ -10,9 +10,9 @@ export class GoogleCloudStorage {
   private storage: Storage;
   constructor(private configService: ConfigService) {
     this.storage = new Storage({
-      keyFilename: this.configService.get<string>('gcs.serviceAccountKey'),
+      keyFilename: this.configService.get<string>('google.gcs.serviceAccountKey'),
     });
-    this.bucketName = this.configService.get<string>('gcs.bucketName');
+    this.bucketName = this.configService.get<string>('google.gcs.bucketName');
     this.bucket = this.storage.bucket(this.bucketName);
   }
 
@@ -38,20 +38,20 @@ export class GoogleCloudStorage {
   }
 
   private getImageURL(imgName: string): string {
-    return this.configService.get<string>('gcs.publicURL') + '/' + imgName;
+    return this.configService.get<string>('google.gcs.publicURL') + '/' + imgName;
   }
 
   private getImageFileName(ownerName: string): string {
-    const secret = this.configService.get<string>('gcs.secret');
+    const secret = this.configService.get<string>('google.gcs.secret');
     return 'profile-' + ownerName + '-' + `${crypto.SHA256(ownerName + secret)}.jpg`;
   }
 
   private getFileURL(fileName: string): string {
-    return encodeURI(this.configService.get<string>('gcs.publicURL') + '/' + fileName);
+    return encodeURI(this.configService.get<string>('google.gcs.publicURL') + '/' + fileName);
   }
 
   private getFileName(fileName: string): string {
-    const secret = this.configService.get<string>('gcs.secret');
+    const secret = this.configService.get<string>('google.gcs.secret');
     return 'file-' + `${crypto.SHA256(fileName + secret)}` + '-' + fileName;
   }
 }
