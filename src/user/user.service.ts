@@ -62,8 +62,16 @@ export class UserService {
       .addSelect('user.password')
       .getOne();
 
+    if (!user) {
+      throw new UnauthorizedException({
+        reason: 'INVALID_INPUT',
+        message: 'username or password wrong',
+      });
+    }
+
     const passwordcompare = await bcrypt.compare(loginDto.password, user.password);
-    if (!user || !passwordcompare) {
+
+    if (!passwordcompare) {
       throw new UnauthorizedException({
         reason: 'INVALID_INPUT',
         message: 'username or password wrong',
@@ -85,6 +93,7 @@ export class UserService {
     return new UserDto({
       id: user.id,
       username: user.username,
+      email: user.email,
       profile: user.profile,
       tokens: user.tokens,
     });
