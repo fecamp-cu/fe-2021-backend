@@ -34,4 +34,10 @@ export default () => ({
       scope: process.env.GOOGLE_OAUTH_SCOPE.split(' '),
     },
   },
+  facebook: {
+    appID: process.env.FACEBOOK_APP_ID,
+    appSecret: process.env.FACEBOOK_APP_SECRET,
+    callbackURI: process.env.FACEBOOK_REDIRECT_URI,
+    scope: process.env.FACEBOOK_SCOPE.split(' '),
+  },
 });
