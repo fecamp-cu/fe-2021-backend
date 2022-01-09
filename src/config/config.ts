@@ -7,6 +7,7 @@ dotenv.config({ path: `.env.${envType}` });
 export default () => ({
   port: parseInt(process.env.PORT) || 8000,
   mode: process.env.NODE_ENV,
+  policykey: process.env.CHECK_POLICIES_KEY,
   encryptionKey: process.env.ENCRYPT_KEY,
   jwt: {
     secret: process.env.SECRET,

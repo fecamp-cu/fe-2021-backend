@@ -16,30 +16,32 @@ export class UserController {
     private readonly userService: UserService,
     private caslAbilityFactory: CaslAbilityFactory,
   ) {}
-
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies(new ManagePolicyHandler())
   @Post()
   create(@Body() registerDto: RegisterDto) {
     return this.userService.create(registerDto.credentials);
   }
-
-  @Get()
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new ManagePolicyHandler())
-  @UseGuards(JwtAuthGuard)
+  @Get()
   findAll() {
     return this.userService.findAll();
   }
-
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies(new ManagePolicyHandler())
   @Get(':id')
   findById(@Param('id') id: string) {
     return this.userService.findOne(+id);
   }
-
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies(new ManagePolicyHandler())
   @Patch(':id')
   update(@Param('id') id: string, @Body() userDto: UserDto) {
     return this.userService.update(+id, userDto);
   }
-
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies(new ManagePolicyHandler())
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);

@@ -1,4 +1,5 @@
 import { SetMetadata } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Action } from 'src/common/enums/action';
 import { AppAbility } from './casl-ability.factory';
 
@@ -9,9 +10,11 @@ interface IPolicyHandler {
 type PolicyHandlerCallback = (ability: AppAbility) => boolean;
 
 export type PolicyHandler = IPolicyHandler | PolicyHandlerCallback;
-export const CHECK_POLICIES_KEY = 'check_policy';
+
+const configService: ConfigService = new ConfigService();
+
 export const CheckPolicies = (...handlers: PolicyHandler[]) =>
-  SetMetadata(CHECK_POLICIES_KEY, handlers);
+  SetMetadata(configService.get<string>('policyguard'), handlers);
 
 export class ManagePolicyHandler implements IPolicyHandler {
   handle(ability: AppAbility) {
