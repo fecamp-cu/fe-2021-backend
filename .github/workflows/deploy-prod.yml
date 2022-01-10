@@ -3,6 +3,7 @@ name: Build and Deploy to GKE
 env:
   GKE_CLUSTER: fecamp
   GKE_ZONE: asia-southeast1-a
+  GKE_DEPLOYMENT_NAME: fecamp-2021-backend
 
 on:
   push:
@@ -29,7 +30,6 @@ jobs:
         run: |
           echo "BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
           echo "IMAGE_NAME=ghcr.io/${{ github.repository }}" >> $GITHUB_ENV
-          echo "GKE_DEPLOYMENT_NAME=fecamp-2021-backend" >> $GITHUB_ENV
 
       - name: Log in to the Container Registry
         uses: docker/login-action@v1
