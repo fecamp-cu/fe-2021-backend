@@ -22,35 +22,37 @@ spec:
           ports:
             - containerPort: 8000
           env:
+            # Database
             - name: DATABASE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: fecamp-secret
+                  name: postgres-secret
                   key: postgres-username
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: fecamp-secret
+                  name: postgres-secret
                   key: postgres-password
             - name: DATABASE_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: config
+                  name: postgres-config
                   key: database_name
             - name: DATABASE_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: config
+                  name: postgres-config
                   key: database_port
             - name: DATABASE_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: config
+                  name: postgres-config
                   key: database_host
+            # Application
             - name: PORT
               valueFrom:
                 configMapKeyRef:
-                  name: config
+                  name: fecamp-config
                   key: port
             - name: SECRET
               valueFrom:
@@ -60,15 +62,97 @@ spec:
             - name: TOKEN_DURATION
               valueFrom:
                 configMapKeyRef:
-                  name: config
+                  name: fecamp-config
                   key: token_duration
             - name: ENTITY_PATH
               valueFrom:
                 configMapKeyRef:
-                  name: config
+                  name: fecamp-config
                   key: entity_path
             - name: MIGRATION_PATH
               valueFrom:
                 configMapKeyRef:
-                  name: config
+                  name: fecamp-config
                   key: migration_path
+            # Google Cloud Storage
+            - name: GCS_SA_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: gcs_sa_key
+            - name: GCS_BUCKET_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: gcs_bucket_name
+            - name: GCS_PUBLIC_IMAGE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: gcs_public_img_url
+            - name: IMAGE_FILE_NAME_SECERT
+              valueFrom:
+                secretKeyRef:
+                  name: fecamp-secret
+                  key: img_file_name_secret
+            # Google Authentication
+            - name: GOOGLE_OAUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: google-secret
+                  key: client_id
+            - name: GOOGLE_OAUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: google-secret
+                  key: client_secret
+            - name: GOOGLE_OAUTH_REDIRECT_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: google_oauth_redirect_uri
+            - name: GOOGLE_OAUTH_SCOPE
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: google_oauth_scope
+            # Facebook Authentication
+            - name: FACEBOOK_APP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: facebook-secret
+                  key: client_id
+            - name: FACEBOOK_APP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: facebook-secret
+                  key: client_secret
+            - name: FACEBOOK_REDIRECT_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: facebook_redirect_uri
+            - name: FACEBOOK_SCOPE
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: facebook_scope
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 70m
+              memory: 128Mi
+            limits:
+              cpu: 100m
+              memory: 512Mi
