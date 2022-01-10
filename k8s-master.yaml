@@ -139,13 +139,13 @@ spec:
                   key: facebook_scope
           livenessProbe:
             httpGet:
-              path: /
+              path: /api
               port: 8000
             initialDelaySeconds: 30
             periodSeconds: 30
           readinessProbe:
             httpGet:
-              path: /
+              path: /api
               port: 8000
             initialDelaySeconds: 30
             periodSeconds: 30
