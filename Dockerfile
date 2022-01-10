@@ -10,9 +10,6 @@ COPY ["package.json", "yarn.lock", "./"]
 # Install dependencies
 RUN yarn --frozen-lockfile
 
-# Set ENV to production
-ENV NODE_ENV production
-
 # Build Image
 FROM base AS build
 
@@ -22,10 +19,23 @@ COPY . .
 # Build application
 RUN yarn build
 
+FROM base as prod-deps
+
+# Prune unused dependencies
+RUN npm prune --production
+
 # Back to Base Image
-FROM base
+FROM node:16.13-alpine AS production
+
+# Initialize working directory
+WORKDIR /usr/src/app
+
+# Set ENV to production
+ENV NODE_ENV production
 
 # Copy files from Build Image to Base Image
+COPY --from=prod-deps /usr/src/app/package.json ./package.json
+COPY --from=prod-deps /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/dist /usr/src/app/dist
 COPY --from=build /usr/src/app/src /usr/src/app/src
 
