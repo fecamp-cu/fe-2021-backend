@@ -39,7 +39,7 @@ export class AuthService {
     const tokenDto = new TokenDto({
       refreshToken,
       expiresDate: new Date(
-        Date.now() + this.configService.get<number>('jwt.refreshTokenDuration') * 1000,
+        Date.now() + parseInt(this.configService.get<string>('jwt.tokenDuration')) * 1000,
       ),
       serviceType,
       user,

@@ -12,7 +12,6 @@ export default () => ({
   jwt: {
     secret: process.env.SECRET,
     tokenDuration: process.env.TOKEN_DURATION || '3600s',
-    refreshTokenDuration: parseInt(process.env.REFRESH_TOKEN_DURATION) || 2592000,
   },
   database: {
     type: process.env.DATABASE_TYPE,
