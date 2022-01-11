@@ -18,7 +18,7 @@ export class Token {
   @Column({ name: 'service_type' })
   serviceType: ServiceType;
 
-  @Column({ name: 'access_token' })
+  @Column({ name: 'access_token', nullable: true })
   accessToken: string;
 
   @Column({ name: 'refresh_token', nullable: true })
