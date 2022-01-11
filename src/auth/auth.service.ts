@@ -10,6 +10,7 @@ import { UserDto } from 'src/user/dto/user.dto';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
+import { v4 as uuidv4 } from 'uuid';
 import { RegisterDto } from './dto/register.dto';
 import { TokenDto } from './dto/token.dto';
 import { Token } from './entities/token.entity';
@@ -30,6 +31,20 @@ export class AuthService {
       id: user.id,
     };
     return this.jwtService.sign(payload);
+  }
+
+  async createRefreshToken(user: UserDto): Promise<TokenDto> {
+    const serviceType = 'fecamp';
+    const refreshToken = await uuidv4();
+    const tokenDto = new TokenDto({
+      refreshToken,
+      expiresDate: new Date(
+        Date.now() + this.configService.get<number>('jwt.refreshTokenDuration') * 1000,
+      ),
+      serviceType,
+      user,
+    });
+    return await this.createTokenEntity(tokenDto);
   }
 
   async createTokenEntity(tokenDto: TokenDto): Promise<TokenDto> {

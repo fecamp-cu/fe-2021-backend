@@ -50,8 +50,7 @@ export class AuthController {
   @Post('login')
   async login(@Body() loginDto: LoginDto, @Res() res: Response): Promise<Response> {
     const user: UserDto = await this.userService.Login(loginDto);
-    const token: string = await this.authService.createToken(user);
-    res.cookie('access_token', token, { httpOnly: true, secure: false });
+    await this.signToken(user, res);
     return res.status(HttpStatus.OK).json(user);
   }
 
@@ -106,8 +105,7 @@ export class AuthController {
 
     user = await this.authService.storeGoogleToken(tokens, user);
 
-    const token: string = await this.authService.createToken(user);
-    res.cookie('access_token', token, { httpOnly: true, secure: false });
+    await this.signToken(user, res);
     return res.status(HttpStatus.OK).json(user);
   }
 
@@ -155,8 +153,14 @@ export class AuthController {
 
     user = await this.authService.storeFacebookToken(tokens, user);
 
-    const token: string = await this.authService.createToken(user);
-    res.cookie('access_token', token, { httpOnly: true, secure: false });
+    await this.signToken(user, res);
     return res.status(HttpStatus.OK).json(user);
+  }
+
+  private async signToken(user: UserDto, res: Response) {
+    const token: string = await this.authService.createToken(user);
+    const refreshToken = await this.authService.createRefreshToken(user);
+    res.cookie('access_token', token, { httpOnly: true, secure: false });
+    res.cookie('refresh_token', refreshToken, { httpOnly: true, secure: false });
   }
 }
