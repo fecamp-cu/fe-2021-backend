@@ -63,6 +63,18 @@ export class AuthService {
     });
   }
 
+  async findRefreshToken(refreshToken: string): Promise<TokenDto> {
+    const token = await this.tokenRepository.findOne({
+      where: { refreshToken },
+    });
+    return new TokenDto({
+      id: token.id,
+      serviceType: token.serviceType,
+      refreshToken: token.refreshToken,
+      expiresDate: token.expiresDate,
+    });
+  }
+
   public async createUser(registerDto: RegisterDto): Promise<UserDto> {
     const count = await this.userService.count({ username: registerDto.credentials.username });
     if (count > 0) {
