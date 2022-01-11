@@ -6,8 +6,10 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { CaslModule } from './casl/casl.module';
 import config from './config/config';
+import { SettingModule } from './mainweb/setting/setting.module';
 import { ProfileModule } from './profile/profile.module';
 import { UserModule } from './user/user.module';
+import { SettingModule } from './setting/setting.module';
 
 @Module({
   imports: [
@@ -33,6 +35,7 @@ import { UserModule } from './user/user.module';
     AuthModule,
     ProfileModule,
     CaslModule,
+    SettingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
