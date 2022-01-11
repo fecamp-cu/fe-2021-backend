@@ -159,7 +159,7 @@ export class AuthController {
 
   private async signToken(user: UserDto, res: Response) {
     const token: string = await this.authService.createToken(user);
-    const refreshToken = await this.authService.createRefreshToken(user);
+    const refreshToken: string = await this.authService.createRefreshToken(user.id);
     res.cookie('access_token', token, { httpOnly: true, secure: false });
     res.cookie('refresh_token', refreshToken, { httpOnly: true, secure: false });
   }

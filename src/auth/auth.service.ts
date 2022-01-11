@@ -33,9 +33,10 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
-  async createRefreshToken(user: UserDto): Promise<TokenDto> {
+  async createRefreshToken(uid: number): Promise<string> {
     const serviceType = 'fecamp';
     const refreshToken = await uuidv4();
+    const user = await this.userService.findOne(uid, ['tokens']);
     const tokenDto = new TokenDto({
       refreshToken,
       expiresDate: new Date(
@@ -44,7 +45,10 @@ export class AuthService {
       serviceType,
       user,
     });
-    return await this.createTokenEntity(tokenDto);
+
+    await this.storeToken(tokenDto, user, serviceType);
+
+    return refreshToken;
   }
 
   async createTokenEntity(tokenDto: TokenDto): Promise<TokenDto> {
@@ -114,31 +118,21 @@ export class AuthService {
     }
 
     if (!token) {
-      token = await this.createTokenEntity(tokenDto);
-      if (!user.tokens) {
-        user.tokens = [];
-      }
-      user.tokens = user.tokens.concat(token);
-
-      const savedUser = await this.userRepository.save(user);
+      await this.createTokenEntity(tokenDto);
       return new UserDto({
-        id: savedUser.id,
-        email: savedUser.email,
-        username: savedUser.username,
-        profile: savedUser.profile,
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        profile: user.profile,
       });
     }
 
     await this.tokenRepository.update(token.id, tokenDto);
-    token = await this.tokenRepository.findOne(token.id);
-    user.tokens.filter(token => token.serviceType !== serviceType).concat(token);
-
-    const savedUser = await this.userRepository.save(user);
     return new UserDto({
-      id: savedUser.id,
-      email: savedUser.email,
-      username: savedUser.username,
-      profile: savedUser.profile,
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      profile: user.profile,
     });
   }
 }
