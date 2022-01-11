@@ -24,6 +24,7 @@ export class ProfileDto {
   @IsNotEmpty()
   grade: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   school: string;
 
@@ -31,6 +32,7 @@ export class ProfileDto {
   @IsNotEmpty()
   address: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   subdistrict: string;
 
