@@ -10,17 +10,17 @@ import {
 import { Setting } from './setting.entity';
 
 @Entity()
-export class TimelineEvent {
+export class SponcerContainer {
   @PrimaryColumn()
   id: number;
 
   @Column()
-  text: string;
+  order: number;
 
   @Column()
-  event_date: Date;
+  img_url: string;
 
-  @ManyToOne(() => Setting, setting => setting.timeline_events) setting: Setting;
+  @ManyToOne(() => Setting, setting => setting.sponcer_containers) setting: Setting;
 
   @CreateDateColumn({ name: 'created_date', select: false })
   createdDate: Date;
