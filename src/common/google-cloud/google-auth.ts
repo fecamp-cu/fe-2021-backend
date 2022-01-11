@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { google } from 'googleapis';
+import { GoogleAuthData } from '../types/auth';
 import { GoogleUserInfo } from '../types/google/google-api';
-import { GoogleAuthData } from '../types/token';
 
 export class GoogleAuthentication {
   private client;

@@ -3,16 +3,16 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as crypto from 'crypto-js';
-import { FacebookAuthData, GoogleAuthData, ServiceType } from 'src/common/types/token';
+import { FacebookAuthData, GoogleAuthData, ServiceType } from 'src/common/types/auth';
 import { Profile } from 'src/profile/entities/profile.entity';
 import { ProfileService } from 'src/profile/profile.service';
-import { TokenDto } from 'src/token/dto/token.dto';
-import { TokenService } from 'src/token/token.service';
 import { UserDto } from 'src/user/dto/user.dto';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 import { RegisterDto } from './dto/register.dto';
+import { TokenDto } from './dto/token.dto';
+import { Token } from './entities/token.entity';
 
 @Injectable()
 export class AuthService {
@@ -20,9 +20,9 @@ export class AuthService {
     private jwtService: JwtService,
     private userService: UserService,
     private profileService: ProfileService,
-    private tokenService: TokenService,
     private configService: ConfigService,
     @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(Token) private tokenRepository: Repository<Token>,
   ) {}
 
   async createToken(user: UserDto) {
@@ -30,6 +30,18 @@ export class AuthService {
       id: user.id,
     };
     return this.jwtService.sign(payload);
+  }
+
+  async createTokenEntity(tokenDto: TokenDto): Promise<TokenDto> {
+    const token: Token = await this.tokenRepository.create(tokenDto);
+    const createdToken: Token = await this.tokenRepository.save(token);
+    return new TokenDto({
+      id: createdToken.id,
+      serviceType: createdToken.serviceType,
+      accessToken: createdToken.accessToken,
+      refreshToken: createdToken.refreshToken,
+      expiresDate: createdToken.expiresDate,
+    });
   }
 
   public async createUser(registerDto: RegisterDto): Promise<UserDto> {
@@ -87,7 +99,7 @@ export class AuthService {
     }
 
     if (!token) {
-      token = await this.tokenService.create(tokenDto);
+      token = await this.createTokenEntity(tokenDto);
       if (!user.tokens) {
         user.tokens = [];
       }
@@ -102,7 +114,8 @@ export class AuthService {
       });
     }
 
-    token = await this.tokenService.update(token.id, tokenDto);
+    await this.tokenRepository.update(token.id, tokenDto);
+    token = await this.tokenRepository.findOne(token.id);
     user.tokens.filter(token => token.serviceType !== serviceType).concat(token);
 
     const savedUser = await this.userRepository.save(user);

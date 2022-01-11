@@ -1,4 +1,4 @@
-import { ServiceType } from 'src/common/types/token';
+import { ServiceType } from 'src/common/types/auth';
 import { User } from 'src/user/entities/user.entity';
 import {
   Column,
