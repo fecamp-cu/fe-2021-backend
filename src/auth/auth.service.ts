@@ -8,7 +8,6 @@ import { ProfileDto } from 'src/profile/dto/profile.dto';
 import { Profile } from 'src/profile/entities/profile.entity';
 import { ProfileService } from 'src/profile/profile.service';
 import { UserDto } from 'src/user/dto/user.dto';
-import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
@@ -23,7 +22,6 @@ export class AuthService {
     private userService: UserService,
     private profileService: ProfileService,
     private configService: ConfigService,
-    @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Token) private tokenRepository: Repository<Token>,
   ) {}
 
