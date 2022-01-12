@@ -66,12 +66,19 @@ export class AuthService {
   async findRefreshToken(refreshToken: string): Promise<TokenDto> {
     const token = await this.tokenRepository.findOne({
       where: { refreshToken },
+      relations: ['user'],
     });
+
+    if (!token) {
+      throw new UnauthorizedException();
+    }
+
     return new TokenDto({
       id: token.id,
       serviceType: token.serviceType,
       refreshToken: token.refreshToken,
       expiresDate: token.expiresDate,
+      user: token.user,
     });
   }
 
