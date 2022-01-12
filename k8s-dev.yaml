@@ -64,6 +64,11 @@ spec:
                 configMapKeyRef:
                   name: fecamp-config
                   key: token_duration
+            - name: ENCRYPT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: fecamp-secret
+                  key: encrypt_key
             - name: ENTITY_PATH
               valueFrom:
                 configMapKeyRef:
