@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as crypto from 'crypto-js';
 import { FacebookAuthData, GoogleAuthData, ServiceType } from 'src/common/types/auth';
+import { ProfileDto } from 'src/profile/dto/profile.dto';
 import { Profile } from 'src/profile/entities/profile.entity';
 import { ProfileService } from 'src/profile/profile.service';
 import { UserDto } from 'src/user/dto/user.dto';
@@ -87,12 +88,33 @@ export class AuthService {
   }
 
   public async createUser(registerDto: RegisterDto): Promise<UserDto> {
-    const count = await this.userService.count({ username: registerDto.credentials.username });
+    const count = await this.userService.count({ username: registerDto.username });
     if (count > 0) {
-      registerDto.credentials.username = registerDto.credentials.username + '#' + (count + 1);
+      registerDto.username = registerDto.username + '#' + (count + 1);
     }
-    const profile: Profile = await this.profileService.create(registerDto.userInfo);
-    const user = await this.userService.create(registerDto.credentials, profile);
+
+    const profileDto = new ProfileDto({
+      firstName: registerDto.firstName,
+      lastName: registerDto.lastName,
+      imageUrl: registerDto.imageUrl,
+      tel: registerDto.tel,
+      grade: registerDto.grade,
+      school: registerDto.school,
+      address: registerDto.address,
+      subdistrict: registerDto.subdistrict,
+      district: registerDto.district,
+      province: registerDto.province,
+      postcode: registerDto.postcode,
+    });
+
+    const userDto = new UserDto({
+      email: registerDto.email,
+      username: registerDto.username,
+      password: registerDto.password,
+    });
+
+    const profile: Profile = await this.profileService.create(profileDto);
+    const user = await this.userService.create(userDto, profile);
 
     return user;
   }

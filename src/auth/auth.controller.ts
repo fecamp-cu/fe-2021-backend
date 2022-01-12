@@ -19,7 +19,6 @@ import { GoogleAuthentication } from 'src/common/google-cloud/google-auth';
 import { GoogleAuthData, RequestWithUserId } from 'src/common/types/auth';
 import { FacebookUserInfo } from 'src/common/types/facebook/facebook';
 import { GoogleUserInfo } from 'src/common/types/google/google-api';
-import { ProfileDto } from 'src/profile/dto/profile.dto';
 import { UserDto } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
@@ -89,17 +88,12 @@ export class AuthController {
 
     if (!user) {
       const registerDto = new RegisterDto({
-        credentials: new UserDto({
-          username: userInfo.given_name,
-          password: faker.datatype.string(16),
-          email: userInfo.email,
-        }),
-
-        userInfo: new ProfileDto({
-          firstName: userInfo.given_name,
-          lastName: userInfo.family_name,
-          imageUrl: userInfo.picture,
-        }),
+        username: userInfo.given_name,
+        password: faker.datatype.string(16),
+        email: userInfo.email,
+        firstName: userInfo.given_name,
+        lastName: userInfo.family_name,
+        imageUrl: userInfo.picture,
       });
 
       user = await this.authService.createUser(registerDto);
@@ -137,17 +131,12 @@ export class AuthController {
       const lastname = name[1];
 
       const registerDto = new RegisterDto({
-        credentials: new UserDto({
-          username: firstname,
-          password: faker.datatype.string(16),
-          email: userInfo.email,
-        }),
-
-        userInfo: new ProfileDto({
-          firstName: firstname,
-          lastName: lastname,
-          imageUrl: userInfo.picture.data.url,
-        }),
+        username: firstname,
+        password: faker.datatype.string(16),
+        email: userInfo.email,
+        firstName: firstname,
+        lastName: lastname,
+        imageUrl: userInfo.picture.data.url,
       });
 
       user = await this.authService.createUser(registerDto);

@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -20,13 +19,6 @@ export class UserService {
   constructor(@InjectRepository(User) private userRepository: Repository<User>) {}
 
   async create(userDto: UserDto, profile?: Profile): Promise<UserDto> {
-    if (userDto.role) {
-      throw new BadRequestException({
-        reason: 'INVALID_INPUT',
-        message: 'Malformed request',
-      });
-    }
-
     const nFindUserByUsername = await this.count({ username: userDto.username });
     if (nFindUserByUsername) {
       throw new UnprocessableEntityException({

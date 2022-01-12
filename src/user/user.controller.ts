@@ -28,7 +28,12 @@ export class UserController {
   @CheckPolicies(new ManagePolicyHandler())
   @Post()
   create(@Body() registerDto: RegisterDto) {
-    return this.userService.create(registerDto.credentials);
+    const userDto = new UserDto({
+      email: registerDto.email,
+      username: registerDto.username,
+      password: registerDto.password,
+    });
+    return this.userService.create(userDto);
   }
 
   @UseGuards(PoliciesGuard)
