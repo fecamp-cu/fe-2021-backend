@@ -16,7 +16,7 @@ import { Response } from 'express';
 import * as faker from 'faker';
 import { FacebookAuthentication } from 'src/common/facebook/facebook-auth';
 import { GoogleAuthentication } from 'src/common/google-cloud/google-auth';
-import { GoogleAuthData } from 'src/common/types/auth';
+import { GoogleAuthData, RequestWithUserId } from 'src/common/types/auth';
 import { FacebookUserInfo } from 'src/common/types/facebook/facebook';
 import { GoogleUserInfo } from 'src/common/types/google/google-api';
 import { ProfileDto } from 'src/profile/dto/profile.dto';
@@ -26,6 +26,7 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { RedeemTokenHandler } from './redeem-token.guard';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -55,7 +56,7 @@ export class AuthController {
   }
 
   @Get('me')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(RedeemTokenHandler, JwtAuthGuard)
   async profile(@Req() req, @Res() res: Response): Promise<Response> {
     const user: UserDto = await this.userService.findOne(req.user.id, ['profile']);
     return res.status(HttpStatus.OK).json(user);

@@ -11,13 +11,14 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RegisterDto } from 'src/auth/dto/register.dto';
+import { RedeemTokenHandler } from 'src/auth/redeem-token.guard';
 import { PoliciesGuard } from 'src/casl/policies.guard';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UserDto } from './dto/user.dto';
 import { UserService } from './user.service';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(RedeemTokenHandler, JwtAuthGuard)
 @Controller('user')
 @ApiTags('User')
 export class UserController {
