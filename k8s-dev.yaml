@@ -110,6 +110,57 @@ spec:
                 secretKeyRef:
                   name: fecamp-secret
                   key: img_file_name_secret
+            # Google Credentials
+            - name: GOOGLE_CREDENTIALS_TYPE
+              valueFrom:
+                secretKeyRef:
+                  name: google-credentials
+                  key: type
+            - name: GOOGLE_CREDENTIALS_PROJECT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: google-credentials
+                  key: project_id
+            - name: GOOGLE_CREDENTIALS_PRIVATE_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: google-credentials
+                  key: private_key_id
+            - name: GOOGLE_CREDENTIALS_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: google-credentials
+                  key: private_key
+            - name: GOOGLE_CREDENTIALS_CLIENT_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: google-credentials
+                  key: client_email
+            - name: GOOGLE_CREDENTIALS_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: google-credentials
+                  key: client_id
+            - name: GOOGLE_CREDENTIALS_AUTH_URI
+              valueFrom:
+                secretKeyRef:
+                  name: google-credentials
+                  key: auth_uri
+            - name: GOOGLE_CREDENTIALS_TOKEN_URI
+              valueFrom:
+                secretKeyRef:
+                  name: google-credentials
+                  key: token_uri
+            - name: GOOGLE_CREDENTIALS_AUTH_PROVIDER_X509_CERT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: google-credentials
+                  key: auth_cert_uri
+            - name: GOOGLE_CREDENTIALS_CLIENT_X509_CERT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: google-credentials
+                  key: client_cert_uri
             # Google Authentication
             - name: GOOGLE_OAUTH_CLIENT_ID
               valueFrom:
