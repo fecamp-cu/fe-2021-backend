@@ -1,4 +1,4 @@
-import { ServiceType } from 'src/common/types/token';
+import { ServiceType } from 'src/common/types/auth';
 import { User } from 'src/user/entities/user.entity';
 import {
   Column,
@@ -18,7 +18,7 @@ export class Token {
   @Column({ name: 'service_type' })
   serviceType: ServiceType;
 
-  @Column({ name: 'access_token' })
+  @Column({ name: 'access_token', nullable: true })
   accessToken: string;
 
   @Column({ name: 'refresh_token', nullable: true })

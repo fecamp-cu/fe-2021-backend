@@ -2,8 +2,8 @@ import { UnprocessableEntityException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import * as faker from 'faker';
+import { FacebookAuthData } from '../types/auth';
 import { FacebookUserInfo } from '../types/facebook/facebook';
-import { FacebookAuthData } from '../types/token';
 
 export class FacebookAuthentication {
   private state: string;

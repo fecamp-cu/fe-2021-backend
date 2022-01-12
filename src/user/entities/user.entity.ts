@@ -1,6 +1,6 @@
+import { Token } from 'src/auth/entities/token.entity';
 import { Role } from 'src/common/enums/role';
 import { Profile } from 'src/profile/entities/profile.entity';
-import { Token } from 'src/token/entities/token.entity';
 import {
   Column,
   CreateDateColumn,

@@ -59,6 +59,16 @@ spec:
                 secretKeyRef:
                   name: fecamp-secret
                   key: secret
+            - name: ENCRYPT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: fecamp-secret
+                  key: encrypt_key
+            - name: CHECK_POLICIES_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: fecamp-secret
+                  key: check_policy_key
             - name: TOKEN_DURATION
               valueFrom:
                 configMapKeyRef:
