@@ -10,7 +10,7 @@ export class GoogleCloudStorage {
   private storage: Storage;
   constructor(private configService: ConfigService) {
     this.storage = new Storage({
-      keyFilename: this.configService.get<string>('google.gcs.serviceAccountKey'),
+      credentials: this.configService.get<any>('google.credentials'),
     });
     this.bucketName = this.configService.get<string>('google.gcs.bucketName');
     this.bucket = this.storage.bucket(this.bucketName);
