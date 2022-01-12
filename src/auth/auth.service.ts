@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -80,6 +80,10 @@ export class AuthService {
       expiresDate: token.expiresDate,
       user: token.user,
     });
+  }
+
+  async clearRefreshToken(refreshToken: string): Promise<void> {
+    await this.tokenRepository.delete({ refreshToken });
   }
 
   public async createUser(registerDto: RegisterDto): Promise<UserDto> {

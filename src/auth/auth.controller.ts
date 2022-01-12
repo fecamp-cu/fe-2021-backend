@@ -64,9 +64,10 @@ export class AuthController {
 
   @Get('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(JwtAuthGuard)
-  logout(@Res() res: Response): Response {
+  logout(@Req() req: RequestWithUserId, @Res() res: Response): Response {
+    this.authService.clearRefreshToken(req.cookies['refresh_token']);
     res.clearCookie('access_token');
+    res.clearCookie('refresh_token');
     return res.send();
   }
 
