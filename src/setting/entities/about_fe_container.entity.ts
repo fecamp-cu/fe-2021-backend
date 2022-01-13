@@ -4,14 +4,14 @@ import {
   DeleteDateColumn,
   Entity,
   ManyToOne,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Setting } from './setting.entity';
 
 @Entity()
 export class AboutFeContainer {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column()

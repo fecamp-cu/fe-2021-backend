@@ -4,7 +4,7 @@ import {
   DeleteDateColumn,
   Entity,
   OneToMany,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { AboutFeContainer } from './about_fe_container.entity';
@@ -15,7 +15,7 @@ import { TimelineEvent } from './timeline_event.entity';
 
 @Entity()
 export class Setting {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
