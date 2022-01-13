@@ -1,26 +1,53 @@
-import { Injectable } from '@nestjs/common';
-import { CreateSettingDto } from './dto/create-setting.dto';
-import { UpdateSettingDto } from './dto/update-setting.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { SettingDto } from './dto/setting.dto';
+import { Setting } from './entities/setting.entity';
 
 @Injectable()
 export class SettingService {
-  create(createSettingDto: CreateSettingDto) {
-    return 'This action adds a new setting';
+  constructor(@InjectRepository(Setting) private settingRepository: Repository<Setting>) {}
+  async createSetting(settingDto: SettingDto): Promise<SettingDto> {
+    const setting: Setting = this.settingRepository.create(settingDto);
+
+    if (settingDto.is_active) {
+      setting.is_active = settingDto.is_active;
+    } else {
+      setting.is_active = false;
+    }
+
+    const createdSetting = await this.settingRepository.save(setting);
+    return createdSetting;
   }
 
-  findAll() {
-    return `This action returns all setting`;
+  async findOne(id: number, relations: string[] = []): Promise<SettingDto> {
+    const setting: Setting = await this.settingRepository.findOne(id, { relations });
+    if (!setting) {
+      throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found setting' });
+    }
+    return setting;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} setting`;
+  async update(id: number, settingDto: SettingDto, relations: string[] = []): Promise<SettingDto> {
+    const update: UpdateResult = await this.settingRepository.update(id, settingDto);
+    if (update.affected === 0) {
+      throw new NotFoundException({
+        reason: 'NOT_FOUND',
+        message: 'Not found setting',
+      });
+    }
+    return await this.findOne(id, relations);
   }
 
-  update(id: number, updateSettingDto: UpdateSettingDto) {
-    return `This action updates a #${id} setting`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} setting`;
+  async remove(id: number): Promise<SettingDto> {
+    const deleted: DeleteResult = await this.settingRepository.softDelete(id);
+    if (deleted.affected === 0) {
+      throw new NotFoundException({
+        reason: 'NOT_FOUND',
+        message: 'Not found setting',
+      });
+    }
+    const setting = await this.findOne(id);
+    return setting;
   }
 }

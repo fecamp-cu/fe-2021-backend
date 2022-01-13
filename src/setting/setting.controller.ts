@@ -1,7 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { CreateSettingDto } from './dto/create-setting.dto';
-import { UpdateSettingDto } from './dto/update-setting.dto';
+import { SettingDto } from './dto/setting.dto';
 import { SettingService } from './setting.service';
 
 @ApiTags('Setting')
@@ -10,14 +9,14 @@ export class SettingController {
   constructor(private readonly settingService: SettingService) {}
 
   @Post()
-  create(@Body() createSettingDto: CreateSettingDto) {
-    return this.settingService.create(createSettingDto);
+  create(@Body() settingDto: SettingDto) {
+    return this.settingService.createSetting(settingDto);
   }
 
-  @Get()
-  findAll() {
-    return this.settingService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.settingService.findAll();
+  // }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -25,8 +24,8 @@ export class SettingController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSettingDto: UpdateSettingDto) {
-    return this.settingService.update(+id, updateSettingDto);
+  update(@Param('id') id: string, @Body() settingDto: SettingDto) {
+    return this.settingService.update(+id, settingDto);
   }
 
   @Delete(':id')
