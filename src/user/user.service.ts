@@ -7,7 +7,9 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from 'src/auth/dto/login.dto';
+import { TokenDto } from 'src/auth/dto/token.dto';
 import { FindUser } from 'src/common/types/user';
+import { ProfileDto } from 'src/profile/dto/profile.dto';
 import { Profile } from 'src/profile/entities/profile.entity';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { UserDto } from './dto/user.dto';
@@ -43,13 +45,7 @@ export class UserService {
 
     const createdUser = await this.userRepository.save(user);
 
-    return new UserDto({
-      id: createdUser.id,
-      username: createdUser.username,
-      email: createdUser.email,
-      profile,
-      role: createdUser.role,
-    });
+    return this.rawToDTO(createdUser);
   }
 
   async findAll(): Promise<UserDto[]> {
@@ -78,11 +74,7 @@ export class UserService {
         message: 'username or password wrong',
       });
     }
-    return new UserDto({
-      id: user.id,
-      username: user.username,
-      role: user.role,
-    });
+    return this.rawToDTO(user);
   }
 
   async findOne(id: number, relations: string[] = []): Promise<User> {
@@ -135,5 +127,56 @@ export class UserService {
 
   async count(key: FindUser): Promise<number> {
     return await this.userRepository.count(key);
+  }
+
+  public async rawToDTO(user: User): Promise<UserDto> {
+    const userDto: UserDto = new UserDto({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      profile: user.profile,
+      role: user.role,
+    });
+    if (user.tokens) {
+      const tokenDto: TokenDto[] = user.tokens.map(
+        token =>
+          new TokenDto({
+            id: token.id,
+            serviceType: token.serviceType,
+            accessToken: token.accessToken,
+            refreshToken: token.refreshToken,
+            expiresDate: token.expiresDate,
+          }),
+      );
+      userDto.tokens = tokenDto;
+    }
+    if (user.profile) {
+      const profileDto: ProfileDto = new ProfileDto({
+        id: user.profile.id,
+        firstName: user.profile.firstName,
+        lastName: user.profile.lastName,
+        imageUrl: user.profile.imageUrl,
+        address: user.profile.address,
+        district: user.profile.district,
+        subdistrict: user.profile.subdistrict,
+        province: user.profile.province,
+        postcode: user.profile.postcode,
+        tel: user.profile.tel,
+        grade: user.profile.grade,
+        school: user.profile.school,
+      });
+      userDto.profile = profileDto;
+    }
+    return userDto;
+  }
+
+  public async serialize(user: User | UserDto): Promise<UserDto> {
+    return new UserDto({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      profile: user.profile,
+      role: user.role,
+    });
   }
 }

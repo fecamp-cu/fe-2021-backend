@@ -53,13 +53,7 @@ export class AuthService {
   async createTokenEntity(tokenDto: TokenDto): Promise<TokenDto> {
     const token: Token = await this.tokenRepository.create(tokenDto);
     const createdToken: Token = await this.tokenRepository.save(token);
-    return new TokenDto({
-      id: createdToken.id,
-      serviceType: createdToken.serviceType,
-      accessToken: createdToken.accessToken,
-      refreshToken: createdToken.refreshToken,
-      expiresDate: createdToken.expiresDate,
-    });
+    return this.rawToDTO(createdToken);
   }
 
   async findRefreshToken(refreshToken: string): Promise<TokenDto> {
@@ -72,13 +66,16 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    return new TokenDto({
-      id: token.id,
-      serviceType: token.serviceType,
-      refreshToken: token.refreshToken,
-      expiresDate: token.expiresDate,
-      user: token.user,
-    });
+    return this.rawToDTO(token);
+  }
+
+  async getAdminToken(serviceType: ServiceType): Promise<TokenDto> {
+    const admin = await this.userService.findByEmail(
+      this.configService.get<string>('admin.email'),
+      ['tokens'],
+    );
+
+    return admin.tokens.find(token => token.serviceType === serviceType);
   }
 
   async clearRefreshToken(refreshToken: string): Promise<void> {
@@ -154,7 +151,18 @@ export class AuthService {
     return await this.storeToken(tokenDto, user, serviceType);
   }
 
-  private async storeToken(tokenDto: TokenDto, user: UserDto, serviceType: ServiceType) {
+  async validateAndRefreshServiceToken(tokenDto: TokenDto) {
+    const now = new Date();
+    if (tokenDto.expiresDate < now) {
+      throw new UnauthorizedException();
+    }
+  }
+
+  private async storeToken(
+    tokenDto: TokenDto,
+    user: UserDto,
+    serviceType: ServiceType,
+  ): Promise<UserDto> {
     let token: TokenDto;
     if (user.tokens) {
       token = user.tokens.find(token => token.serviceType === serviceType);
@@ -162,20 +170,36 @@ export class AuthService {
 
     if (!token) {
       await this.createTokenEntity(tokenDto);
-      return new UserDto({
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        profile: user.profile,
-      });
+      return this.userService.serialize(user);
     }
 
     await this.tokenRepository.update(token.id, tokenDto);
-    return new UserDto({
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      profile: user.profile,
+    return this.userService.serialize(user);
+  }
+
+  private async rawToDTO(token: Token): Promise<TokenDto> {
+    const tokenDto = new TokenDto({
+      id: token.id,
+      serviceType: token.serviceType,
+
+      accessToken: crypto.AES.decrypt(
+        token.accessToken,
+        this.configService.get<string>('encryptionKey'),
+      ).toString(crypto.enc.Utf8),
+
+      refreshToken: crypto.AES.decrypt(
+        token.refreshToken,
+        this.configService.get<string>('encryptionKey'),
+      ).toString(crypto.enc.Utf8),
+
+      expiresDate: token.expiresDate,
     });
+
+    if (token.user) {
+      const userDto = await this.userService.serialize(token.user);
+      tokenDto.user = userDto;
+    }
+
+    return tokenDto;
   }
 }
