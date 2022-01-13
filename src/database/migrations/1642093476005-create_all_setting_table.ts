@@ -1,26 +1,26 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class createAllSettingTable1641923869518 implements MigrationInterface {
-  name = 'createAllSettingTable1641923869518';
+export class createAllSettingTable1642093476005 implements MigrationInterface {
+  name = 'createAllSettingTable1642093476005';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TABLE "qualification_preview" ("id" integer NOT NULL, "order" integer NOT NULL, "text" character varying NOT NULL, "created_date" TIMESTAMP NOT NULL DEFAULT now(), "updated_date" TIMESTAMP NOT NULL DEFAULT now(), "deleted_date" TIMESTAMP, "settingId" integer, CONSTRAINT "PK_f5db20a8d85b2db3d55764b6bd9" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "qualification_preview" ("id" SERIAL NOT NULL, "order" integer NOT NULL, "text" character varying NOT NULL, "created_date" TIMESTAMP NOT NULL DEFAULT now(), "updated_date" TIMESTAMP NOT NULL DEFAULT now(), "deleted_date" TIMESTAMP, "settingId" integer, CONSTRAINT "PK_f5db20a8d85b2db3d55764b6bd9" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "sponcer_container" ("id" integer NOT NULL, "order" integer NOT NULL, "img_url" character varying NOT NULL, "created_date" TIMESTAMP NOT NULL DEFAULT now(), "updated_date" TIMESTAMP NOT NULL DEFAULT now(), "deleted_date" TIMESTAMP, "settingId" integer, CONSTRAINT "PK_4c67f7efdc028ed0bc9e67478cb" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "sponcer_container" ("id" SERIAL NOT NULL, "order" integer NOT NULL, "img_url" character varying NOT NULL, "created_date" TIMESTAMP NOT NULL DEFAULT now(), "updated_date" TIMESTAMP NOT NULL DEFAULT now(), "deleted_date" TIMESTAMP, "settingId" integer, CONSTRAINT "PK_4c67f7efdc028ed0bc9e67478cb" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "timeline_event" ("id" integer NOT NULL, "text" character varying NOT NULL, "event_date" TIMESTAMP NOT NULL, "created_date" TIMESTAMP NOT NULL DEFAULT now(), "updated_date" TIMESTAMP NOT NULL DEFAULT now(), "deleted_date" TIMESTAMP, "settingId" integer, CONSTRAINT "PK_8f5a66cd7151d78a419da3a3375" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "timeline_event" ("id" SERIAL NOT NULL, "text" character varying NOT NULL, "event_date" TIMESTAMP NOT NULL, "created_date" TIMESTAMP NOT NULL DEFAULT now(), "updated_date" TIMESTAMP NOT NULL DEFAULT now(), "deleted_date" TIMESTAMP, "settingId" integer, CONSTRAINT "PK_8f5a66cd7151d78a419da3a3375" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "setting" ("id" integer NOT NULL, "youtube_url" character varying NOT NULL, "register_form_url" character varying NOT NULL, "is_active" boolean NOT NULL, "created_date" TIMESTAMP NOT NULL DEFAULT now(), "updated_date" TIMESTAMP NOT NULL DEFAULT now(), "deleted_date" TIMESTAMP, CONSTRAINT "PK_fcb21187dc6094e24a48f677bed" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "setting" ("id" SERIAL NOT NULL, "youtube_url" character varying NOT NULL, "register_form_url" character varying NOT NULL, "is_active" boolean NOT NULL, "created_date" TIMESTAMP NOT NULL DEFAULT now(), "updated_date" TIMESTAMP NOT NULL DEFAULT now(), "deleted_date" TIMESTAMP, CONSTRAINT "PK_fcb21187dc6094e24a48f677bed" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "about_fe_container" ("id" integer NOT NULL, "order" integer NOT NULL, "text" character varying NOT NULL, "created_date" TIMESTAMP NOT NULL DEFAULT now(), "updated_date" TIMESTAMP NOT NULL DEFAULT now(), "deleted_date" TIMESTAMP, "settingId" integer, CONSTRAINT "PK_2a31fc6f0f3a196c1de077ee2c2" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "about_fe_container" ("id" SERIAL NOT NULL, "order" integer NOT NULL, "text" character varying NOT NULL, "created_date" TIMESTAMP NOT NULL DEFAULT now(), "updated_date" TIMESTAMP NOT NULL DEFAULT now(), "deleted_date" TIMESTAMP, "settingId" integer, CONSTRAINT "PK_2a31fc6f0f3a196c1de077ee2c2" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "photo_preview" ("id" integer NOT NULL, "order" integer NOT NULL, "img_url" character varying NOT NULL, "created_date" TIMESTAMP NOT NULL DEFAULT now(), "updated_date" TIMESTAMP NOT NULL DEFAULT now(), "deleted_date" TIMESTAMP, "settingId" integer, CONSTRAINT "PK_b1f4b5aa3b914635504e966e84e" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "photo_preview" ("id" SERIAL NOT NULL, "order" integer NOT NULL, "img_url" character varying NOT NULL, "created_date" TIMESTAMP NOT NULL DEFAULT now(), "updated_date" TIMESTAMP NOT NULL DEFAULT now(), "deleted_date" TIMESTAMP, "settingId" integer, CONSTRAINT "PK_b1f4b5aa3b914635504e966e84e" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `ALTER TABLE "qualification_preview" ADD CONSTRAINT "FK_9dfe88def1cfbf59e2a04e9e362" FOREIGN KEY ("settingId") REFERENCES "setting"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
