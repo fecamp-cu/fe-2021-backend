@@ -18,6 +18,9 @@ export class Token {
   @Column({ name: 'service_type' })
   serviceType: ServiceType;
 
+  @Column({ name: 'service_user_id', nullable: true })
+  serviceUserId: string;
+
   @Column({ name: 'access_token', nullable: true })
   accessToken: string;
 

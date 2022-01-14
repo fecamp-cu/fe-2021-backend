@@ -96,7 +96,7 @@ export class AuthController {
       user = await this.authService.createUser(registerDto);
     }
 
-    user = await this.authService.storeGoogleToken(tokens, user);
+    user = await this.authService.storeGoogleToken(tokens, user, userInfo.id);
 
     await this.signToken(user, res);
     return res.status(HttpStatus.OK).json(user);
@@ -139,7 +139,7 @@ export class AuthController {
       user = await this.authService.createUser(registerDto);
     }
 
-    user = await this.authService.storeFacebookToken(tokens, user);
+    user = await this.authService.storeFacebookToken(tokens, user, userInfo.id);
 
     await this.signToken(user, res);
     return res.status(HttpStatus.OK).json(user);

@@ -12,6 +12,10 @@ export class TokenDto {
 
   @ApiProperty()
   @IsNotEmpty()
+  serviceUserId: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
   accessToken: string;
 
   @ApiProperty()

@@ -120,7 +120,11 @@ export class AuthService {
     return user;
   }
 
-  public async storeGoogleToken(tokens: GoogleAuthData, user: UserDto): Promise<UserDto> {
+  public async storeGoogleToken(
+    tokens: GoogleAuthData,
+    user: UserDto,
+    serviceUserId?: string,
+  ): Promise<UserDto> {
     const serviceType: ServiceType = 'google';
     const tokenDto = new TokenDto({
       accessToken: await crypto.AES.encrypt(
@@ -138,10 +142,18 @@ export class AuthService {
       user,
     });
 
+    if (serviceUserId) {
+      tokenDto.serviceUserId = serviceUserId;
+    }
+
     return await this.storeToken(tokenDto, user, serviceType);
   }
 
-  public async storeFacebookToken(tokens: FacebookAuthData, user: UserDto): Promise<UserDto> {
+  public async storeFacebookToken(
+    tokens: FacebookAuthData,
+    user: UserDto,
+    serviceUserId?: string,
+  ): Promise<UserDto> {
     const serviceType: ServiceType = 'facebook';
     const tokenDto = new TokenDto({
       accessToken: await crypto.AES.encrypt(
@@ -153,6 +165,10 @@ export class AuthService {
       serviceType,
       user,
     });
+
+    if (serviceUserId) {
+      tokenDto.serviceUserId = serviceUserId;
+    }
 
     return await this.storeToken(tokenDto, user, serviceType);
   }
