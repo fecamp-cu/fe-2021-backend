@@ -19,6 +19,9 @@ export class Setting {
   id: number;
 
   @Column()
+  title: string;
+
+  @Column()
   youtube_url: string;
 
   @Column()
