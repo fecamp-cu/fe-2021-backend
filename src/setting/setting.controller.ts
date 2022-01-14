@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { SettingDto } from './dto/setting.dto';
+import { SponcerContainerDto } from './dto/sponcer_container.dto';
 import { TimelineEventDto } from './dto/timeline_event.dto';
 import { SettingService } from './setting.service';
 
@@ -34,7 +35,7 @@ export class SettingController {
     return this.settingService.remove(+id);
   }
   @Post('timeline_event/:settingid')
-  createTimeline(
+  createTimelineEvent(
     @Body() timelineEventDto: TimelineEventDto,
     @Param('settingid') settingid: string,
   ) {
@@ -58,5 +59,35 @@ export class SettingController {
   @Delete('timeline_event/:id')
   removeTimelineEvent(@Param('id') id: string) {
     return this.settingService.removeTimelineEvent(+id);
+  }
+
+  @Post('timeline_event/:settingid')
+  createSponcerContainer(
+    @Body() sponcerContainerDto: SponcerContainerDto,
+    @Param('settingid') settingid: string,
+  ) {
+    return this.settingService.createSponcerContainer(sponcerContainerDto, +settingid);
+  }
+  @Get('timeline_event')
+  findAllSponcerContainer() {
+    return this.settingService.findAllSponcerContainer();
+  }
+
+  @Get('timeline_event/:id')
+  findOneSponcerContainer(@Param('id') id: string) {
+    return this.settingService.findOneSponcerContainer(+id);
+  }
+
+  @Patch('timeline_event/:id')
+  updateSponcerContainer(
+    @Param('id') id: string,
+    @Body() sponcerContainerDto: SponcerContainerDto,
+  ) {
+    return this.settingService.updateSponcerContainer(+id, sponcerContainerDto);
+  }
+
+  @Delete('timeline_event/:id')
+  removeSponcerContainer(@Param('id') id: string) {
+    return this.settingService.removeSponcerContainer(+id);
   }
 }
