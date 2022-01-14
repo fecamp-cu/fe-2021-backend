@@ -5,6 +5,9 @@ export class SettingDto {
   id: number;
 
   @ApiProperty()
+  title: string;
+
+  @ApiProperty()
   youtube_url: string;
 
   @ApiProperty()
@@ -13,6 +16,7 @@ export class SettingDto {
   @ApiProperty()
   @IsBoolean()
   is_active: boolean;
+
   constructor(partial: Partial<SettingDto>) {
     Object.assign(this, partial);
   }
