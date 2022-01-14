@@ -1,9 +1,10 @@
 import { Bucket, Storage } from '@google-cloud/storage';
-import { StreamableFile } from '@nestjs/common';
+import { Injectable, StreamableFile } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto-js';
-import { MetaData } from '../types/google/google-cloud-storage';
+import { MetaData } from 'src/common/types/google/google-cloud-storage';
 
+@Injectable()
 export class GoogleCloudStorage {
   private bucket: Bucket;
   private bucketName: string;

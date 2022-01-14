@@ -14,11 +14,11 @@ import { ConfigService } from '@nestjs/config';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import * as faker from 'faker';
-import { FacebookAuthentication } from 'src/common/facebook/facebook-auth';
-import { GoogleAuthentication } from 'src/common/google-cloud/google-auth';
 import { GoogleAuthData, RequestWithUserId } from 'src/common/types/auth';
 import { FacebookUserInfo } from 'src/common/types/facebook/facebook';
 import { GoogleUserInfo } from 'src/common/types/google/google-api';
+import { FacebookAuthentication } from 'src/third-party/facebook/facebook-auth.service';
+import { GoogleAuthentication } from 'src/third-party/google-cloud/google-auth.service';
 import { UserDto } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
@@ -30,16 +30,13 @@ import { RedeemTokenHandler } from './redeem-token.guard';
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
-  private googleClient: GoogleAuthentication;
-  private facebookClient: FacebookAuthentication;
   constructor(
     private readonly authService: AuthService,
     private userService: UserService,
     private configService: ConfigService,
-  ) {
-    this.googleClient = new GoogleAuthentication(this.configService);
-    this.facebookClient = new FacebookAuthentication(this.configService);
-  }
+    private googleClient: GoogleAuthentication,
+    private facebookClient: FacebookAuthentication,
+  ) {}
 
   @Post('register')
   async register(@Body() registerDto: RegisterDto, @Res() res: Response): Promise<Response> {

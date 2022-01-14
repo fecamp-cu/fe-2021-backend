@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GoogleCloudStorage } from 'src/common/google-cloud/google-storage';
+import { GoogleCloudStorage } from 'src/third-party/google-cloud/google-storage.service';
 import { UserDto } from 'src/user/dto/user.dto';
 import { Repository } from 'typeorm';
 import { ProfileDto } from './dto/profile.dto';

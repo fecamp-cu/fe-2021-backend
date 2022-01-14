@@ -3,10 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as crypto from 'crypto-js';
+import moment from 'moment';
 import { FacebookAuthData, GoogleAuthData, ServiceType } from 'src/common/types/auth';
 import { ProfileDto } from 'src/profile/dto/profile.dto';
 import { Profile } from 'src/profile/entities/profile.entity';
 import { ProfileService } from 'src/profile/profile.service';
+import { GoogleAuthentication } from 'src/third-party/google-cloud/google-auth.service';
 import { UserDto } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
@@ -22,6 +24,7 @@ export class AuthService {
     private userService: UserService,
     private profileService: ProfileService,
     private configService: ConfigService,
+    private googleAuth: GoogleAuthentication,
     @InjectRepository(Token) private tokenRepository: Repository<Token>,
   ) {}
 
@@ -37,7 +40,10 @@ export class AuthService {
     const refreshToken = await uuidv4();
     const user = await this.userService.findOne(uid, ['tokens']);
     const tokenDto = new TokenDto({
-      refreshToken,
+      refreshToken: await crypto.AES.encrypt(
+        refreshToken,
+        this.configService.get<string>('encryptionKey'),
+      ).toString(),
       expiresDate: new Date(
         Date.now() + parseInt(this.configService.get<string>('jwt.tokenDuration')) * 1000,
       ),
@@ -151,11 +157,25 @@ export class AuthService {
     return await this.storeToken(tokenDto, user, serviceType);
   }
 
-  async validateAndRefreshServiceToken(tokenDto: TokenDto) {
-    const now = new Date();
-    if (tokenDto.expiresDate < now) {
-      throw new UnauthorizedException();
+  public async validateAndRefreshServiceToken(tokenDto: TokenDto): Promise<TokenDto> {
+    const now = new Date().getTime();
+    const expireTime = moment(tokenDto.expiresDate).toDate().getTime();
+
+    if (expireTime < now) {
+      const tokens: GoogleAuthData = await this.googleAuth.redeemRefreshToken(
+        tokenDto.refreshToken,
+      );
+      await this.storeGoogleToken(tokens, tokenDto.user);
+
+      return new TokenDto({
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+        expiresDate: new Date(tokens.expiry_date),
+        serviceType: tokenDto.serviceType,
+      });
     }
+
+    return tokenDto;
   }
 
   private async storeToken(
@@ -178,20 +198,25 @@ export class AuthService {
   }
 
   private async rawToDTO(token: Token): Promise<TokenDto> {
+    if (token.accessToken) {
+      token.accessToken = await crypto.AES.decrypt(
+        token.accessToken,
+        this.configService.get<string>('encryptionKey'),
+      ).toString(crypto.enc.Utf8);
+    }
+
+    if (token.refreshToken && token.serviceType !== 'fecamp') {
+      token.refreshToken = await crypto.AES.decrypt(
+        token.refreshToken,
+        this.configService.get<string>('encryptionKey'),
+      ).toString(crypto.enc.Utf8);
+    }
+
     const tokenDto = new TokenDto({
       id: token.id,
       serviceType: token.serviceType,
-
-      accessToken: crypto.AES.decrypt(
-        token.accessToken,
-        this.configService.get<string>('encryptionKey'),
-      ).toString(crypto.enc.Utf8),
-
-      refreshToken: crypto.AES.decrypt(
-        token.refreshToken,
-        this.configService.get<string>('encryptionKey'),
-      ).toString(crypto.enc.Utf8),
-
+      accessToken: token.accessToken,
+      refreshToken: token.refreshToken,
       expiresDate: token.expiresDate,
     });
 
