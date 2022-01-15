@@ -94,10 +94,11 @@ export class UserService {
   }
 
   async update(id: number, userDto: UserDto, relations: string[] = []): Promise<UserDto> {
-    const update: UpdateResult = await this.userRepository.update(id, userDto);
     if (userDto.password) {
       userDto.password = await bcrypt.hash(userDto.password, SALTROUND);
     }
+
+    const update: UpdateResult = await this.userRepository.update(id, userDto);
 
     if (update.affected === 0) {
       throw new NotFoundException({
