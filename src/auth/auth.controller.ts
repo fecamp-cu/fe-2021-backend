@@ -28,12 +28,14 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { RedeemTokenHandler } from './redeem-token.guard';
+import { ThirdPartyAuthService } from './third-party-auth.service';
 
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
+    private readonly thirdPartyAuthService: ThirdPartyAuthService,
     private userService: UserService,
     private configService: ConfigService,
     private googleClient: GoogleAuthentication,
@@ -105,7 +107,7 @@ export class AuthController {
       ]);
     }
 
-    user = await this.authService.storeGoogleToken(tokens, user, userInfo.id);
+    user = await this.thirdPartyAuthService.storeGoogleToken(tokens, user, userInfo.id);
 
     await this.signToken(user, res);
     return res.status(HttpStatus.OK).json(user);
@@ -154,7 +156,7 @@ export class AuthController {
       ]);
     }
 
-    user = await this.authService.storeFacebookToken(tokens, user, userInfo.id);
+    user = await this.thirdPartyAuthService.storeFacebookToken(tokens, user, userInfo.id);
 
     await this.signToken(user, res);
     return res.status(HttpStatus.OK).json(user);
@@ -168,8 +170,8 @@ export class AuthController {
   }
 
   private async sendEmail(userDto: UserDto, subject: string, message: string[]) {
-    let tokenDto = await this.authService.getAdminToken('google');
-    tokenDto = await this.authService.validateAndRefreshServiceToken(tokenDto);
+    let tokenDto = await this.thirdPartyAuthService.getAdminToken('google');
+    tokenDto = await this.thirdPartyAuthService.validateAndRefreshServiceToken(tokenDto);
 
     const emailRef: GoogleEmailRef = {
       email: userDto.email,

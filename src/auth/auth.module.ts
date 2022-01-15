@@ -11,6 +11,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { Token } from './entities/token.entity';
 import { JwtStrategy } from './jwt.strategy';
+import { ThirdPartyAuthService } from './third-party-auth.service';
 
 @Global()
 @Module({
@@ -30,7 +31,7 @@ import { JwtStrategy } from './jwt.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
-  exports: [AuthService, JwtModule],
+  providers: [AuthService, ThirdPartyAuthService, JwtStrategy],
+  exports: [AuthService, ThirdPartyAuthService, JwtModule],
 })
 export class AuthModule {}
