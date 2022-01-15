@@ -10,8 +10,10 @@ import { UserModule } from 'src/user/user.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { Token } from './entities/token.entity';
+import { ValidateCode } from './entities/validate-code.entity';
 import { JwtStrategy } from './jwt.strategy';
 import { ThirdPartyAuthService } from './third-party-auth.service';
+import { ValidateCodeService } from './validate-code.service';
 
 @Global()
 @Module({
@@ -20,7 +22,7 @@ import { ThirdPartyAuthService } from './third-party-auth.service';
     ProfileModule,
     PassportModule,
     ThirdPartyModule,
-    TypeOrmModule.forFeature([User, Token]),
+    TypeOrmModule.forFeature([User, Token, ValidateCode]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -31,7 +33,7 @@ import { ThirdPartyAuthService } from './third-party-auth.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, ThirdPartyAuthService, JwtStrategy],
-  exports: [AuthService, ThirdPartyAuthService, JwtModule],
+  providers: [AuthService, ThirdPartyAuthService, ValidateCodeService, JwtStrategy],
+  exports: [AuthService, ThirdPartyAuthService, ValidateCodeService, JwtModule],
 })
 export class AuthModule {}

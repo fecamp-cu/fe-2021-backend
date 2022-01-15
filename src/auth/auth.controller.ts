@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   Query,
   Req,
@@ -11,9 +12,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import * as faker from 'faker';
+import * as moment from 'moment';
 import { GoogleAuthData, RequestWithUserId } from 'src/common/types/auth';
 import { FacebookUserInfo } from 'src/common/types/facebook/facebook';
 import { GoogleUserInfo } from 'src/common/types/google/google-api';
@@ -26,9 +28,12 @@ import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ValidateCodeDto } from './dto/validate-code.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { RedeemTokenHandler } from './redeem-token.guard';
 import { ThirdPartyAuthService } from './third-party-auth.service';
+import { ValidateCodeService } from './validate-code.service';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -36,6 +41,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly thirdPartyAuthService: ThirdPartyAuthService,
+    private readonly validateCodeService: ValidateCodeService,
     private userService: UserService,
     private configService: ConfigService,
     private googleClient: GoogleAuthentication,
@@ -70,6 +76,47 @@ export class AuthController {
     res.clearCookie('access_token');
     res.clearCookie('refresh_token');
     return res.send();
+  }
+
+  @Post('reset-password/request')
+  async requestResetPassword(
+    @Body() ResetPasswordDto: ResetPasswordDto,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const user: UserDto = await this.userService.findByEmail(ResetPasswordDto.email, ['profile']);
+    if (user) {
+      const expireDate = moment().add(1, 'day').toDate();
+      const validateCodeDto: ValidateCodeDto = await this.validateCodeService.generate(
+        'reset_password',
+        expireDate,
+      );
+      this.sendEmail(user, 'Reset Password', [
+        `You are receiving this email because you have requested a password reset.<br/>`,
+        `Please click on the following link to reset your password:<br/>`,
+        `This link valid until ${moment(expireDate).format('llll')}<br/>`,
+        `${this.configService.get<string>('app.url')}/reset-password?${
+          validateCodeDto.code
+        }&userId=${user.id}`,
+      ]);
+    }
+    return res.status(HttpStatus.OK).json({ message: 'Successfully sent email' });
+  }
+
+  @ApiParam({ name: 'token' })
+  @Post('reset-password/:token')
+  async resetPassword(
+    @Param('token') token,
+    @Body() resetPasswordDto: ResetPasswordDto,
+    @Res() res: Response,
+  ): Promise<Response> {
+    await this.validateCodeService.validateCode('reset_password', token);
+
+    const user: UserDto = await this.userService.update(
+      resetPasswordDto.id,
+      resetPasswordDto as UserDto,
+    );
+
+    return res.status(HttpStatus.OK).json(user);
   }
 
   @Get('google')
