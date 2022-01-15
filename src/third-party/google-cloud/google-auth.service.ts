@@ -2,6 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosInstance } from 'axios';
 import { google } from 'googleapis';
+import { TokenDto } from 'src/auth/dto/token.dto';
 import { GoogleAuthData } from 'src/common/types/auth';
 import { GoogleUserInfo } from 'src/common/types/google/google-api';
 
@@ -20,6 +21,10 @@ export class GoogleAuthentication {
       baseURL: 'https://oauth2.googleapis.com',
       timeout: 5000,
     });
+  }
+
+  public getClient() {
+    return this.client;
   }
 
   public getUrl(scopes: string[]): string {
@@ -44,6 +49,10 @@ export class GoogleAuthentication {
     this.client.setCredentials(tokens);
   }
 
+  public async setCredentialsByDTO(tokens: TokenDto) {
+    this.client.setCredentials(this.DTOToCredentials(tokens));
+  }
+
   async redeemRefreshToken(refreshToken: string): Promise<GoogleAuthData> {
     const params = new URLSearchParams();
     params.append('client_id', this.configService.get<string>('google.oauth.clientID'));
@@ -59,5 +68,17 @@ export class GoogleAuthentication {
     } catch (err) {
       throw new HttpException(err.response.statusText, err.response.status);
     }
+  }
+
+  private DTOToCredentials(tokenDto: TokenDto): GoogleAuthData {
+    const tokens: GoogleAuthData = {
+      access_token: tokenDto.accessToken,
+      refresh_token: tokenDto.refreshToken,
+      id_token: tokenDto.idToken,
+      scope: this.configService.get<string>('google.oauth.scope'),
+      expiry_date: tokenDto.expiresDate,
+      token_type: 'Bearer',
+    };
+    return tokens;
   }
 }
