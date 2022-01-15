@@ -17,8 +17,10 @@ import * as faker from 'faker';
 import { GoogleAuthData, RequestWithUserId } from 'src/common/types/auth';
 import { FacebookUserInfo } from 'src/common/types/facebook/facebook';
 import { GoogleUserInfo } from 'src/common/types/google/google-api';
+import { GoogleEmailRef } from 'src/common/types/google/google-gmail';
 import { FacebookAuthentication } from 'src/third-party/facebook/facebook-auth.service';
 import { GoogleAuthentication } from 'src/third-party/google-cloud/google-auth.service';
+import { GoogleGmail } from 'src/third-party/google-cloud/google-gmail.service';
 import { UserDto } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
@@ -35,6 +37,7 @@ export class AuthController {
     private userService: UserService,
     private configService: ConfigService,
     private googleClient: GoogleAuthentication,
+    private googleGmail: GoogleGmail,
     private facebookClient: FacebookAuthentication,
   ) {}
 
@@ -83,10 +86,12 @@ export class AuthController {
 
     let user: UserDto = await this.userService.findByEmail(userInfo.email, ['profile', 'tokens']);
 
+    const password = faker.datatype.string(16);
+
     if (!user) {
       const registerDto = new RegisterDto({
         username: userInfo.given_name,
-        password: faker.datatype.string(16),
+        password,
         email: userInfo.email,
         firstName: userInfo.given_name,
         lastName: userInfo.family_name,
@@ -94,6 +99,10 @@ export class AuthController {
       });
 
       user = await this.authService.createUser(registerDto);
+      this.sendEmail(user, 'Welcome to FE Camp 2022', [
+        `Welcome ${userInfo.name} to our FE Camp Family.<br/>`,
+        `your password is ${password}`,
+      ]);
     }
 
     user = await this.authService.storeGoogleToken(tokens, user, userInfo.id);
@@ -126,10 +135,11 @@ export class AuthController {
       const name = userInfo.name.split(' ');
       const firstname = name[0];
       const lastname = name[1];
+      const password = faker.datatype.string(16);
 
       const registerDto = new RegisterDto({
         username: firstname,
-        password: faker.datatype.string(16),
+        password,
         email: userInfo.email,
         firstName: firstname,
         lastName: lastname,
@@ -137,6 +147,11 @@ export class AuthController {
       });
 
       user = await this.authService.createUser(registerDto);
+
+      this.sendEmail(user, 'Welcome to FE Camp 2022', [
+        'hello world.\n',
+        `your password is ${password}`,
+      ]);
     }
 
     user = await this.authService.storeFacebookToken(tokens, user, userInfo.id);
@@ -150,5 +165,18 @@ export class AuthController {
     const refreshToken: string = await this.authService.createRefreshToken(user.id);
     res.cookie('access_token', token, { httpOnly: true, secure: false });
     res.cookie('refresh_token', refreshToken, { httpOnly: true, secure: false });
+  }
+
+  private async sendEmail(userDto: UserDto, subject: string, message: string[]) {
+    let tokenDto = await this.authService.getAdminToken('google');
+    tokenDto = await this.authService.validateAndRefreshServiceToken(tokenDto);
+
+    const emailRef: GoogleEmailRef = {
+      email: userDto.email,
+      firstname: userDto.profile.firstName,
+      lastname: userDto.profile.lastName,
+    };
+
+    this.googleGmail.sendMessage(subject, message, emailRef, tokenDto);
   }
 }
