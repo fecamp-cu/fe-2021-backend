@@ -5,10 +5,14 @@ const envType = process.env.NODE_ENV || 'development';
 dotenv.config({ path: `.env.${envType}` });
 
 export default () => ({
-  port: parseInt(process.env.PORT) || 8000,
-  mode: process.env.NODE_ENV,
-  policykey: process.env.CHECK_POLICIES_KEY,
-  encryptionKey: process.env.ENCRYPT_KEY,
+  app: {
+    port: parseInt(process.env.PORT) || 8000,
+    url: process.env.URL,
+  },
+  secret: {
+    policykey: process.env.CHECK_POLICIES_KEY,
+    encryptionKey: process.env.ENCRYPT_KEY,
+  },
   admin: {
     email: process.env.ADMIN_EMAIL,
   },
