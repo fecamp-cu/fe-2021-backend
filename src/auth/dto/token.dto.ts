@@ -16,6 +16,10 @@ export class TokenDto {
 
   @ApiProperty()
   @IsNotEmpty()
+  idToken: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
   accessToken: string;
 
   @ApiProperty()
