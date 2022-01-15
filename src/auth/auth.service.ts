@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as crypto from 'crypto-js';
-import moment from 'moment';
+import * as moment from 'moment';
 import { FacebookAuthData, GoogleAuthData, ServiceType } from 'src/common/types/auth';
 import { ProfileDto } from 'src/profile/dto/profile.dto';
 import { Profile } from 'src/profile/entities/profile.entity';
@@ -40,10 +40,7 @@ export class AuthService {
     const refreshToken = await uuidv4();
     const user = await this.userService.findOne(uid, ['tokens']);
     const tokenDto = new TokenDto({
-      refreshToken: await crypto.AES.encrypt(
-        refreshToken,
-        this.configService.get<string>('encryptionKey'),
-      ).toString(),
+      refreshToken,
       expiresDate: new Date(
         Date.now() + parseInt(this.configService.get<string>('jwt.tokenDuration')) * 1000,
       ),
@@ -81,7 +78,17 @@ export class AuthService {
       ['tokens'],
     );
 
-    return admin.tokens.find(token => token.serviceType === serviceType);
+    const tokenIdx = admin.tokens.findIndex(token => token.serviceType === serviceType);
+
+    admin.tokens[tokenIdx] = await this.rawToDTO(admin.tokens[tokenIdx]);
+
+    return new TokenDto({
+      accessToken: admin.tokens[tokenIdx].accessToken,
+      expiresDate: admin.tokens[tokenIdx].expiresDate,
+      refreshToken: admin.tokens[tokenIdx].refreshToken,
+      serviceType: admin.tokens[tokenIdx].serviceType,
+      user: admin,
+    });
   }
 
   async clearRefreshToken(refreshToken: string): Promise<void> {
@@ -132,8 +139,8 @@ export class AuthService {
         this.configService.get<string>('encryptionKey'),
       ).toString(),
 
-      refreshToken: await crypto.AES.encrypt(
-        tokens.refresh_token,
+      idToken: await crypto.AES.encrypt(
+        tokens.id_token,
         this.configService.get<string>('encryptionKey'),
       ).toString(),
 
@@ -141,6 +148,13 @@ export class AuthService {
       serviceType,
       user,
     });
+
+    if (tokens.refresh_token) {
+      tokenDto.refreshToken = await crypto.AES.encrypt(
+        tokens.refresh_token,
+        this.configService.get<string>('encryptionKey'),
+      ).toString();
+    }
 
     if (serviceUserId) {
       tokenDto.serviceUserId = serviceUserId;
@@ -181,6 +195,9 @@ export class AuthService {
       const tokens: GoogleAuthData = await this.googleAuth.redeemRefreshToken(
         tokenDto.refreshToken,
       );
+
+      tokens.expiry_date = moment(Date.now() + tokens.expires_in * 1000).toDate();
+
       await this.storeGoogleToken(tokens, tokenDto.user);
 
       return new TokenDto({
@@ -213,28 +230,33 @@ export class AuthService {
     return this.userService.serialize(user);
   }
 
-  private async rawToDTO(token: Token): Promise<TokenDto> {
+  private async rawToDTO(token: Token | TokenDto): Promise<TokenDto> {
+    const tokenDto = new TokenDto({
+      id: token.id,
+      serviceType: token.serviceType,
+      expiresDate: token.expiresDate,
+    });
+
     if (token.accessToken) {
-      token.accessToken = await crypto.AES.decrypt(
+      tokenDto.accessToken = await crypto.AES.decrypt(
         token.accessToken,
         this.configService.get<string>('encryptionKey'),
       ).toString(crypto.enc.Utf8);
     }
 
-    if (token.refreshToken && token.serviceType !== 'fecamp') {
-      token.refreshToken = await crypto.AES.decrypt(
+    if (token.refreshToken) {
+      tokenDto.refreshToken = await crypto.AES.decrypt(
         token.refreshToken,
         this.configService.get<string>('encryptionKey'),
       ).toString(crypto.enc.Utf8);
     }
 
-    const tokenDto = new TokenDto({
-      id: token.id,
-      serviceType: token.serviceType,
-      accessToken: token.accessToken,
-      refreshToken: token.refreshToken,
-      expiresDate: token.expiresDate,
-    });
+    if (token.idToken) {
+      tokenDto.idToken = await crypto.AES.decrypt(
+        token.idToken,
+        this.configService.get<string>('encryptionKey'),
+      ).toString(crypto.enc.Utf8);
+    }
 
     if (token.user) {
       const userDto = await this.userService.serialize(token.user);

@@ -19,6 +19,7 @@ export type GoogleAuthData = {
   token_type: string;
   id_token: string;
   expiry_date: Date;
+  expires_in?: number;
 };
 
 export type FacebookAuthData = {
