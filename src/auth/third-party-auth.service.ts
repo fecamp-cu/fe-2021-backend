@@ -46,12 +46,12 @@ export class ThirdPartyAuthService {
     const tokenDto = new TokenDto({
       accessToken: await crypto.AES.encrypt(
         tokens.access_token,
-        this.configService.get<string>('encryptionKey'),
+        this.configService.get<string>('secret.encryptionKey'),
       ).toString(),
 
       idToken: await crypto.AES.encrypt(
         tokens.id_token,
-        this.configService.get<string>('encryptionKey'),
+        this.configService.get<string>('secret.encryptionKey'),
       ).toString(),
 
       expiresDate: new Date(tokens.expiry_date),
@@ -62,7 +62,7 @@ export class ThirdPartyAuthService {
     if (tokens.refresh_token) {
       tokenDto.refreshToken = await crypto.AES.encrypt(
         tokens.refresh_token,
-        this.configService.get<string>('encryptionKey'),
+        this.configService.get<string>('secret.encryptionKey'),
       ).toString();
     }
 
@@ -82,7 +82,7 @@ export class ThirdPartyAuthService {
     const tokenDto = new TokenDto({
       accessToken: await crypto.AES.encrypt(
         tokens.access_token,
-        this.configService.get<string>('encryptionKey'),
+        this.configService.get<string>('secret.encryptionKey'),
       ).toString(),
 
       expiresDate: new Date(tokens.expires_in * 1000 + Date.now()),

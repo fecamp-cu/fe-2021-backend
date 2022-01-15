@@ -36,7 +36,7 @@ export class AuthService {
     const serviceType = 'fecamp';
     const refreshToken = await crypto.AES.encrypt(
       await uuidv4(),
-      this.configService.get<string>('encryptionKey'),
+      this.configService.get<string>('secret.encryptionKey'),
     ).toString();
     const user = await this.userService.findOne(uid, ['tokens']);
     const tokenDto = new TokenDto({
@@ -137,21 +137,21 @@ export class AuthService {
     if (token.accessToken) {
       tokenDto.accessToken = await crypto.AES.decrypt(
         token.accessToken,
-        this.configService.get<string>('encryptionKey'),
+        this.configService.get<string>('secret.encryptionKey'),
       ).toString(crypto.enc.Utf8);
     }
 
     if (token.refreshToken) {
       tokenDto.refreshToken = await crypto.AES.decrypt(
         token.refreshToken,
-        this.configService.get<string>('encryptionKey'),
+        this.configService.get<string>('secret.encryptionKey'),
       ).toString(crypto.enc.Utf8);
     }
 
     if (token.idToken) {
       tokenDto.idToken = await crypto.AES.decrypt(
         token.idToken,
-        this.configService.get<string>('encryptionKey'),
+        this.configService.get<string>('secret.encryptionKey'),
       ).toString(crypto.enc.Utf8);
     }
 
