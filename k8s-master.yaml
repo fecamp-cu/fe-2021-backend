@@ -74,11 +74,16 @@ spec:
                 configMapKeyRef:
                   name: fecamp-config
                   key: token_duration
-            - name: REFRESH_TOKEN_DURATION
+            - name: ADMIN_EMAIL
               valueFrom:
                 configMapKeyRef:
                   name: fecamp-config
-                  key: refresh_token_duration
+                  key: admin_email
+            - name: URL
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: url
             - name: ENTITY_PATH
               valueFrom:
                 configMapKeyRef:
