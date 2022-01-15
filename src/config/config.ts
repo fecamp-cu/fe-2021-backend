@@ -9,6 +9,9 @@ export default () => ({
   mode: process.env.NODE_ENV,
   policykey: process.env.CHECK_POLICIES_KEY,
   encryptionKey: process.env.ENCRYPT_KEY,
+  admin: {
+    email: process.env.ADMIN_EMAIL,
+  },
   jwt: {
     secret: process.env.SECRET,
     tokenDuration: process.env.TOKEN_DURATION || '3600s',
