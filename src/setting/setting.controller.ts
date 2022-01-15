@@ -4,11 +4,17 @@ import { SettingDto } from './dto/setting.dto';
 import { SponcerContainerDto } from './dto/sponcer_container.dto';
 import { TimelineEventDto } from './dto/timeline_event.dto';
 import { SettingService } from './setting.service';
+import { SponcerContainerService } from './sponcer_container.service';
+import { TimelineEventService } from './timeline_event.service';
 
 @ApiTags('Setting')
 @Controller('setting')
 export class SettingController {
-  constructor(private readonly settingService: SettingService) {}
+  constructor(
+    private readonly settingService: SettingService,
+    private readonly timelineEventService: TimelineEventService,
+    private readonly sponcerContainerService: SponcerContainerService,
+  ) {}
 
   @Post()
   create(@Body() settingDto: SettingDto) {
@@ -39,55 +45,55 @@ export class SettingController {
     @Body() timelineEventDto: TimelineEventDto,
     @Param('settingid') settingid: string,
   ) {
-    return this.settingService.createTimelineEvent(timelineEventDto, +settingid);
+    return this.timelineEventService.create(timelineEventDto, +settingid);
   }
   @Get('timeline_event')
   findAllTimelineEvent() {
-    return this.settingService.findAllTimelineEvent();
+    return this.timelineEventService.findAll();
   }
 
   @Get('timeline_event/:id')
   findOneTimelineEvent(@Param('id') id: string) {
-    return this.settingService.findOneTimelineEvent(+id);
+    return this.timelineEventService.findOne(+id);
   }
 
   @Patch('timeline_event/:id')
   updateTimelineEvent(@Param('id') id: string, @Body() timelineEventDto: TimelineEventDto) {
-    return this.settingService.updateTimelineEvent(+id, timelineEventDto);
+    return this.timelineEventService.update(+id, timelineEventDto);
   }
 
   @Delete('timeline_event/:id')
   removeTimelineEvent(@Param('id') id: string) {
-    return this.settingService.removeTimelineEvent(+id);
+    return this.timelineEventService.remove(+id);
   }
 
-  @Post('timeline_event/:settingid')
+  @Post('sponcer_container/:settingid')
   createSponcerContainer(
     @Body() sponcerContainerDto: SponcerContainerDto,
     @Param('settingid') settingid: string,
   ) {
-    return this.settingService.createSponcerContainer(sponcerContainerDto, +settingid);
+    return this.sponcerContainerService.create(sponcerContainerDto, +settingid);
   }
-  @Get('timeline_event')
+  @Get('sponcer_container')
   findAllSponcerContainer() {
-    return this.settingService.findAllSponcerContainer();
+    return this.sponcerContainerService.findAll();
   }
 
-  @Get('timeline_event/:id')
+  @Get('sponcer_container/:id')
   findOneSponcerContainer(@Param('id') id: string) {
-    return this.settingService.findOneSponcerContainer(+id);
+    return this.sponcerContainerService.findOne(+id);
   }
 
-  @Patch('timeline_event/:id')
+  @Patch('sponcer_container/:id')
   updateSponcerContainer(
     @Param('id') id: string,
     @Body() sponcerContainerDto: SponcerContainerDto,
   ) {
-    return this.settingService.updateSponcerContainer(+id, sponcerContainerDto);
+    return this.sponcerContainerService.update(+id, sponcerContainerDto);
   }
 
-  @Delete('timeline_event/:id')
+  @Delete('sponcer_container/:id')
   removeSponcerContainer(@Param('id') id: string) {
-    return this.settingService.removeSponcerContainer(+id);
+    return this.sponcerContainerService.remove(+id);
   }
 }

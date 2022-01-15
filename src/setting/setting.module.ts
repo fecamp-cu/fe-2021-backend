@@ -8,6 +8,8 @@ import { SponcerContainer } from './entities/sponcer_container.entity';
 import { TimelineEvent } from './entities/timeline_event.entity';
 import { SettingController } from './setting.controller';
 import { SettingService } from './setting.service';
+import { SponcerContainerService } from './sponcer_container.service';
+import { TimelineEventService } from './timeline_event.service';
 
 @Module({
   imports: [
@@ -21,6 +23,6 @@ import { SettingService } from './setting.service';
     ]),
   ],
   controllers: [SettingController],
-  providers: [SettingService],
+  providers: [SettingService, TimelineEventService, SponcerContainerService],
 })
 export class SettingModule {}
