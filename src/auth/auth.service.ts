@@ -34,7 +34,10 @@ export class AuthService {
 
   async createRefreshToken(uid: number): Promise<string> {
     const serviceType = 'fecamp';
-    const refreshToken = await uuidv4();
+    const refreshToken = await crypto.AES.encrypt(
+      await uuidv4(),
+      this.configService.get<string>('encryptionKey'),
+    ).toString();
     const user = await this.userService.findOne(uid, ['tokens']);
     const tokenDto = new TokenDto({
       refreshToken,
