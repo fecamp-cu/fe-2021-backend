@@ -29,11 +29,31 @@ export class SettingService {
   async findAll(): Promise<SettingDto[]> {
     return await this.settingRepository.find();
   }
-  async findOne(id: number, relations: string[] = []): Promise<Setting> {
+
+  async findOne(
+    id: number,
+    relations: string[] = ['timeline_events', 'sponcer_containers'],
+  ): Promise<Setting> {
     const setting: Setting = await this.settingRepository.findOne(id, { relations });
     if (!setting) {
       throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found setting' });
     }
+    await setting.timeline_events.sort((a, b) => {
+      const dateA = a.event_date;
+      const dateB = b.event_date;
+      if (dateA < dateB) {
+        return -1;
+      }
+      if (dateA > dateB) {
+        return 1;
+      }
+      return 0;
+    });
+
+    await setting.sponcer_containers.sort((a, b) => {
+      return a.order - b.order;
+    });
+
     return setting;
   }
 
