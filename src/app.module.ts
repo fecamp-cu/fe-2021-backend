@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { CaslModule } from './casl/casl.module';
 import config from './config/config';
+import { ItemModule } from './item/item.module';
 import { ProfileModule } from './profile/profile.module';
 import { UserModule } from './user/user.module';
 
@@ -33,6 +34,7 @@ import { UserModule } from './user/user.module';
     AuthModule,
     ProfileModule,
     CaslModule,
+    ItemModule,
   ],
   controllers: [AppController],
   providers: [AppService],
