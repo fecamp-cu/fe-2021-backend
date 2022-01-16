@@ -5,8 +5,8 @@ import {
   Get,
   Param,
   ParseIntPipe,
-  Patch,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -15,6 +15,7 @@ import { RedeemTokenHandler } from 'src/auth/redeem-token.guard';
 import { PoliciesGuard } from 'src/casl/policies.guard';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { UserService } from './user.service';
 
@@ -52,8 +53,8 @@ export class UserController {
 
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new ManagePolicyHandler())
-  @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() userDto: UserDto) {
+  @Put(':id')
+  update(@Param('id', ParseIntPipe) id: number, @Body() userDto: UpdateUserDto) {
     return this.userService.update(id, userDto);
   }
 

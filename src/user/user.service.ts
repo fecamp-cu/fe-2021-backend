@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -12,6 +13,7 @@ import { FindUser } from 'src/common/types/user';
 import { ProfileDto } from 'src/profile/dto/profile.dto';
 import { Profile } from 'src/profile/entities/profile.entity';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
 
@@ -24,6 +26,14 @@ export class UserService {
     userDto: UserDto,
     profile?: Profile,
     isEmailVerified: boolean = false,
+  ): Promise<UserDto> {
+    if (userDto.role) {
+      throw new BadRequestException({
+        reason: 'INVALID_INPUT',
+        message: 'Role must be empty',
+      });
+    }
+
     const nFindUserByUsername = await this.count({ username: userDto.username });
     if (nFindUserByUsername) {
       throw new UnprocessableEntityException({
@@ -98,7 +108,7 @@ export class UserService {
     });
   }
 
-  async update(id: number, userDto: UserDto, relations: string[] = []): Promise<UserDto> {
+  async update(id: number, userDto: UpdateUserDto, relations: string[] = []): Promise<UserDto> {
     if (userDto.password) {
       userDto.password = await bcrypt.hash(userDto.password, SALTROUND);
     }
