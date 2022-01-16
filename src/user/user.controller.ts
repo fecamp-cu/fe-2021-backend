@@ -5,8 +5,8 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
-  Put,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -53,7 +53,7 @@ export class UserController {
 
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new ManagePolicyHandler())
-  @Put(':id')
+  @Patch(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() userDto: UpdateUserDto) {
     return this.userService.update(id, userDto);
   }
