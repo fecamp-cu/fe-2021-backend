@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -101,6 +101,14 @@ export class AuthService {
       username: registerDto.username,
       password: registerDto.password,
     });
+
+    const nFindUserByEmail = await this.userService.count({ email: userDto.email });
+    if (nFindUserByEmail) {
+      throw new UnprocessableEntityException({
+        reason: 'INVALID_INPUT',
+        message: 'Email already existed',
+      });
+    }
 
     const profile: Profile = await this.profileService.create(profileDto);
     const user = await this.userService.create(userDto, profile, isVerified);
