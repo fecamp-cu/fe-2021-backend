@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto-js';
 import * as moment from 'moment';
-import { FacebookAuthData, GoogleAuthData, ServiceType } from 'src/common/types/auth';
+import { ServiceType } from 'src/common/enums/service-type';
+import { FacebookAuthData, GoogleAuthData } from 'src/common/types/auth';
 import { GoogleAuthentication } from 'src/third-party/google-cloud/google-auth.service';
 import { UserDto } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
@@ -42,7 +43,7 @@ export class ThirdPartyAuthService {
     user: UserDto,
     serviceUserId?: string,
   ): Promise<UserDto> {
-    const serviceType: ServiceType = 'google';
+    const serviceType: ServiceType = ServiceType.GOOGLE;
     const tokenDto = new TokenDto({
       accessToken: await crypto.AES.encrypt(
         tokens.access_token,
@@ -78,7 +79,7 @@ export class ThirdPartyAuthService {
     user: UserDto,
     serviceUserId?: string,
   ): Promise<UserDto> {
-    const serviceType: ServiceType = 'facebook';
+    const serviceType: ServiceType = ServiceType.FACEBOOK;
     const tokenDto = new TokenDto({
       accessToken: await crypto.AES.encrypt(
         tokens.access_token,

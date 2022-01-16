@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as crypto from 'crypto-js';
-import { ServiceType } from 'src/common/types/auth';
+import { ServiceType } from 'src/common/enums/service-type';
 import { ProfileDto } from 'src/profile/dto/profile.dto';
 import { Profile } from 'src/profile/entities/profile.entity';
 import { ProfileService } from 'src/profile/profile.service';
@@ -33,7 +33,7 @@ export class AuthService {
   }
 
   async createRefreshToken(uid: number): Promise<string> {
-    const serviceType = 'fecamp';
+    const serviceType = ServiceType.FE_CAMP;
     const refreshToken = await crypto.AES.encrypt(
       await uuidv4(),
       this.configService.get<string>('secret.encryptionKey'),

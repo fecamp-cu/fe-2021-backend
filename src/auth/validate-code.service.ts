@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CodeType } from 'src/common/types/validate-code';
+import { CodeType } from 'src/common/enums/validate-code-type';
 import { UserDto } from 'src/user/dto/user.dto';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';

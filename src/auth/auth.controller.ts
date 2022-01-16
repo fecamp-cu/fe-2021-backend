@@ -16,6 +16,8 @@ import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import * as faker from 'faker';
 import * as moment from 'moment';
+import { ServiceType } from 'src/common/enums/service-type';
+import { CodeType } from 'src/common/enums/validate-code-type';
 import { GoogleAuthData, RequestWithUserId } from 'src/common/types/auth';
 import { FacebookUserInfo } from 'src/common/types/facebook/facebook';
 import { GoogleUserInfo } from 'src/common/types/google/google-api';
@@ -52,7 +54,7 @@ export class AuthController {
   @Post('register')
   async register(@Body() registerDto: RegisterDto, @Res() res: Response): Promise<Response> {
     const user: UserDto = await this.authService.createUser(registerDto);
-    const tokenDto = await this.validateCodeService.generate(user, 'confirm_email');
+    const tokenDto = await this.validateCodeService.generate(user, CodeType.VERIFY_EMAIL);
     this.sendEmail(user, 'Welcome to our FE Camp Family', [
       `Welcome to our FE Camp Family, N. ${user.profile.firstName} ${user.profile.lastName}<br/>`,
       `the next step is you need to verify your email address.<br/>`,
@@ -96,7 +98,7 @@ export class AuthController {
       const expireDate = moment().add(1, 'day').toDate();
       const validateCodeDto: ValidateCodeDto = await this.validateCodeService.generate(
         user,
-        'reset_password',
+        CodeType.RESET_PASSWORD,
         expireDate,
       );
       this.sendEmail(user, 'Reset Password', [
@@ -118,7 +120,11 @@ export class AuthController {
     @Body() resetPasswordDto: ResetPasswordDto,
     @Res() res: Response,
   ): Promise<Response> {
-    await this.validateCodeService.validateCode(resetPasswordDto.id, 'reset_password', token);
+    await this.validateCodeService.validateCode(
+      resetPasswordDto.id,
+      CodeType.RESET_PASSWORD,
+      token,
+    );
 
     const user: UserDto = await this.userService.update(
       resetPasswordDto.id,
@@ -134,7 +140,7 @@ export class AuthController {
     @Query('userId') userId: string,
     @Res() res: Response,
   ) {
-    await this.validateCodeService.validateCode(+userId, 'confirm_email', token);
+    await this.validateCodeService.validateCode(+userId, CodeType.VERIFY_EMAIL, token);
     await this.userService.update(+userId, new UserDto({ isEmailVerified: true }));
     res.status(HttpStatus.OK).json({ message: 'Successfully verified email' });
   }
@@ -237,7 +243,7 @@ export class AuthController {
   }
 
   private async sendEmail(userDto: UserDto, subject: string, message: string[]) {
-    let tokenDto = await this.thirdPartyAuthService.getAdminToken('google');
+    let tokenDto = await this.thirdPartyAuthService.getAdminToken(ServiceType.GOOGLE);
     tokenDto = await this.thirdPartyAuthService.validateAndRefreshServiceToken(tokenDto);
 
     const emailRef: GoogleEmailRef = {
