@@ -1,6 +1,7 @@
 import { Token } from 'src/auth/entities/token.entity';
 import { ValidateCode } from 'src/auth/entities/validate-code.entity';
 import { Role } from 'src/common/enums/role';
+import { Item } from 'src/item/entities/item.entity';
 import { Profile } from 'src/profile/entities/profile.entity';
 import {
   Column,
@@ -39,6 +40,9 @@ export class User {
     cascade: true,
   })
   verifiedCodes: ValidateCode[];
+
+  @OneToMany(() => Item, item => item.user, { persistence: false, cascade: true })
+  items: Item[];
 
   @Column({ default: Role.USER })
   role: Role;
