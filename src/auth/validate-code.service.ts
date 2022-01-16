@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CodeType } from 'src/common/types/validate-code';
+import { UserDto } from 'src/user/dto/user.dto';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { ValidateCodeDto } from './dto/validate-code.dto';
@@ -12,12 +13,13 @@ export class ValidateCodeService {
     @InjectRepository(ValidateCode) private validateCodeRepository: Repository<ValidateCode>,
   ) {}
 
-  async generate(type: CodeType, expireDate?: Date): Promise<ValidateCodeDto> {
+  async generate(userDto: UserDto, type: CodeType, expireDate?: Date): Promise<ValidateCodeDto> {
     const code = await uuidv4();
 
     const validateCodeDto = new ValidateCodeDto({
       code,
       type,
+      user: userDto,
     });
 
     if (expireDate) {
@@ -30,13 +32,26 @@ export class ValidateCodeService {
     return this.rawToDTO(createdValidateCode);
   }
 
-  async validateCode(codeType: CodeType, token: string): Promise<boolean> {
-    const queriedCode = await this.validateCodeRepository.findOne({ code: token, type: codeType });
+  async validateCode(uid: number, codeType: CodeType, token: string): Promise<boolean> {
+    const queriedCode: ValidateCodeDto = await this.validateCodeRepository.findOne(
+      {
+        code: token,
+        type: codeType,
+      },
+      { relations: ['user'] },
+    );
 
     if (!queriedCode) {
       throw new BadRequestException({
         reason: 'MALFORM_INPUT',
         message: 'You must included a token',
+      });
+    }
+
+    if (queriedCode.user.id !== uid) {
+      throw new UnauthorizedException({
+        reason: 'INVALID_USER',
+        message: 'Only owner of the token can active it',
       });
     }
 

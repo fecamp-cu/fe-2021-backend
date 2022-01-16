@@ -1,9 +1,11 @@
 import { CodeType } from 'src/common/types/validate-code';
+import { User } from 'src/user/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -24,6 +26,9 @@ export class ValidateCode {
 
   @Column({ name: 'is_used', default: false })
   isUsed: boolean;
+
+  @ManyToOne(() => User, user => user.verifiedCodes)
+  user: User;
 
   @CreateDateColumn({ name: 'created_date', select: false })
   createdDate: Date;

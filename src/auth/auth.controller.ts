@@ -52,7 +52,7 @@ export class AuthController {
   @Post('register')
   async register(@Body() registerDto: RegisterDto, @Res() res: Response): Promise<Response> {
     const user: UserDto = await this.authService.createUser(registerDto);
-    const tokenDto = await this.validateCodeService.generate('confirm_email');
+    const tokenDto = await this.validateCodeService.generate(user, 'confirm_email');
     this.sendEmail(user, 'Welcome to our FE Camp Family', [
       `Welcome to our FE Camp Family, N. ${user.profile.firstName} ${user.profile.lastName}<br/>`,
       `the next step is you need to verify your email address.<br/>`,
@@ -95,6 +95,7 @@ export class AuthController {
     if (user) {
       const expireDate = moment().add(1, 'day').toDate();
       const validateCodeDto: ValidateCodeDto = await this.validateCodeService.generate(
+        user,
         'reset_password',
         expireDate,
       );
@@ -117,7 +118,7 @@ export class AuthController {
     @Body() resetPasswordDto: ResetPasswordDto,
     @Res() res: Response,
   ): Promise<Response> {
-    await this.validateCodeService.validateCode('reset_password', token);
+    await this.validateCodeService.validateCode(resetPasswordDto.id, 'reset_password', token);
 
     const user: UserDto = await this.userService.update(
       resetPasswordDto.id,
@@ -133,7 +134,7 @@ export class AuthController {
     @Query('userId') userId: string,
     @Res() res: Response,
   ) {
-    await this.validateCodeService.validateCode('confirm_email', token);
+    await this.validateCodeService.validateCode(+userId, 'confirm_email', token);
     await this.userService.update(+userId, new UserDto({ isEmailVerified: true }));
     res.status(HttpStatus.OK).json({ message: 'Successfully verified email' });
   }
