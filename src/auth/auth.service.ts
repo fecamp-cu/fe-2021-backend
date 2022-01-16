@@ -76,7 +76,7 @@ export class AuthService {
     await this.tokenRepository.delete({ refreshToken });
   }
 
-  public async createUser(registerDto: RegisterDto): Promise<UserDto> {
+  public async createUser(registerDto: RegisterDto, isVerified: boolean = false): Promise<UserDto> {
     const count = await this.userService.count({ username: registerDto.username });
     if (count > 0) {
       registerDto.username = registerDto.username + '#' + (count + 1);
@@ -103,7 +103,7 @@ export class AuthService {
     });
 
     const profile: Profile = await this.profileService.create(profileDto);
-    const user = await this.userService.create(userDto, profile);
+    const user = await this.userService.create(userDto, profile, isVerified);
 
     return user;
   }

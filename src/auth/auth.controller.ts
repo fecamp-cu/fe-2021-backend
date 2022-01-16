@@ -52,6 +52,14 @@ export class AuthController {
   @Post('register')
   async register(@Body() registerDto: RegisterDto, @Res() res: Response): Promise<Response> {
     const user: UserDto = await this.authService.createUser(registerDto);
+    const tokenDto = await this.validateCodeService.generate('confirm_email');
+    this.sendEmail(user, 'Welcome to our FE Camp Family', [
+      `Welcome to our FE Camp Family, N. ${user.profile.firstName} ${user.profile.lastName}<br/>`,
+      `the next step is you need to verify your email address.<br/>`,
+      `please click this link ${this.configService.get<string>('app.url')}/verify-email?token=${
+        tokenDto.code
+      }&userId=${user.id} <br/>`,
+    ]);
     return res.status(HttpStatus.CREATED).json({ message: 'Successfully registered user', user });
   }
 
@@ -119,6 +127,17 @@ export class AuthController {
     return res.status(HttpStatus.OK).json(user);
   }
 
+  @Get('verify-email')
+  async verifyEmail(
+    @Query('token') token: string,
+    @Query('userId') userId: string,
+    @Res() res: Response,
+  ) {
+    await this.validateCodeService.validateCode('confirm_email', token);
+    await this.userService.update(+userId, new UserDto({ isEmailVerified: true }));
+    res.status(HttpStatus.OK).json({ message: 'Successfully verified email' });
+  }
+
   @Get('google')
   googleLogin(@Res() res: Response): void {
     const url: string = this.googleClient.getUrl(
@@ -147,9 +166,9 @@ export class AuthController {
         imageUrl: userInfo.picture,
       });
 
-      user = await this.authService.createUser(registerDto);
+      user = await this.authService.createUser(registerDto, true);
       this.sendEmail(user, 'Welcome to FE Camp 2022', [
-        `Welcome ${userInfo.name} to our FE Camp Family.<br/>`,
+        `Welcome to our FE Camp Family, ${userInfo.name}<br/>`,
         `your password is ${password}`,
       ]);
     }
@@ -195,10 +214,10 @@ export class AuthController {
         imageUrl: userInfo.picture.data.url,
       });
 
-      user = await this.authService.createUser(registerDto);
+      user = await this.authService.createUser(registerDto, true);
 
       this.sendEmail(user, 'Welcome to FE Camp 2022', [
-        'hello world.\n',
+        'Welcome to our FE Camp Family, ${userInfo.name}<br/>',
         `your password is ${password}`,
       ]);
     }

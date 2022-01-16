@@ -20,7 +20,10 @@ const SALTROUND = 10;
 export class UserService {
   constructor(@InjectRepository(User) private userRepository: Repository<User>) {}
 
-  async create(userDto: UserDto, profile?: Profile): Promise<UserDto> {
+  async create(
+    userDto: UserDto,
+    profile?: Profile,
+    isEmailVerified: boolean = false,
     const nFindUserByUsername = await this.count({ username: userDto.username });
     if (nFindUserByUsername) {
       throw new UnprocessableEntityException({
@@ -38,6 +41,8 @@ export class UserService {
     userDto.password = await bcrypt.hash(userDto.password, SALTROUND);
 
     const user = this.userRepository.create(userDto);
+
+    user.isEmailVerified = isEmailVerified;
 
     if (profile) {
       user.profile = profile;
