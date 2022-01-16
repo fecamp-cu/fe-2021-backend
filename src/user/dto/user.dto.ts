@@ -12,17 +12,18 @@ export class UserDto {
   username: string;
 
   @ApiProperty()
-  @IsNotEmpty()
   @MinLength(8, { message: 'Password must at least 8 character' })
   password: string;
 
   @ApiProperty()
-  @IsNotEmpty()
   @IsEmail()
   email: string;
 
   @ApiProperty()
   @IsEmpty()
+  isEmailVerified: boolean;
+
+  @ApiProperty()
   role: Role;
 
   @ApiProperty()

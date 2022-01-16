@@ -27,6 +27,9 @@ export class User {
   @Column({ unique: true })
   email: string;
 
+  @Column({ name: 'is_email_verified', default: false })
+  isEmailVerified: boolean;
+
   @OneToMany(() => Token, token => token.user, { persistence: false, cascade: true })
   tokens: Token[];
 
