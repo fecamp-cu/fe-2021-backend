@@ -3,9 +3,11 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Item } from './item.entity';
 
 @Entity()
 export class ItemIndex {
@@ -17,6 +19,9 @@ export class ItemIndex {
 
   @Column()
   text: string;
+
+  @ManyToOne(() => Item, item => item.indexes)
+  item: Item;
 
   @CreateDateColumn({ name: 'created_date', select: false })
   createdDate: Date;

@@ -6,9 +6,11 @@ import {
   DeleteDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ItemIndex } from './item-index.entity';
 
 @Entity()
 export class Item {
@@ -38,6 +40,9 @@ export class Item {
 
   @ManyToOne(() => User, user => user.items)
   user: User;
+
+  @OneToMany(() => ItemIndex, index => index.item, { persistence: false, cascade: true })
+  indexes: ItemIndex[];
 
   @CreateDateColumn({ name: 'created_date', select: false })
   createdDate: Date;
