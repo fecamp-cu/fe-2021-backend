@@ -27,12 +27,11 @@ async function bootstrap() {
     .addTag('Auth')
     .addTag('User')
     .addTag('Profile')
-    .addTag('Token')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  await app.listen(configService.get<number>('port'));
+  await app.listen(configService.get<number>('app.port'));
 }
 bootstrap();

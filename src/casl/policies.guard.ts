@@ -17,7 +17,7 @@ export class PoliciesGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const policyHandlers =
       this.reflector.get<PolicyHandler[]>(
-        this.configService.get<string>('poilcykey'),
+        this.configService.get<string>('secret.poilcykey'),
         context.getHandler(),
       ) || [];
     const req = context.switchToHttp().getRequest();

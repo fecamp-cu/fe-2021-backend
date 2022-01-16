@@ -1,16 +1,17 @@
 import { Bucket, Storage } from '@google-cloud/storage';
-import { StreamableFile } from '@nestjs/common';
+import { Injectable, StreamableFile } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto-js';
-import { MetaData } from '../types/google/google-cloud-storage';
+import { MetaData } from 'src/common/types/google/google-cloud-storage';
 
+@Injectable()
 export class GoogleCloudStorage {
   private bucket: Bucket;
   private bucketName: string;
   private storage: Storage;
   constructor(private configService: ConfigService) {
     this.storage = new Storage({
-      keyFilename: this.configService.get<string>('google.gcs.serviceAccountKey'),
+      credentials: this.configService.get<any>('google.credentials'),
     });
     this.bucketName = this.configService.get<string>('google.gcs.bucketName');
     this.bucket = this.storage.bucket(this.bucketName);

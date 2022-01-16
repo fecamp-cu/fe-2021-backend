@@ -5,10 +5,17 @@ const envType = process.env.NODE_ENV || 'development';
 dotenv.config({ path: `.env.${envType}` });
 
 export default () => ({
-  port: parseInt(process.env.PORT) || 8000,
-  mode: process.env.NODE_ENV,
-  policykey: process.env.CHECK_POLICIES_KEY,
-  encryptionKey: process.env.ENCRYPT_KEY,
+  app: {
+    port: parseInt(process.env.PORT) || 8000,
+    url: process.env.URL,
+  },
+  secret: {
+    policykey: process.env.CHECK_POLICIES_KEY,
+    encryptionKey: process.env.ENCRYPT_KEY,
+  },
+  admin: {
+    email: process.env.ADMIN_EMAIL,
+  },
   jwt: {
     secret: process.env.SECRET,
     tokenDuration: process.env.TOKEN_DURATION || '3600s',
@@ -22,6 +29,18 @@ export default () => ({
     password: process.env.DATABASE_PASSWORD,
   },
   google: {
+    credentials: {
+      type: process.env.GOOGLE_CREDENTIALS_TYPE,
+      project_id: process.env.GOOGLE_CREDENTIALS_PROJECT_ID,
+      private_key_id: process.env.GOOGLE_CREDENTIALS_PRIVATE_KEY_ID,
+      private_key: process.env.GOOGLE_CREDENTIALS_PRIVATE_KEY,
+      client_email: process.env.GOOGLE_CREDENTIALS_CLIENT_EMAIL,
+      client_id: process.env.GOOGLE_CREDENTIALS_CLIENT_ID,
+      auth_uri: process.env.GOOGLE_CREDENTIALS_AUTH_URI,
+      token_uri: process.env.GOOGLE_CREDENTIALS_TOKEN_URI,
+      auth_provider_x509_cert_url: process.env.GOOGLE_CREDENTIALS_AUTH_PROVIDER_X509_CERT_URL,
+      client_x509_cert_url: process.env.GOOGLE_CREDENTIALS_CLIENT_X509_CERT_URL,
+    },
     gcs: {
       serviceAccountKey: process.env.GCS_SA_KEY,
       bucketName: process.env.GCS_BUCKET_NAME,

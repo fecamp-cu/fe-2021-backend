@@ -1,4 +1,5 @@
 import { Token } from 'src/auth/entities/token.entity';
+import { ValidateCode } from 'src/auth/entities/validate-code.entity';
 import { Role } from 'src/common/enums/role';
 import { Profile } from 'src/profile/entities/profile.entity';
 import {
@@ -27,8 +28,17 @@ export class User {
   @Column({ unique: true })
   email: string;
 
+  @Column({ name: 'is_email_verified', default: false })
+  isEmailVerified: boolean;
+
   @OneToMany(() => Token, token => token.user, { persistence: false, cascade: true })
   tokens: Token[];
+
+  @OneToMany(() => ValidateCode, validateCode => validateCode.user, {
+    persistence: false,
+    cascade: true,
+  })
+  verifiedCodes: ValidateCode[];
 
   @Column({ default: Role.USER })
   role: Role;

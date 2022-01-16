@@ -1,14 +1,13 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as crypto from 'crypto-js';
-import { FacebookAuthData, GoogleAuthData, ServiceType } from 'src/common/types/auth';
+import { ServiceType } from 'src/common/types/auth';
 import { ProfileDto } from 'src/profile/dto/profile.dto';
 import { Profile } from 'src/profile/entities/profile.entity';
 import { ProfileService } from 'src/profile/profile.service';
 import { UserDto } from 'src/user/dto/user.dto';
-import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
@@ -23,7 +22,6 @@ export class AuthService {
     private userService: UserService,
     private profileService: ProfileService,
     private configService: ConfigService,
-    @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Token) private tokenRepository: Repository<Token>,
   ) {}
 
@@ -36,7 +34,10 @@ export class AuthService {
 
   async createRefreshToken(uid: number): Promise<string> {
     const serviceType = 'fecamp';
-    const refreshToken = await uuidv4();
+    const refreshToken = await crypto.AES.encrypt(
+      await uuidv4(),
+      this.configService.get<string>('secret.encryptionKey'),
+    ).toString();
     const user = await this.userService.findOne(uid, ['tokens']);
     const tokenDto = new TokenDto({
       refreshToken,
@@ -55,13 +56,7 @@ export class AuthService {
   async createTokenEntity(tokenDto: TokenDto): Promise<TokenDto> {
     const token: Token = await this.tokenRepository.create(tokenDto);
     const createdToken: Token = await this.tokenRepository.save(token);
-    return new TokenDto({
-      id: createdToken.id,
-      serviceType: createdToken.serviceType,
-      accessToken: createdToken.accessToken,
-      refreshToken: createdToken.refreshToken,
-      expiresDate: createdToken.expiresDate,
-    });
+    return this.rawToDTO(createdToken);
   }
 
   async findRefreshToken(refreshToken: string): Promise<TokenDto> {
@@ -74,20 +69,14 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    return new TokenDto({
-      id: token.id,
-      serviceType: token.serviceType,
-      refreshToken: token.refreshToken,
-      expiresDate: token.expiresDate,
-      user: token.user,
-    });
+    return this.rawToDTO(token);
   }
 
   async clearRefreshToken(refreshToken: string): Promise<void> {
     await this.tokenRepository.delete({ refreshToken });
   }
 
-  public async createUser(registerDto: RegisterDto): Promise<UserDto> {
+  public async createUser(registerDto: RegisterDto, isVerified: boolean = false): Promise<UserDto> {
     const count = await this.userService.count({ username: registerDto.username });
     if (count > 0) {
       registerDto.username = registerDto.username + '#' + (count + 1);
@@ -113,50 +102,25 @@ export class AuthService {
       password: registerDto.password,
     });
 
+    const nFindUserByEmail = await this.userService.count({ email: userDto.email });
+    if (nFindUserByEmail) {
+      throw new UnprocessableEntityException({
+        reason: 'INVALID_INPUT',
+        message: 'Email already existed',
+      });
+    }
+
     const profile: Profile = await this.profileService.create(profileDto);
-    const user = await this.userService.create(userDto, profile);
+    const user = await this.userService.create(userDto, profile, isVerified);
 
     return user;
   }
 
-  public async storeGoogleToken(tokens: GoogleAuthData, user: UserDto): Promise<UserDto> {
-    const serviceType: ServiceType = 'google';
-    const tokenDto = new TokenDto({
-      accessToken: await crypto.AES.encrypt(
-        tokens.access_token,
-        this.configService.get<string>('encryptionKey'),
-      ).toString(),
-
-      refreshToken: await crypto.AES.encrypt(
-        tokens.refresh_token,
-        this.configService.get<string>('encryptionKey'),
-      ).toString(),
-
-      expiresDate: new Date(tokens.expiry_date),
-      serviceType,
-      user,
-    });
-
-    return await this.storeToken(tokenDto, user, serviceType);
-  }
-
-  public async storeFacebookToken(tokens: FacebookAuthData, user: UserDto): Promise<UserDto> {
-    const serviceType: ServiceType = 'facebook';
-    const tokenDto = new TokenDto({
-      accessToken: await crypto.AES.encrypt(
-        tokens.access_token,
-        this.configService.get<string>('encryptionKey'),
-      ).toString(),
-
-      expiresDate: new Date(tokens.expires_in * 1000 + Date.now()),
-      serviceType,
-      user,
-    });
-
-    return await this.storeToken(tokenDto, user, serviceType);
-  }
-
-  private async storeToken(tokenDto: TokenDto, user: UserDto, serviceType: ServiceType) {
+  public async storeToken(
+    tokenDto: TokenDto,
+    user: UserDto,
+    serviceType: ServiceType,
+  ): Promise<UserDto> {
     let token: TokenDto;
     if (user.tokens) {
       token = user.tokens.find(token => token.serviceType === serviceType);
@@ -164,20 +128,46 @@ export class AuthService {
 
     if (!token) {
       await this.createTokenEntity(tokenDto);
-      return new UserDto({
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        profile: user.profile,
-      });
+      return this.userService.serialize(user);
     }
 
     await this.tokenRepository.update(token.id, tokenDto);
-    return new UserDto({
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      profile: user.profile,
+    return this.userService.serialize(user);
+  }
+
+  public async rawToDTO(token: Token | TokenDto): Promise<TokenDto> {
+    const tokenDto = new TokenDto({
+      id: token.id,
+      serviceType: token.serviceType,
+      expiresDate: token.expiresDate,
     });
+
+    if (token.accessToken) {
+      tokenDto.accessToken = await crypto.AES.decrypt(
+        token.accessToken,
+        this.configService.get<string>('secret.encryptionKey'),
+      ).toString(crypto.enc.Utf8);
+    }
+
+    if (token.refreshToken) {
+      tokenDto.refreshToken = await crypto.AES.decrypt(
+        token.refreshToken,
+        this.configService.get<string>('secret.encryptionKey'),
+      ).toString(crypto.enc.Utf8);
+    }
+
+    if (token.idToken) {
+      tokenDto.idToken = await crypto.AES.decrypt(
+        token.idToken,
+        this.configService.get<string>('secret.encryptionKey'),
+      ).toString(crypto.enc.Utf8);
+    }
+
+    if (token.user) {
+      const userDto = await this.userService.serialize(token.user);
+      tokenDto.user = userDto;
+    }
+
+    return tokenDto;
   }
 }
