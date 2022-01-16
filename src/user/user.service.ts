@@ -89,6 +89,14 @@ export class UserService {
         message: 'username or password wrong',
       });
     }
+
+    if (!user.isEmailVerified) {
+      throw new UnauthorizedException({
+        reason: 'NOT_VERIFY_EMAIL',
+        message: 'The email must be verify before login',
+      });
+    }
+
     return this.rawToDTO(user);
   }
 
