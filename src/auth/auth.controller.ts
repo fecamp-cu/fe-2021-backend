@@ -154,7 +154,7 @@ export class AuthController {
   }
 
   @Get('google/callback')
-  async OAuthCallbackGoogle(@Query('code') code: string, @Res() res: Response): Promise<Response> {
+  async OAuthCallbackGoogle(@Query('code') code: string, @Res() res: Response): Promise<void> {
     const tokens: GoogleAuthData = await this.googleClient.getTokens(code);
     this.googleClient.setCredentials(tokens);
     const userInfo: GoogleUserInfo = await this.googleClient.getUserInfo();
@@ -183,7 +183,7 @@ export class AuthController {
     user = await this.thirdPartyAuthService.storeGoogleToken(tokens, user, userInfo.id);
 
     await this.signToken(user, res);
-    return res.status(HttpStatus.OK).json(user);
+    res.status(HttpStatus.MOVED_PERMANENTLY).redirect(this.configService.get<string>('app.url'));
   }
 
   @Get('facebook')
@@ -199,7 +199,7 @@ export class AuthController {
     @Query('code') code: string,
     @Query('state') state: string,
     @Res() res: Response,
-  ): Promise<Response> {
+  ): Promise<void> {
     const tokens = await this.facebookClient.redeemCode(state, code);
     this.facebookClient.setCredentials(tokens);
     const userInfo: FacebookUserInfo = await this.facebookClient.getUserInfo();
@@ -232,7 +232,7 @@ export class AuthController {
     user = await this.thirdPartyAuthService.storeFacebookToken(tokens, user, userInfo.id);
 
     await this.signToken(user, res);
-    return res.status(HttpStatus.OK).json(user);
+    res.status(HttpStatus.MOVED_PERMANENTLY).redirect(this.configService.get<string>('app.url'));
   }
 
   private async signToken(user: UserDto, res: Response) {
