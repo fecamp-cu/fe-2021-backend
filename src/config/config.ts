@@ -8,6 +8,7 @@ export default () => ({
   app: {
     port: parseInt(process.env.PORT) || 8000,
     url: process.env.URL,
+    apiUrl: process.env.URL + '/api',
   },
   secret: {
     policykey: process.env.CHECK_POLICIES_KEY,
@@ -59,5 +60,9 @@ export default () => ({
     appSecret: process.env.FACEBOOK_APP_SECRET,
     callbackURI: process.env.FACEBOOK_REDIRECT_URI,
     scope: process.env.FACEBOOK_SCOPE.split(' '),
+  },
+  omise: {
+    publicKey: process.env.OMISE_PUBLIC_KEY,
+    secretKey: process.env.OMISE_SECRET_KEY,
   },
 });
