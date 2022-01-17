@@ -7,7 +7,6 @@ import {
   DeleteDateColumn,
   Entity,
   ManyToMany,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -40,8 +39,8 @@ export class Item {
   @Column()
   author: string;
 
-  @ManyToOne(() => User, user => user.items)
-  user: User;
+  @ManyToMany(() => User, user => user.items)
+  users: User[];
 
   @OneToMany(() => ItemIndex, index => index.item, { persistence: false, cascade: true })
   indexes: ItemIndex[];

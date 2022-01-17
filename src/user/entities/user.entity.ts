@@ -10,6 +10,8 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -42,7 +44,8 @@ export class User {
   })
   verifiedCodes: ValidateCode[];
 
-  @OneToMany(() => Item, item => item.user, { persistence: false, cascade: true })
+  @ManyToMany(() => Item, item => item.users, { persistence: false, cascade: true })
+  @JoinTable()
   items: Item[];
 
   @OneToMany(() => Order, order => order.user, { persistence: false, cascade: true })
