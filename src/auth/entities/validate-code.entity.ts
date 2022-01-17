@@ -1,4 +1,4 @@
-import { CodeType } from 'src/common/types/validate-code';
+import { CodeType } from 'src/common/enums/validate-code-type';
 import { User } from 'src/user/entities/user.entity';
 import {
   Column,

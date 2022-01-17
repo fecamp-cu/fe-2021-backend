@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { ServiceType } from 'src/common/types/auth';
+import { ServiceType } from 'src/common/enums/service-type';
 import { UserDto } from 'src/user/dto/user.dto';
 
 export class TokenDto {
