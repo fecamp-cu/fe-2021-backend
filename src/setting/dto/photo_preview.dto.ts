@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsUrl } from 'class-validator';
 
-export class SponcerContainerDto {
+export class PhotoPreviewDto {
   id: number;
 
   @ApiProperty()
@@ -11,7 +11,7 @@ export class SponcerContainerDto {
   @IsUrl()
   img_url: string;
 
-  constructor(partial: Partial<SponcerContainerDto>) {
+  constructor(partial: Partial<PhotoPreviewDto>) {
     Object.assign(this, partial);
   }
 }

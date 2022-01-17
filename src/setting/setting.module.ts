@@ -6,6 +6,7 @@ import { QualificationPreview } from './entities/qualification_preview.entity';
 import { Setting } from './entities/setting.entity';
 import { SponcerContainer } from './entities/sponcer_container.entity';
 import { TimelineEvent } from './entities/timeline_event.entity';
+import { PhotoPreviewService } from './photo_preview.service';
 import { SettingController } from './setting.controller';
 import { SettingService } from './setting.service';
 import { SponcerContainerService } from './sponcer_container.service';
@@ -23,6 +24,6 @@ import { TimelineEventService } from './timeline_event.service';
     ]),
   ],
   controllers: [SettingController],
-  providers: [SettingService, TimelineEventService, SponcerContainerService],
+  providers: [SettingService, TimelineEventService, SponcerContainerService, PhotoPreviewService],
 })
 export class SettingModule {}
