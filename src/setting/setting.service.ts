@@ -32,7 +32,13 @@ export class SettingService {
 
   async findOne(
     id: number,
-    relations: string[] = ['timeline_events', 'sponcer_containers'],
+    relations: string[] = [
+      'timeline_events',
+      'sponcer_containers',
+      'qualification_previews',
+      'photo_previews',
+      'about_fe_containers',
+    ],
   ): Promise<Setting> {
     const setting: Setting = await this.settingRepository.findOne(id, { relations });
     if (!setting) {
@@ -51,6 +57,16 @@ export class SettingService {
     });
 
     await setting.sponcer_containers.sort((a, b) => {
+      return a.order - b.order;
+    });
+
+    await setting.qualification_previews.sort((a, b) => {
+      return a.order - b.order;
+    });
+    await setting.photo_previews.sort((a, b) => {
+      return a.order - b.order;
+    });
+    await setting.about_fe_containers.sort((a, b) => {
       return a.order - b.order;
     });
 

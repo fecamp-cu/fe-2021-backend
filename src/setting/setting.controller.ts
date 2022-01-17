@@ -1,10 +1,14 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { AboutFeContainerService } from './about_fe_container.service';
+import { AboutFeContainerDto } from './dto/about_fe_container.dto';
 import { PhotoPreviewDto } from './dto/photo_preview.dto';
+import { QualificationPreviewDto } from './dto/qualification_preview.dto';
 import { SettingDto } from './dto/setting.dto';
 import { SponcerContainerDto } from './dto/sponcer_container.dto';
 import { TimelineEventDto } from './dto/timeline_event.dto';
 import { PhotoPreviewService } from './photo_preview.service';
+import { QualificationPreviewService } from './qualification_preview.service';
 import { SettingService } from './setting.service';
 import { SponcerContainerService } from './sponcer_container.service';
 import { TimelineEventService } from './timeline_event.service';
@@ -17,6 +21,8 @@ export class SettingController {
     private readonly timelineEventService: TimelineEventService,
     private readonly sponcerContainerService: SponcerContainerService,
     private readonly photoPreviewService: PhotoPreviewService,
+    private readonly qualificationPreviewService: QualificationPreviewService,
+    private readonly aboutFeContainerService: AboutFeContainerService,
   ) {}
 
   @Post()
@@ -125,5 +131,65 @@ export class SettingController {
   @Delete('photo_preview/:id')
   removePhotoPreview(@Param('id') id: string) {
     return this.photoPreviewService.remove(+id);
+  }
+
+  @Post('qualification_preview/:settingid')
+  createQualificationPreview(
+    @Body() qualificationPreviewDto: QualificationPreviewDto,
+    @Param('settingid') settingid: string,
+  ) {
+    return this.qualificationPreviewService.create(qualificationPreviewDto, +settingid);
+  }
+  @Get('qualification_preview')
+  findAllQualificationPreview() {
+    return this.qualificationPreviewService.findAll();
+  }
+
+  @Get('qualification_preview/:id')
+  findOneQualificationPreview(@Param('id') id: string) {
+    return this.qualificationPreviewService.findOne(+id);
+  }
+
+  @Patch('qualification_preview/:id')
+  updateQualificationPreview(
+    @Param('id') id: string,
+    @Body() qualificationPreviewDto: QualificationPreviewDto,
+  ) {
+    return this.qualificationPreviewService.update(+id, qualificationPreviewDto);
+  }
+
+  @Delete('qualification_preview/:id')
+  removeQualificationPreview(@Param('id') id: string) {
+    return this.qualificationPreviewService.remove(+id);
+  }
+
+  @Post('about_fe_container/:settingid')
+  createAboutFeContainer(
+    @Body() aboutFeContainerDto: AboutFeContainerDto,
+    @Param('settingid') settingid: string,
+  ) {
+    return this.aboutFeContainerService.create(aboutFeContainerDto, +settingid);
+  }
+  @Get('about_fe_container')
+  findAllAboutFeContainer() {
+    return this.aboutFeContainerService.findAll();
+  }
+
+  @Get('about_fe_container/:id')
+  findOneAboutFeContainer(@Param('id') id: string) {
+    return this.aboutFeContainerService.findOne(+id);
+  }
+
+  @Patch('about_fe_container/:id')
+  updateAboutFeContainer(
+    @Param('id') id: string,
+    @Body() aboutFeContainerDto: AboutFeContainerDto,
+  ) {
+    return this.aboutFeContainerService.update(+id, aboutFeContainerDto);
+  }
+
+  @Delete('about_fe_container/:id')
+  removeAboutFeContainer(@Param('id') id: string) {
+    return this.aboutFeContainerService.remove(+id);
   }
 }
