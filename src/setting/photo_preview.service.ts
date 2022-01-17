@@ -17,7 +17,7 @@ export class PhotoPreviewService {
   async create(photoPreviewDto: PhotoPreviewDto, settingid: number): Promise<PhotoPreviewDto> {
     const photoPreview: PhotoPreview = await this.photoPreviewRepository.create(photoPreviewDto);
     const setting: Setting = await this.settingService.findOne(settingid);
-    photoPreview.setting = setting;
+    photoPreview.setting = await setting;
     const createdPhotoPreview = await this.photoPreviewRepository.save(photoPreview);
     return createdPhotoPreview;
   }

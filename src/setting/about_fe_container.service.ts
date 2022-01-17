@@ -22,7 +22,7 @@ export class AboutFeContainerService {
       aboutFeContainerDto,
     );
     const setting: Setting = await this.settingService.findOne(settingid);
-    aboutFeContainer.setting = setting;
+    aboutFeContainer.setting = await setting;
     const createdAboutFeContainer = await this.aboutFeContainerRepository.save(aboutFeContainer);
     return createdAboutFeContainer;
   }
