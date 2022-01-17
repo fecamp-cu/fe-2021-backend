@@ -45,8 +45,7 @@ export class ProfileDto {
   province: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsPostalCode()
+  @IsPostalCode('TH')
   postcode: string;
 
   constructor(partial: Partial<ProfileDto>) {

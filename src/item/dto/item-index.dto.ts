@@ -14,7 +14,6 @@ export class ItemIndexDto {
   @IsString()
   text: string;
 
-  @ApiProperty()
   item: ItemDto;
 
   constructor(partial: Partial<ItemIndexDto>) {

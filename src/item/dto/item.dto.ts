@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmpty, IsIn, IsInt, IsString, IsUrl } from 'class-validator';
+import { IsEmpty, IsIn, IsInt, IsString, IsUrl, ValidateNested } from 'class-validator';
 import { ItemType } from 'src/common/enums/item-type';
 import { OrderDto } from 'src/order/dto/order.dto';
 import { UserDto } from 'src/user/dto/user.dto';
@@ -39,14 +39,12 @@ export class ItemDto {
   author: string;
 
   @ApiProperty()
+  @ValidateNested()
+  indexes?: ItemIndexDto[];
+
   @IsEmpty()
   users?: UserDto[];
 
-  @ApiProperty()
-  @IsEmpty()
-  indexes?: ItemIndexDto[];
-
-  @ApiProperty()
   @IsEmpty()
   orders?: OrderDto[];
 
