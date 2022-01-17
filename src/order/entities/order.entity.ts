@@ -47,7 +47,7 @@ export class Order {
     cascade: true,
   })
   @JoinColumn()
-  code: string;
+  code: PromotionCode;
 
   @CreateDateColumn({ name: 'created_date', select: false })
   createdDate: Date;
