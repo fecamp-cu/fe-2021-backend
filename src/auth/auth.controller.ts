@@ -132,11 +132,7 @@ export class AuthController {
     @Body() resetPasswordDto: ResetPasswordDto,
     @Res() res: Response,
   ): Promise<Response> {
-    await this.validateCodeService.validateCode(
-      resetPasswordDto.id,
-      CodeType.RESET_PASSWORD,
-      token,
-    );
+    await this.validateCodeService.use(resetPasswordDto.id, CodeType.RESET_PASSWORD, token);
 
     const user: UserDto = await this.userService.update(
       resetPasswordDto.id,
@@ -152,7 +148,7 @@ export class AuthController {
     @Query('userId') userId: string,
     @Res() res: Response,
   ) {
-    await this.validateCodeService.validateCode(+userId, CodeType.VERIFY_EMAIL, token);
+    await this.validateCodeService.use(+userId, CodeType.VERIFY_EMAIL, token);
     await this.userService.update(+userId, new UserDto({ isEmailVerified: true }));
     res.status(HttpStatus.OK).json({ message: 'Successfully verified email' });
   }
