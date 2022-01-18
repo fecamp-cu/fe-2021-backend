@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { OrderDto } from './dto/order.dto';
 import { Order } from './entities/order.entity';
 
@@ -8,7 +8,8 @@ import { Order } from './entities/order.entity';
 export class OrderService {
   constructor(@InjectRepository(Order) private orderRepository: Repository<Order>) {}
 
-  create(orderDto: OrderDto) {
+  async create(orderDto: OrderDto) {
+    const order = await this.orderRepository.create(orderDto);
     return 'This action adds a new order';
   }
 
@@ -16,12 +17,43 @@ export class OrderService {
     return `This action returns all order`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
+  async findOne(id: number, relations: string[] = []): Promise<OrderDto> {
+    const order = await this.orderRepository.findOne(id, { relations });
+
+    if (!order) {
+      throw new NotFoundException({
+        reason: 'NOT_FOUND',
+        message: `Not found order`,
+      });
+    }
+
+    return this.rawToDTO(order);
   }
 
-  update(id: number, orderDto: OrderDto) {
-    return `This action updates a #${id} order`;
+  async findBySourceId(sourceId: string, relations: string[] = []) {
+    const order = await this.orderRepository.findOne({ sourceId }, { relations });
+
+    if (!order) {
+      throw new NotFoundException({
+        reason: 'NOT_FOUND',
+        message: `Not found order`,
+      });
+    }
+
+    return this.rawToDTO(order);
+  }
+
+  async update(id: number, orderDto: OrderDto, relations: string[] = []): Promise<OrderDto> {
+    const update: UpdateResult = await this.orderRepository.update(id, orderDto);
+
+    if (update.affected === 0) {
+      throw new NotFoundException({
+        reason: 'NOT_FOUND',
+        message: 'user not found',
+      });
+    }
+
+    return await this.findOne(id, relations);
   }
 
   remove(id: number) {
@@ -35,7 +67,7 @@ export class OrderService {
       transactionId: order.transactionId,
       paymentMethod: order.paymentMethod,
       amount: order.amount,
-      paid_at: order.paid_at,
+      paidAt: order.paidAt,
     });
 
     if (order.user) {
