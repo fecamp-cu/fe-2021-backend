@@ -16,6 +16,11 @@ import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import * as faker from 'faker';
 import * as moment from 'moment';
+import {
+  accountPasswordMessage,
+  emailVerifyMessage,
+  resetPasswordMessage,
+} from 'src/common/constants/email-message.constant';
 import { ServiceType } from 'src/common/enums/service-type';
 import { CodeType } from 'src/common/enums/validate-code-type';
 import { GoogleAuthData, RequestWithUserId } from 'src/common/types/auth';
@@ -55,13 +60,15 @@ export class AuthController {
   async register(@Body() registerDto: RegisterDto, @Res() res: Response): Promise<Response> {
     const user: UserDto = await this.authService.createUser(registerDto);
     const tokenDto = await this.validateCodeService.generate(user, CodeType.VERIFY_EMAIL);
-    this.sendEmail(user, 'Welcome to our FE Camp Family', [
-      `Welcome to our FE Camp Family, N. ${user.profile.firstName} ${user.profile.lastName}<br/>`,
-      `the next step is you need to verify your email address.<br/>`,
-      `please click this link ${this.configService.get<string>('app.url')}/verify-email?token=${
-        tokenDto.code
-      }&userId=${user.id} <br/>`,
-    ]);
+
+    const url =
+      this.configService.get<string>('app.url') +
+      '/verify-email?token=' +
+      tokenDto.code +
+      '&userId=' +
+      user.id;
+
+    this.sendEmail(user, 'Welcome to our FE Camp Family', emailVerifyMessage(url, user));
     return res.status(HttpStatus.CREATED).json({ message: 'Successfully registered user', user });
   }
 
@@ -101,14 +108,18 @@ export class AuthController {
         CodeType.RESET_PASSWORD,
         expireDate,
       );
-      this.sendEmail(user, 'Reset Password', [
-        `You are receiving this email because you have requested a password reset.<br/>`,
-        `Please click on the following link to reset your password:<br/>`,
-        `This link valid until ${moment(expireDate).format('llll')}<br/>`,
-        `${this.configService.get<string>('app.url')}/reset-password?${
-          validateCodeDto.code
-        }&userId=${user.id}`,
-      ]);
+      const url =
+        this.configService.get<string>('app.url') +
+        '/reset-password?' +
+        validateCodeDto.code +
+        '&userId=' +
+        user.id;
+
+      this.sendEmail(
+        user,
+        'Reset Password',
+        resetPasswordMessage(url, moment(expireDate).format('llll')),
+      );
     }
     return res.status(HttpStatus.OK).json({ message: 'Successfully sent email' });
   }
@@ -173,11 +184,10 @@ export class AuthController {
         imageUrl: userInfo.picture,
       });
 
+      [`Welcome to our FE Camp Family, ${userInfo.name}<br/>`, `your password is ${password}`];
+
       user = await this.authService.createUser(registerDto, true);
-      this.sendEmail(user, 'Welcome to FE Camp 2022', [
-        `Welcome to our FE Camp Family, ${userInfo.name}<br/>`,
-        `your password is ${password}`,
-      ]);
+      this.sendEmail(user, 'Welcome to FE Camp 2022', accountPasswordMessage(user, password));
     }
 
     user = await this.thirdPartyAuthService.storeGoogleToken(tokens, user, userInfo.id);
@@ -223,10 +233,7 @@ export class AuthController {
 
       user = await this.authService.createUser(registerDto, true);
 
-      this.sendEmail(user, 'Welcome to FE Camp 2022', [
-        'Welcome to our FE Camp Family, ${userInfo.name}<br/>',
-        `your password is ${password}`,
-      ]);
+      this.sendEmail(user, 'Welcome to FE Camp 2022', accountPasswordMessage(user, password));
     }
 
     user = await this.thirdPartyAuthService.storeFacebookToken(tokens, user, userInfo.id);
