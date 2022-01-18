@@ -1,34 +1,32 @@
-import { IsDate, IsEmpty, IsInt, IsString } from 'class-validator';
-import { Item } from 'src/item/entities/item.entity';
-import { User } from 'src/user/entities/user.entity';
+import { PaymentStatus } from 'src/common/enums/shop';
+import { ItemDto } from 'src/item/dto/item.dto';
+import { UserDto } from 'src/user/dto/user.dto';
 import { PromotionCodeDto } from './promotion-code.dto';
 
 export class OrderDto {
   id: number;
 
-  @IsString()
+  email: string;
+
+  sourceId: string;
+
   chargeId: string;
 
-  @IsString()
   transactionId: string;
 
-  @IsString()
   paymentMethod: string;
 
-  @IsInt()
+  status: PaymentStatus;
+
   amount: number;
 
-  @IsDate()
-  paid_at: Date;
+  paidAt: Date;
 
-  @IsEmpty()
-  user: User;
+  user: UserDto;
 
-  @IsEmpty()
-  items: Item[];
+  items: ItemDto[];
 
-  @IsEmpty()
-  code: PromotionCodeDto;
+  code?: PromotionCodeDto;
 
   constructor(partial: Partial<OrderDto>) {
     Object.assign(this, partial);
