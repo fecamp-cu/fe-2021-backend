@@ -17,10 +17,11 @@ export class SponcerContainer {
   @Column()
   order: number;
 
-  @Column()
-  img_url: string;
+  @Column({ name: 'img_url' })
+  imgUrl: string;
 
-  @ManyToOne(() => Setting, setting => setting.sponcer_containers) setting: Setting;
+  @ManyToOne(() => Setting, setting => setting.sponcer_containers)
+  setting: Setting;
 
   @CreateDateColumn({ name: 'created_date', select: false })
   createdDate: Date;

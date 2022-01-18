@@ -1,3 +1,4 @@
+import { IsBoolean, IsUrl } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -21,23 +22,30 @@ export class Setting {
   @Column()
   title: string;
 
-  @Column()
-  youtube_url: string;
+  @Column({ name: 'youtube_url' })
+  @IsUrl()
+  youtubeUrl: string;
 
-  @Column()
-  register_form_url: string;
+  @Column({ name: 'register_form_url' })
+  @IsUrl()
+  registerFormUrl: string;
 
-  @Column()
-  is_active: boolean;
+  @Column({ name: 'is_active' })
+  @IsBoolean()
+  isActive: boolean;
 
   @OneToMany(() => TimelineEvent, timeline_event => timeline_event.setting)
   timeline_events: TimelineEvent[];
+
   @OneToMany(() => SponcerContainer, sponcer_container => sponcer_container.setting)
   sponcer_containers: SponcerContainer[];
+
   @OneToMany(() => QualificationPreview, qualification_preview => qualification_preview.setting)
   qualification_previews: QualificationPreview[];
+
   @OneToMany(() => QualificationPreview, photo_preview => photo_preview.setting)
   photo_previews: PhotoPreview[];
+
   @OneToMany(() => AboutFeContainer, about_fe_container => about_fe_container.setting)
   about_fe_containers: AboutFeContainer[];
 

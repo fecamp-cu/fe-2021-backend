@@ -17,10 +17,11 @@ export class TimelineEvent {
   @Column()
   text: string;
 
-  @Column()
-  event_date: Date;
+  @Column({ name: 'event_date' })
+  eventDate: Date;
 
-  @ManyToOne(() => Setting, setting => setting.timeline_events) setting: Setting;
+  @ManyToOne(() => Setting, setting => setting.timeline_events)
+  setting: Setting;
 
   @CreateDateColumn({ name: 'created_date', select: false })
   createdDate: Date;

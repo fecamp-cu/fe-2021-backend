@@ -17,10 +17,11 @@ export class PhotoPreview {
   @Column()
   order: number;
 
-  @Column()
-  img_url: string;
+  @Column({ name: 'img_url' })
+  imgUrl: string;
 
-  @ManyToOne(() => Setting, setting => setting.photo_previews) setting: Setting;
+  @ManyToOne(() => Setting, setting => setting.photo_previews)
+  setting: Setting;
 
   @CreateDateColumn({ name: 'created_date', select: false })
   createdDate: Date;

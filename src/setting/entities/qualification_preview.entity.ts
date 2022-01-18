@@ -20,7 +20,8 @@ export class QualificationPreview {
   @Column()
   text: string;
 
-  @ManyToOne(() => Setting, setting => setting.qualification_previews) setting: Setting;
+  @ManyToOne(() => Setting, setting => setting.qualification_previews)
+  setting: Setting;
 
   @CreateDateColumn({ name: 'created_date', select: false })
   createdDate: Date;
