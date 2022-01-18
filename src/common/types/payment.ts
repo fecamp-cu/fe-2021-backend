@@ -1,5 +1,5 @@
 export type OmiseSource = {
-  object: string;
+  object: 'source';
   id: string;
   livemode: boolean;
   location: string;
@@ -24,6 +24,76 @@ export type OmiseSource = {
   charge_status: string;
   receipt_amount: number;
   discounts: [];
+};
+
+export type OmiseCharge = {
+  object: 'charge';
+  id: string;
+  location: string;
+  amount: number;
+  net: number;
+  fee: number;
+  fee_vat: number;
+  interest: number;
+  interest_vat: number;
+  funding_amount: number;
+  refunded_amount: number;
+  transaction_fees: {
+    fee_flat: string;
+    fee_rate: string;
+    vat_rate: string;
+  };
+  platform_fee: {
+    fixed: string;
+    amount: string;
+    percentage: string;
+  };
+  currency: string;
+  funding_currency: string;
+  ip: string;
+  refunds: {
+    object: string;
+    data: [];
+    limit: number;
+    offset: number;
+    total: number;
+    location: string;
+    order: string;
+    from: string;
+    to: string;
+  };
+  link: string;
+  description: string;
+  metadata: object;
+  card: string;
+  source: OmiseSource;
+  schedule: string;
+  customer: string;
+  dispute: string;
+  transaction: string;
+  failure_code: string;
+  failure_message: string;
+  status: string;
+  authorize_uri: string;
+  return_uri: string;
+  created_at: Date;
+  paid_at: Date;
+  expires_at: Date;
+  expired_at: Date;
+  reversed_at: Date;
+  zero_interest_installments: boolean;
+  branch: object;
+  authorized: boolean;
+  capturable: boolean;
+  capture: boolean;
+  disputable: boolean;
+  livemode: boolean;
+  refundable: boolean;
+  reversed: boolean;
+  reversible: boolean;
+  voided: boolean;
+  paid: boolean;
+  expired: boolean;
 };
 
 export type Basket = {
