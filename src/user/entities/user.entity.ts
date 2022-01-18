@@ -9,6 +9,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  Index,
   JoinColumn,
   JoinTable,
   ManyToMany,
@@ -29,6 +30,7 @@ export class User {
   @Column({ select: false })
   password: string;
 
+  @Index()
   @Column({ unique: true })
   email: string;
 
