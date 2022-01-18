@@ -30,6 +30,11 @@ export class ItemService {
     return item;
   }
 
+  async findMulti(ids: number[], relations: string[] = ['indexes']): Promise<ItemDto[]> {
+    const items = await this.itemRepository.findByIds(ids, { relations });
+    return items.map(item => this.rawToDTO(item));
+  }
+
   update(id: number, itemDto: ItemDto) {
     return `This action updates a #${id} item`;
   }
