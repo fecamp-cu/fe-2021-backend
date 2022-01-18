@@ -21,7 +21,7 @@ export class QualificationPreviewService {
     const qualificationPreview: QualificationPreview =
       await this.qualificationPreviewRepository.create(qualificationPreviewDto);
     const setting: Setting = await this.settingService.findOne(settingid);
-    qualificationPreview.setting = await setting;
+    qualificationPreview.setting =  setting;
     const createdQualificationPreview = await this.qualificationPreviewRepository.save(
       qualificationPreview,
     );
