@@ -65,7 +65,7 @@ export class PaymentDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  promotion_code?: string;
+  promotionCode?: string;
 
   constructor(partial: Partial<PaymentDto>) {
     Object.assign(this, partial);
