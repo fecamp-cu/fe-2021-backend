@@ -22,7 +22,7 @@ export class SponcerContainerService {
       sponcerContainerDto,
     );
     const setting: Setting = await this.settingService.findOne(settingid);
-    sponcerContainer.setting = await setting;
+    sponcerContainer.setting =  setting;
     const createdSponcerContainer = await this.sponcerContainerRepository.save(sponcerContainer);
     return createdSponcerContainer;
   }
