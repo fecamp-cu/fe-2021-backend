@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosResponse } from 'axios';
-import { OmiseCharge } from 'src/common/types/payment';
+import { OmiseCharge, OmiseSource } from 'src/common/types/payment';
 
 @Injectable()
 export class OmiseService {
@@ -20,7 +20,24 @@ export class OmiseService {
   public async getAllCharages(): Promise<OmiseCharge[]> {
     try {
       const res: AxiosResponse = await this.client.get('/charges');
-      console.log(res.data);
+      return res.data;
+    } catch (err) {
+      console.log(err.response.data);
+    }
+  }
+
+  public async getCharge(id: string): Promise<OmiseCharge> {
+    try {
+      const res: AxiosResponse = await this.client.get(`/charges/${id}`);
+      return res.data;
+    } catch (err) {
+      console.log(err.response.data);
+    }
+  }
+
+  public async getSource(id: string): Promise<OmiseSource> {
+    try {
+      const res: AxiosResponse = await this.client.get(`/sources/${id}`);
       return res.data;
     } catch (err) {
       console.log(err.response.data);
