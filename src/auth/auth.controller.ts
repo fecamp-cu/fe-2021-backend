@@ -22,6 +22,7 @@ import {
   resetPasswordMessage,
 } from 'src/common/constants/email-message.constant';
 import { ServiceType } from 'src/common/enums/service-type';
+import { EmailMessage } from 'src/common/enums/third-party';
 import { CodeType } from 'src/common/enums/validate-code-type';
 import { GoogleAuthData, RequestWithUserId } from 'src/common/types/auth';
 import { FacebookUserInfo } from 'src/common/types/facebook/facebook';
@@ -68,7 +69,7 @@ export class AuthController {
       '&userId=' +
       user.id;
 
-    this.sendEmail(user, 'Welcome to our FE Camp Family', emailVerifyMessage(url, user));
+    this.sendEmail(user, EmailMessage.VERIFY_SUBJECT, emailVerifyMessage(url, user));
     return res.status(HttpStatus.CREATED).json({ message: 'Successfully registered user', user });
   }
 
@@ -117,7 +118,7 @@ export class AuthController {
 
       this.sendEmail(
         user,
-        'Reset Password',
+        EmailMessage.RESET_PASSWORD_SUBJECT,
         resetPasswordMessage(url, moment(expireDate).format('llll')),
       );
     }
@@ -184,10 +185,12 @@ export class AuthController {
         imageUrl: userInfo.picture,
       });
 
-      [`Welcome to our FE Camp Family, ${userInfo.name}<br/>`, `your password is ${password}`];
-
       user = await this.authService.createUser(registerDto, true);
-      this.sendEmail(user, 'Welcome to FE Camp 2022', accountPasswordMessage(user, password));
+      this.sendEmail(
+        user,
+        EmailMessage.ACCOUNT_PASSWORD_SUBJECT,
+        accountPasswordMessage(user, password),
+      );
     }
 
     user = await this.thirdPartyAuthService.storeGoogleToken(tokens, user, userInfo.id);
@@ -233,7 +236,11 @@ export class AuthController {
 
       user = await this.authService.createUser(registerDto, true);
 
-      this.sendEmail(user, 'Welcome to FE Camp 2022', accountPasswordMessage(user, password));
+      this.sendEmail(
+        user,
+        EmailMessage.ACCOUNT_PASSWORD_SUBJECT,
+        accountPasswordMessage(user, password),
+      );
     }
 
     user = await this.thirdPartyAuthService.storeFacebookToken(tokens, user, userInfo.id);
