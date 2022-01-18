@@ -1,3 +1,4 @@
+import { PaymentStatus } from 'src/common/enums/shop';
 import { Item } from 'src/item/entities/item.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
@@ -5,6 +6,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  Index,
   JoinColumn,
   JoinTable,
   ManyToMany,
@@ -20,20 +22,31 @@ export class Order {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Index()
+  @Column({ name: 'customer_email' })
+  email: string;
+
+  @Index()
+  @Column({ name: 'source_id', nullable: true })
+  sourceId: string;
+
+  @Column({ name: 'charge_id', nullable: true })
   chargeId: string;
 
-  @Column()
+  @Column({ name: 'transaction_id', nullable: true })
   transactionId: string;
 
-  @Column()
+  @Column({ name: 'payment_method', nullable: true })
   paymentMethod: string;
+
+  @Column({ default: PaymentStatus.PENDING })
+  status: PaymentStatus;
 
   @Column()
   amount: number;
 
-  @Column()
-  paid_at: Date;
+  @Column({ name: 'paid_at', nullable: true })
+  paidAt: Date;
 
   @ManyToOne(() => User, user => user.orders)
   user: User;
@@ -47,7 +60,7 @@ export class Order {
     cascade: true,
   })
   @JoinColumn()
-  code: PromotionCode;
+  code?: PromotionCode;
 
   @CreateDateColumn({ name: 'created_date', select: false })
   createdDate: Date;
