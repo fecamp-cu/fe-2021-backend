@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { SponcerContainerDto } from './dto/sponcer_container.dto';
@@ -6,7 +6,6 @@ import { Setting } from './entities/setting.entity';
 import { SponcerContainer } from './entities/sponcer_container.entity';
 import { SettingService } from './setting.service';
 
-@Injectable()
 export class SponcerContainerService {
   constructor(
     @InjectRepository(Setting) private settingRepository: Repository<Setting>,
