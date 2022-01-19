@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { TimelineEventDto } from './dto/timeline_event.dto';
@@ -6,7 +6,6 @@ import { Setting } from './entities/setting.entity';
 import { TimelineEvent } from './entities/timeline_event.entity';
 import { SettingService } from './setting.service';
 
-@Injectable()
 export class TimelineEventService {
   constructor(
     @InjectRepository(Setting) private settingRepository: Repository<Setting>,

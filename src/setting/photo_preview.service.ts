@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { PhotoPreviewDto } from './dto/photo_preview.dto';
@@ -6,7 +6,6 @@ import { PhotoPreview } from './entities/photo_preview.entity';
 import { Setting } from './entities/setting.entity';
 import { SettingService } from './setting.service';
 
-@Injectable()
 export class PhotoPreviewService {
   constructor(
     @InjectRepository(Setting) private settingRepository: Repository<Setting>,

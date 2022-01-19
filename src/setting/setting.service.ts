@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { SettingDto } from './dto/setting.dto';
@@ -6,7 +6,6 @@ import { Setting } from './entities/setting.entity';
 import { SponcerContainer } from './entities/sponcer_container.entity';
 import { TimelineEvent } from './entities/timeline_event.entity';
 
-@Injectable()
 export class SettingService {
   constructor(
     @InjectRepository(Setting) private settingRepository: Repository<Setting>,
@@ -30,50 +29,29 @@ export class SettingService {
     return await this.settingRepository.find();
   }
 
-  async findOne(
-    id: number,
-    relations: string[] = [
-      'timeline_events',
-      'sponcer_containers',
-      'qualification_previews',
-      'photo_previews',
-      'about_fe_containers',
-    ],
-  ): Promise<Setting> {
-    const setting: Setting = await this.settingRepository.findOne(id, { relations });
+  async findOne(id: number): Promise<Setting> {
+    const setting: Setting = await this.settingRepository
+      .createQueryBuilder('setting')
+      .where('setting.id = :id', { id: id })
+      .leftJoinAndSelect('setting.timelineEvents', 'timeline_event')
+      .leftJoinAndSelect('setting.photoPreviews', 'photo_preview')
+      .leftJoinAndSelect('setting.sponcerContainers', 'sponcer_container')
+      .leftJoinAndSelect('setting.qualificationPreviews', 'qualification_preview')
+      .leftJoinAndSelect('setting.aboutFeContainers', 'about_fe_container')
+      .orderBy('event_date', 'ASC')
+      .addOrderBy('"photo_preview"."order"', 'ASC')
+      .addOrderBy('"sponcer_container"."order"', 'ASC')
+      .addOrderBy('"qualification_preview"."order"', 'ASC')
+      .addOrderBy('"about_fe_container"."order"', 'ASC')
+      .cache(true)
+      .getOne();
     if (!setting) {
       throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found setting' });
     }
-    await setting.timelineEvents.sort((a, b) => {
-      const dateA = a.eventDate;
-      const dateB = b.eventDate;
-      if (dateA < dateB) {
-        return -1;
-      }
-      if (dateA > dateB) {
-        return 1;
-      }
-      return 0;
-    });
-
-    await setting.sponcerContainers.sort((a, b) => {
-      return a.order - b.order;
-    });
-
-    await setting.qualificationPreviews.sort((a, b) => {
-      return a.order - b.order;
-    });
-    await setting.photoPreviews.sort((a, b) => {
-      return a.order - b.order;
-    });
-    await setting.aboutFeContainers.sort((a, b) => {
-      return a.order - b.order;
-    });
-
     return setting;
   }
 
-  async update(id: number, settingDto: SettingDto, relations: string[] = []): Promise<SettingDto> {
+  async update(id: number, settingDto: SettingDto): Promise<SettingDto> {
     const update: UpdateResult = await this.settingRepository.update(id, settingDto);
     if (update.affected === 0) {
       throw new NotFoundException({
@@ -81,7 +59,7 @@ export class SettingService {
         message: 'Not found setting',
       });
     }
-    return await this.findOne(id, relations);
+    return await this.findOne(id);
   }
 
   async remove(id: number): Promise<SettingDto> {
