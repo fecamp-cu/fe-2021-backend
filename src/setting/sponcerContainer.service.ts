@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { SponcerContainerDto } from './dto/sponcerContainer.dto';
 import { Setting } from './entities/setting.entity';
-import { SponcerContainer } from './entities/sponcer_container.entity';
+import { SponcerContainer } from './entities/sponcerContainer.entity';
 import { SettingService } from './setting.service';
 
 export class SponcerContainerService {

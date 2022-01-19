@@ -8,11 +8,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { AboutFeContainer } from './about_fe_container.entity';
-import { PhotoPreview } from './photo_preview.entity';
-import { QualificationPreview } from './qualification_preview.entity';
-import { SponcerContainer } from './sponcer_container.entity';
-import { TimelineEvent } from './timeline_event.entity';
+import { AboutFeContainer } from './aboutFeContainer.entity';
+import { PhotoPreview } from './photoPreview.entity';
+import { QualificationPreview } from './qualificationPreview.entity';
+import { SponcerContainer } from './sponcerContainer.entity';
+import { TimelineEvent } from './timelineEvent.entity';
 
 @Entity()
 export class Setting {
