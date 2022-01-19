@@ -2,7 +2,7 @@ import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { AboutFeContainerDto } from './dto/aboutFeContainer.dto';
-import { AboutFeContainer } from './entities/about_fe_container.entity';
+import { AboutFeContainer } from './entities/aboutFeContainer.entity';
 import { Setting } from './entities/setting.entity';
 import { SettingService } from './setting.service';
 

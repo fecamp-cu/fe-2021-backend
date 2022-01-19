@@ -2,7 +2,7 @@ import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { QualificationPreviewDto } from './dto/qualificationPreview.dto';
-import { QualificationPreview } from './entities/qualification_preview.entity';
+import { QualificationPreview } from './entities/qualificationPreview.entity';
 import { Setting } from './entities/setting.entity';
 import { SettingService } from './setting.service';
 

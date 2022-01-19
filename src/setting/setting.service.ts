@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { SettingDto } from './dto/setting.dto';
 import { Setting } from './entities/setting.entity';
-import { SponcerContainer } from './entities/sponcer_container.entity';
-import { TimelineEvent } from './entities/timeline_event.entity';
+import { SponcerContainer } from './entities/sponcerContainer.entity';
+import { TimelineEvent } from './entities/timelineEvent.entity';
 
 export class SettingService {
   constructor(

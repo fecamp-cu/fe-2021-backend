@@ -2,7 +2,7 @@ import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { PhotoPreviewDto } from './dto/photoPreview.dto';
-import { PhotoPreview } from './entities/photo_preview.entity';
+import { PhotoPreview } from './entities/photoPreview.entity';
 import { Setting } from './entities/setting.entity';
 import { SettingService } from './setting.service';
 

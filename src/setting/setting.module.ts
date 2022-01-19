@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AboutFeContainerService } from './aboutFeContainer.service';
-import { AboutFeContainer } from './entities/about_fe_container.entity';
-import { PhotoPreview } from './entities/photo_preview.entity';
-import { QualificationPreview } from './entities/qualification_preview.entity';
+import { AboutFeContainer } from './entities/aboutFeContainer.entity';
+import { PhotoPreview } from './entities/photoPreview.entity';
+import { QualificationPreview } from './entities/qualificationPreview.entity';
 import { Setting } from './entities/setting.entity';
-import { SponcerContainer } from './entities/sponcer_container.entity';
-import { TimelineEvent } from './entities/timeline_event.entity';
+import { SponcerContainer } from './entities/sponcerContainer.entity';
+import { TimelineEvent } from './entities/timelineEvent.entity';
 import { PhotoPreviewService } from './photoPreview.service';
 import { QualificationPreviewService } from './qualificationPreview.service';
 import { SettingController } from './setting.controller';
