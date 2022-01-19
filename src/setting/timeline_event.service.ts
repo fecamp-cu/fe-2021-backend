@@ -19,14 +19,18 @@ export class TimelineEventService {
     const setting: Setting = await this.settingService.findOne(settingid);
     timelineEvent.setting = setting;
     const createdTimelineEvent = await this.timelineEventRepository.save(timelineEvent);
-    return createdTimelineEvent;
+    return new TimelineEventDto({
+      id: createdTimelineEvent.id,
+      text: createdTimelineEvent.text,
+      eventDate: createdTimelineEvent.eventDate,
+    });
   }
 
   async findAll(): Promise<TimelineEventDto[]> {
     return await this.timelineEventRepository.find();
   }
 
-  async findOne(id: number, relations: string[] = []): Promise<TimelineEvent> {
+  async findOne(id: number, relations: string[] = []): Promise<TimelineEventDto> {
     const timelineEvent: TimelineEvent = await this.timelineEventRepository.findOne(id, {
       relations,
     });
@@ -36,7 +40,11 @@ export class TimelineEventService {
         message: 'Not found timeline_event',
       });
     }
-    return timelineEvent;
+    return new TimelineEventDto({
+      id: timelineEvent.id,
+      text: timelineEvent.text,
+      eventDate: timelineEvent.eventDate,
+    });
   }
 
   async update(
@@ -62,7 +70,6 @@ export class TimelineEventService {
         message: 'Not found timeline_event',
       });
     }
-    const timelineEvent = await this.findOne(id);
-    return timelineEvent;
+    return await this.findOne(id);
   }
 }
