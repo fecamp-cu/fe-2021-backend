@@ -18,14 +18,18 @@ export class PhotoPreviewService {
     const setting: Setting = await this.settingService.findOne(settingid);
     photoPreview.setting = setting;
     const createdPhotoPreview = await this.photoPreviewRepository.save(photoPreview);
-    return createdPhotoPreview;
+    return new PhotoPreviewDto({
+      id: createdPhotoPreview.id,
+      order: createdPhotoPreview.order,
+      imgUrl: createdPhotoPreview.imgUrl,
+    });
   }
 
   async findAll(): Promise<PhotoPreviewDto[]> {
     return await this.photoPreviewRepository.find();
   }
 
-  async findOne(id: number, relations: string[] = []): Promise<PhotoPreview> {
+  async findOne(id: number, relations: string[] = []): Promise<PhotoPreviewDto> {
     const photoPreview: PhotoPreview = await this.photoPreviewRepository.findOne(id, {
       relations,
     });
@@ -35,7 +39,12 @@ export class PhotoPreviewService {
         message: 'Not found sponcer_container',
       });
     }
-    return photoPreview;
+
+    return new PhotoPreviewDto({
+      id: photoPreview.id,
+      order: photoPreview.order,
+      imgUrl: photoPreview.imgUrl,
+    });
   }
 
   async update(
@@ -61,7 +70,6 @@ export class PhotoPreviewService {
         message: 'Not found sponcer_container',
       });
     }
-    const photoPreview = await this.findOne(id);
-    return photoPreview;
+    return await this.findOne(id);
   }
 }
