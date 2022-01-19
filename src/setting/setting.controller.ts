@@ -1,17 +1,17 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AboutFeContainerService } from './about_fe_container.service';
-import { AboutFeContainerDto } from './dto/about_fe_container.dto';
-import { PhotoPreviewDto } from './dto/photo_preview.dto';
-import { QualificationPreviewDto } from './dto/qualification_preview.dto';
+import { AboutFeContainerService } from './aboutFeContainer.service';
+import { AboutFeContainerDto } from './dto/aboutFeContainer.dto';
+import { PhotoPreviewDto } from './dto/photoPreview.dto';
+import { QualificationPreviewDto } from './dto/qualificationPreview.dto';
 import { SettingDto } from './dto/setting.dto';
-import { SponcerContainerDto } from './dto/sponcer_container.dto';
-import { TimelineEventDto } from './dto/timeline_event.dto';
-import { PhotoPreviewService } from './photo_preview.service';
-import { QualificationPreviewService } from './qualification_preview.service';
+import { SponcerContainerDto } from './dto/sponcerContainer.dto';
+import { TimelineEventDto } from './dto/timelineEvent.dto';
+import { PhotoPreviewService } from './photoPreview.service';
+import { QualificationPreviewService } from './qualificationPreview.service';
 import { SettingService } from './setting.service';
-import { SponcerContainerService } from './sponcer_container.service';
-import { TimelineEventService } from './timeline_event.service';
+import { SponcerContainerService } from './sponcerContainer.service';
+import { TimelineEventService } from './timelineEvent.service';
 
 @ApiTags('Setting')
 @Controller('setting')

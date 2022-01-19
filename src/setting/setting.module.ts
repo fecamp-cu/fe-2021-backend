@@ -1,18 +1,18 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AboutFeContainerService } from './about_fe_container.service';
+import { AboutFeContainerService } from './aboutFeContainer.service';
 import { AboutFeContainer } from './entities/about_fe_container.entity';
 import { PhotoPreview } from './entities/photo_preview.entity';
 import { QualificationPreview } from './entities/qualification_preview.entity';
 import { Setting } from './entities/setting.entity';
 import { SponcerContainer } from './entities/sponcer_container.entity';
 import { TimelineEvent } from './entities/timeline_event.entity';
-import { PhotoPreviewService } from './photo_preview.service';
-import { QualificationPreviewService } from './qualification_preview.service';
+import { PhotoPreviewService } from './photoPreview.service';
+import { QualificationPreviewService } from './qualificationPreview.service';
 import { SettingController } from './setting.controller';
 import { SettingService } from './setting.service';
-import { SponcerContainerService } from './sponcer_container.service';
-import { TimelineEventService } from './timeline_event.service';
+import { SponcerContainerService } from './sponcerContainer.service';
+import { TimelineEventService } from './timelineEvent.service';
 
 @Module({
   imports: [
