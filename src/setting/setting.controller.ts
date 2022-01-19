@@ -45,6 +45,11 @@ export class SettingController {
     return this.settingService.update(+id, settingDto);
   }
 
+  @Patch(':id')
+  activate(@Param('id') id: string) {
+    return this.settingService.activate(+id);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.settingService.remove(+id);

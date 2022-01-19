@@ -16,14 +16,16 @@ export class SettingService {
   async createSetting(settingDto: SettingDto): Promise<SettingDto> {
     const setting: Setting = this.settingRepository.create(settingDto);
 
-    if (settingDto.isActive) {
-      setting.isActive = settingDto.isActive;
-    } else {
-      setting.isActive = false;
-    }
+    setting.isActive = false;
 
     const createdSetting = await this.settingRepository.save(setting);
-    return createdSetting;
+    return new SettingDto({
+      id: createdSetting.id,
+      title: createdSetting.title,
+      youtubeUrl: createdSetting.youtubeUrl,
+      registerFormUrl: createdSetting.registerFormUrl,
+      isActive: createdSetting.isActive,
+    });
   }
   async findAll(): Promise<SettingDto[]> {
     return await this.settingRepository.find();
@@ -59,7 +61,25 @@ export class SettingService {
         message: 'Not found setting',
       });
     }
-    return await this.findOne(id);
+    const setting = await this.findOne(id);
+    return new SettingDto({
+      id: setting.id,
+      title: setting.title,
+      youtubeUrl: setting.youtubeUrl,
+      registerFormUrl: setting.registerFormUrl,
+      isActive: setting.isActive,
+    });
+  }
+  async activate(id: number): Promise<SettingDto> {
+    const setting: Setting = await this.findOne(id);
+    setting.isActive = true;
+    return new SettingDto({
+      id: setting.id,
+      title: setting.title,
+      youtubeUrl: setting.youtubeUrl,
+      registerFormUrl: setting.registerFormUrl,
+      isActive: setting.isActive,
+    });
   }
 
   async remove(id: number): Promise<SettingDto> {
@@ -71,6 +91,12 @@ export class SettingService {
       });
     }
     const setting = await this.findOne(id);
-    return setting;
+    return new SettingDto({
+      id: setting.id,
+      title: setting.title,
+      youtubeUrl: setting.youtubeUrl,
+      registerFormUrl: setting.registerFormUrl,
+      isActive: setting.isActive,
+    });
   }
 }
