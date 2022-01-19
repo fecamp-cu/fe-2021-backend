@@ -24,14 +24,18 @@ export class QualificationPreviewService {
     const createdQualificationPreview = await this.qualificationPreviewRepository.save(
       qualificationPreview,
     );
-    return createdQualificationPreview;
+    return new QualificationPreviewDto({
+      id: createdQualificationPreview.id,
+      order: createdQualificationPreview.order,
+      text: createdQualificationPreview.text,
+    });
   }
 
   async findAll(): Promise<QualificationPreviewDto[]> {
     return await this.qualificationPreviewRepository.find();
   }
 
-  async findOne(id: number, relations: string[] = []): Promise<QualificationPreview> {
+  async findOne(id: number, relations: string[] = []): Promise<QualificationPreviewDto> {
     const qualificationPreview: QualificationPreview =
       await this.qualificationPreviewRepository.findOne(id, {
         relations,
@@ -42,7 +46,12 @@ export class QualificationPreviewService {
         message: 'Not found timeline_event',
       });
     }
-    return qualificationPreview;
+
+    return new QualificationPreviewDto({
+      id: qualificationPreview.id,
+      order: qualificationPreview.order,
+      text: qualificationPreview.text,
+    });
   }
 
   async update(
@@ -71,7 +80,6 @@ export class QualificationPreviewService {
         message: 'Not found timeline_event',
       });
     }
-    const qualificationPreview = await this.findOne(id);
-    return qualificationPreview;
+    return await this.findOne(id);
   }
 }
