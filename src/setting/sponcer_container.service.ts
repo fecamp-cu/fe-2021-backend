@@ -23,14 +23,18 @@ export class SponcerContainerService {
     const setting: Setting = await this.settingService.findOne(settingid);
     sponcerContainer.setting = setting;
     const createdSponcerContainer = await this.sponcerContainerRepository.save(sponcerContainer);
-    return createdSponcerContainer;
+    return new SponcerContainerDto({
+      id: createdSponcerContainer.id,
+      order: createdSponcerContainer.order,
+      imgUrl: createdSponcerContainer.imgUrl,
+    });
   }
 
   async findAll(): Promise<SponcerContainerDto[]> {
     return await this.sponcerContainerRepository.find();
   }
 
-  async findOne(id: number, relations: string[] = []): Promise<SponcerContainer> {
+  async findOne(id: number, relations: string[] = []): Promise<SponcerContainerDto> {
     const sponcerContainer: SponcerContainer = await this.sponcerContainerRepository.findOne(id, {
       relations,
     });
@@ -40,7 +44,11 @@ export class SponcerContainerService {
         message: 'Not found sponcer_container',
       });
     }
-    return sponcerContainer;
+    return new SponcerContainerDto({
+      id: sponcerContainer.id,
+      order: sponcerContainer.order,
+      imgUrl: sponcerContainer.imgUrl,
+    });
   }
 
   async update(
@@ -69,7 +77,6 @@ export class SponcerContainerService {
         message: 'Not found sponcer_container',
       });
     }
-    const sponcerContainer = await this.findOne(id);
-    return sponcerContainer;
+    return await this.findOne(id);
   }
 }
