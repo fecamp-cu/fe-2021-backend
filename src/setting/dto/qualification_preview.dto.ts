@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SponcerContainerDto } from './sponcer_container.dto';
 
 export class QualificationPreviewDto {
   id: number;
@@ -10,7 +9,7 @@ export class QualificationPreviewDto {
   @ApiProperty()
   text: string;
 
-  constructor(partial: Partial<SponcerContainerDto>) {
+  constructor(partial: Partial<QualificationPreviewDto>) {
     Object.assign(this, partial);
   }
 }
