@@ -10,7 +10,27 @@ export class CustomerDto {
 
   lastname: string;
 
+  tel: string;
+
+  grade: string;
+
+  school: string;
+
+  address: string;
+
+  subdistrict: string;
+
+  district: string;
+
+  province: string;
+
+  postcode: string;
+
   orders: OrderDto[];
 
   user: UserDto;
+
+  constructor(partial: Partial<CustomerDto>) {
+    Object.assign(this, partial);
+  }
 }

@@ -8,13 +8,14 @@ import { Order } from './entities/order.entity';
 export class OrderService {
   constructor(@InjectRepository(Order) private orderRepository: Repository<Order>) {}
 
-  async create(orderDto: OrderDto) {
+  async create(orderDto: OrderDto): Promise<OrderDto> {
     const order = await this.orderRepository.create(orderDto);
-    return 'This action adds a new order';
+    const savedOrder = await this.orderRepository.save(order);
+    return this.rawToDTO(savedOrder);
   }
 
-  findAll() {
-    return `This action returns all order`;
+  async findAll() {
+    return await this.orderRepository.find({ relations: ['customer'] });
   }
 
   async findOne(id: number, relations: string[] = []): Promise<OrderDto> {
@@ -70,8 +71,8 @@ export class OrderService {
       paidAt: order.paidAt,
     });
 
-    if (order.user) {
-      orderDto.user = order.user;
+    if (order.customer) {
+      orderDto.customer = order.customer;
     }
 
     if (order.items) {

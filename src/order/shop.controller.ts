@@ -7,7 +7,7 @@ import { PaymentDto } from './dto/payment.dto';
 import { OrderService } from './order.service';
 import { PaymentService } from './payment.service';
 
-@ApiTags('shop')
+@ApiTags('Shop')
 @Controller('shop')
 export class ShopController {
   constructor(
@@ -28,8 +28,9 @@ export class ShopController {
 
   @Post('omise/callback')
   async callback(@Body() paymentCompleteDto: PaymentCompleteDto, @Res() res: Response) {
-    // const authorize_uri = await this.paymentService.checkout(paymentCompleteDto);
-    console.log(paymentCompleteDto);
+    if (paymentCompleteDto.data.status === 'successful') {
+      this.paymentService.sendReciept(paymentCompleteDto);
+    }
     return res.status(HttpStatus.OK).json(paymentCompleteDto);
   }
 
@@ -38,15 +39,9 @@ export class ShopController {
     return this.paymentService.getAllCharges();
   }
 
-  @Get('webhook')
-  sendWebHook(@Res() res: Response) {
-    this.paymentService.sendWebhook();
-    return res.status(HttpStatus.NO_CONTENT).send();
-  }
-
   @Get()
-  findAll() {
-    return this.orderService.findAll();
+  async findAll() {
+    return await this.orderService.findAll();
   }
 
   @Get(':id')

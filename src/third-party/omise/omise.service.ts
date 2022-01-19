@@ -52,7 +52,6 @@ export class OmiseService {
         return_uri: this.configService.get<string>('app.url') + '/payment/success',
         source,
       });
-      console.log(res.data);
       return res.data.authorize_uri;
     } catch (err) {
       console.log(err.response.data);

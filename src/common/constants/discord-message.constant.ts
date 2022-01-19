@@ -1,3 +1,9 @@
-export const DiscordShopMessage = (user: string, orderId: string): string => {
-  return `${user} ได้สั่งซื้อสินค้าเรียบร้อยแล้ว รหัสการสั่งซื้อของคุณคือ ${orderId}`;
+import { OrderDto } from 'src/order/dto/order.dto';
+
+export const DiscordShopMessage = (orderDto: OrderDto): string => {
+  return `
+  คุณ ${orderDto.customer.firstname} ${orderDto.customer.lastname} ได้สั่งซื้อสินค้าเรียบร้อยแล้ว
+  ชนิดของสินค้า คือ ${orderDto.items.map(item => item.title).join(' ')}
+  จำนวน ${orderDto.amount} ชิ้น
+  รหัสการสั่งซื้อคือ ${orderDto.id}`;
 };
