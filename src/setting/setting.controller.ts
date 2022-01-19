@@ -45,7 +45,7 @@ export class SettingController {
     return this.settingService.update(+id, settingDto);
   }
 
-  @Patch(':id')
+  @Patch(':id/activate')
   activate(@Param('id') id: string) {
     return this.settingService.activate(+id);
   }
