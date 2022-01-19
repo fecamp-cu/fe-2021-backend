@@ -11,7 +11,6 @@ import { ItemModule } from './item/item.module';
 import { OrderModule } from './order/order.module';
 import { ProfileModule } from './profile/profile.module';
 import { SettingModule } from './setting/setting.module';
-import { TokenModule } from './token/token.module';
 import { UserModule } from './user/user.module';
 
 @Module({
