@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean } from 'class-validator';
+import { IsBoolean, IsUrl } from 'class-validator';
 
 export class SettingDto {
   id: number;
@@ -8,9 +8,11 @@ export class SettingDto {
   title: string;
 
   @ApiProperty()
+  @IsUrl()
   youtubeUrl: string;
 
   @ApiProperty()
+  @IsUrl()
   registerFormUrl: string;
 
   @ApiProperty()
