@@ -9,7 +9,7 @@ export class PhotoPreviewDto {
 
   @ApiProperty()
   @IsUrl()
-  img_url: string;
+  imgUrl: string;
 
   constructor(partial: Partial<PhotoPreviewDto>) {
     Object.assign(this, partial);

@@ -20,7 +20,7 @@ export class AboutFeContainer {
   @Column()
   text: string;
 
-  @ManyToOne(() => Setting, setting => setting.about_fe_containers)
+  @ManyToOne(() => Setting, setting => setting.aboutFeContainers)
   setting: Setting;
 
   @CreateDateColumn({ name: 'created_date', select: false })

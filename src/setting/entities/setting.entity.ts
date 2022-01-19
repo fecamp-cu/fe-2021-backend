@@ -34,20 +34,20 @@ export class Setting {
   @IsBoolean()
   isActive: boolean;
 
-  @OneToMany(() => TimelineEvent, timeline_event => timeline_event.setting)
-  timeline_events: TimelineEvent[];
+  @OneToMany(() => TimelineEvent, timelineEvent => timelineEvent.setting)
+  timelineEvents: TimelineEvent[];
 
-  @OneToMany(() => SponcerContainer, sponcer_container => sponcer_container.setting)
-  sponcer_containers: SponcerContainer[];
+  @OneToMany(() => SponcerContainer, sponcerContainer => sponcerContainer.setting)
+  sponcerContainers: SponcerContainer[];
 
-  @OneToMany(() => QualificationPreview, qualification_preview => qualification_preview.setting)
-  qualification_previews: QualificationPreview[];
+  @OneToMany(() => QualificationPreview, qualificationPreview => qualificationPreview.setting)
+  qualificationPreviews: QualificationPreview[];
 
-  @OneToMany(() => QualificationPreview, photo_preview => photo_preview.setting)
-  photo_previews: PhotoPreview[];
+  @OneToMany(() => QualificationPreview, photoPreview => photoPreview.setting)
+  photoPreviews: PhotoPreview[];
 
-  @OneToMany(() => AboutFeContainer, about_fe_container => about_fe_container.setting)
-  about_fe_containers: AboutFeContainer[];
+  @OneToMany(() => AboutFeContainer, aboutFeContainer => aboutFeContainer.setting)
+  aboutFeContainers: AboutFeContainer[];
 
   @CreateDateColumn({ name: 'created_date', select: false })
   createdDate: Date;

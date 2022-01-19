@@ -20,7 +20,7 @@ export class SponcerContainer {
   @Column({ name: 'img_url' })
   imgUrl: string;
 
-  @ManyToOne(() => Setting, setting => setting.sponcer_containers)
+  @ManyToOne(() => Setting, setting => setting.sponcerContainers)
   setting: Setting;
 
   @CreateDateColumn({ name: 'created_date', select: false })

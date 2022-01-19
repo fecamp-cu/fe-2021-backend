@@ -17,10 +17,10 @@ export class SettingService {
   async createSetting(settingDto: SettingDto): Promise<SettingDto> {
     const setting: Setting = this.settingRepository.create(settingDto);
 
-    if (settingDto.is_active) {
-      setting.is_active = settingDto.is_active;
+    if (settingDto.isActive) {
+      setting.isActive = settingDto.isActive;
     } else {
-      setting.is_active = false;
+      setting.isActive = false;
     }
 
     const createdSetting = await this.settingRepository.save(setting);
@@ -44,9 +44,9 @@ export class SettingService {
     if (!setting) {
       throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found setting' });
     }
-    await setting.timeline_events.sort((a, b) => {
-      const dateA = a.event_date;
-      const dateB = b.event_date;
+    await setting.timelineEvents.sort((a, b) => {
+      const dateA = a.eventDate;
+      const dateB = b.eventDate;
       if (dateA < dateB) {
         return -1;
       }
@@ -56,17 +56,17 @@ export class SettingService {
       return 0;
     });
 
-    await setting.sponcer_containers.sort((a, b) => {
+    await setting.sponcerContainers.sort((a, b) => {
       return a.order - b.order;
     });
 
-    await setting.qualification_previews.sort((a, b) => {
+    await setting.qualificationPreviews.sort((a, b) => {
       return a.order - b.order;
     });
-    await setting.photo_previews.sort((a, b) => {
+    await setting.photoPreviews.sort((a, b) => {
       return a.order - b.order;
     });
-    await setting.about_fe_containers.sort((a, b) => {
+    await setting.aboutFeContainers.sort((a, b) => {
       return a.order - b.order;
     });
 

@@ -8,14 +8,14 @@ export class SettingDto {
   title: string;
 
   @ApiProperty()
-  youtube_url: string;
+  youtubeUrl: string;
 
   @ApiProperty()
-  register_form_url: string;
+  registerFormUrl: string;
 
   @ApiProperty()
   @IsBoolean()
-  is_active: boolean;
+  isActive: boolean;
 
   constructor(partial: Partial<SettingDto>) {
     Object.assign(this, partial);
