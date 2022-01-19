@@ -1,6 +1,5 @@
 import { PaymentStatus } from 'src/common/enums/shop';
 import { Item } from 'src/item/entities/item.entity';
-import { User } from 'src/user/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
@@ -15,16 +14,13 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Customer } from './customer.entity';
 import { PromotionCode } from './promotion-code.entity';
 
 @Entity()
 export class Order {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Index()
-  @Column({ name: 'customer_email' })
-  email: string;
 
   @Index()
   @Column({ name: 'source_id', nullable: true })
@@ -48,8 +44,8 @@ export class Order {
   @Column({ name: 'paid_at', nullable: true })
   paidAt: Date;
 
-  @ManyToOne(() => User, user => user.orders)
-  user: User;
+  @ManyToOne(() => Customer, cumtomer => cumtomer.orders)
+  customer: Customer;
 
   @ManyToMany(() => Item, item => item.orders)
   @JoinTable()

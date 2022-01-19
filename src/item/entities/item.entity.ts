@@ -40,13 +40,13 @@ export class Item {
   author: string;
 
   @ManyToMany(() => User, user => user.items)
-  users: User[];
+  users?: User[];
 
   @OneToMany(() => ItemIndex, index => index.item, { persistence: false, cascade: true })
   indexes: ItemIndex[];
 
   @ManyToMany(() => Order, order => order.items)
-  orders: Order[];
+  orders?: Order[];
 
   @CreateDateColumn({ name: 'created_date', select: false })
   createdDate: Date;

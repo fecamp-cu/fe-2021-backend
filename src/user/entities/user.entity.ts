@@ -2,7 +2,7 @@ import { Token } from 'src/auth/entities/token.entity';
 import { ValidateCode } from 'src/auth/entities/validate-code.entity';
 import { Role } from 'src/common/enums/role';
 import { Item } from 'src/item/entities/item.entity';
-import { Order } from 'src/order/entities/order.entity';
+import { Customer } from 'src/order/entities/customer.entity';
 import { Profile } from 'src/profile/entities/profile.entity';
 import {
   Column,
@@ -50,8 +50,12 @@ export class User {
   @JoinTable()
   items: Item[];
 
-  @OneToMany(() => Order, order => order.user, { persistence: false, cascade: true })
-  orders: Order[];
+  @OneToOne(() => Customer, customer => customer.user, {
+    persistence: false,
+    cascade: true,
+  })
+  @JoinColumn()
+  customer?: Customer;
 
   @Column({ default: Role.USER })
   role: Role;
