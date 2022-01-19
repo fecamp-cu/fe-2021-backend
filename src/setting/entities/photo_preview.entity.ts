@@ -20,7 +20,7 @@ export class PhotoPreview {
   @Column({ name: 'img_url' })
   imgUrl: string;
 
-  @ManyToOne(() => Setting, setting => setting.photo_previews)
+  @ManyToOne(() => Setting, setting => setting.photoPreviews)
   setting: Setting;
 
   @CreateDateColumn({ name: 'created_date', select: false })

@@ -18,7 +18,7 @@ export class TimelineEventService {
       timelineEventDto,
     );
     const setting: Setting = await this.settingService.findOne(settingid);
-    timelineEvent.setting =  setting;
+    timelineEvent.setting = setting;
     const createdTimelineEvent = await this.timelineEventRepository.save(timelineEvent);
     return createdTimelineEvent;
   }

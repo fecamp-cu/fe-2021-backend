@@ -7,7 +7,7 @@ export class TimelineEventDto {
   text: string;
 
   @ApiProperty()
-  event_date: Date;
+  eventDate: Date;
 
   constructor(partial: Partial<TimelineEventDto>) {
     Object.assign(this, partial);

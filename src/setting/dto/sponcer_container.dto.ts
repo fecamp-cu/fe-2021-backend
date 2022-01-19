@@ -9,7 +9,7 @@ export class SponcerContainerDto {
 
   @ApiProperty()
   @IsUrl()
-  img_url: string;
+  imgUrl: string;
 
   constructor(partial: Partial<SponcerContainerDto>) {
     Object.assign(this, partial);
