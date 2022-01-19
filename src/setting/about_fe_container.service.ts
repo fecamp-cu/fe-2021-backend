@@ -23,14 +23,19 @@ export class AboutFeContainerService {
     const setting: Setting = await this.settingService.findOne(settingid);
     aboutFeContainer.setting = setting;
     const createdAboutFeContainer = await this.aboutFeContainerRepository.save(aboutFeContainer);
-    return createdAboutFeContainer;
+
+    return new AboutFeContainerDto({
+      id: createdAboutFeContainer.id,
+      order: createdAboutFeContainer.order,
+      text: createdAboutFeContainer.text,
+    });
   }
 
   async findAll(): Promise<AboutFeContainerDto[]> {
     return await this.aboutFeContainerRepository.find();
   }
 
-  async findOne(id: number, relations: string[] = []): Promise<AboutFeContainer> {
+  async findOne(id: number, relations: string[] = []): Promise<AboutFeContainerDto> {
     const aboutFeContainer: AboutFeContainer = await this.aboutFeContainerRepository.findOne(id, {
       relations,
     });
@@ -40,7 +45,11 @@ export class AboutFeContainerService {
         message: 'Not found timeline_event',
       });
     }
-    return aboutFeContainer;
+    return new AboutFeContainerDto({
+      id: aboutFeContainer.id,
+      order: aboutFeContainer.order,
+      text: aboutFeContainer.text,
+    });
   }
 
   async update(
@@ -69,7 +78,6 @@ export class AboutFeContainerService {
         message: 'Not found timeline_event',
       });
     }
-    const aboutFeContainer = await this.findOne(id);
-    return aboutFeContainer;
+    return await this.findOne(id);
   }
 }
