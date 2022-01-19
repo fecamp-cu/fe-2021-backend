@@ -84,6 +84,11 @@ spec:
                 configMapKeyRef:
                   name: fecamp-config
                   key: url
+            - name: DISCORD_WEBHOOK_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: discord_webhook_url
             - name: ENCRYPT_KEY
               valueFrom:
                 secretKeyRef:
