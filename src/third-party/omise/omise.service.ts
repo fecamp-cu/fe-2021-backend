@@ -44,15 +44,46 @@ export class OmiseService {
     }
   }
 
-  public async createCharge(amount: number, source: string) {
+  public async createInternetBankingCharge(amount: number, source: string) {
     try {
       const res: AxiosResponse = await this.client.post('/charges', {
-        amount: amount,
+        amount,
         currency: 'THB',
         return_uri: this.configService.get<string>('app.url') + '/payment/success',
         source,
       });
       return res.data.authorize_uri;
+    } catch (err) {
+      console.log(err.response.data);
+    }
+  }
+
+  // TODO create function for promptpay and credit card
+
+  public async createPromptPayCharge(amount: number, source: string) {
+    try {
+      const res: AxiosResponse = await this.client.post('/charges', {
+        amount,
+        currency: 'THB',
+        return_uri: this.configService.get<string>('app.url') + '/payment/success',
+        source,
+      });
+      return res.data.source.scannable_code.image.download_uri;
+    } catch (err) {
+      console.log(err.response.data);
+    }
+  }
+
+  public async createCreditCardCharge(amount: number, token: string) {
+    try {
+      const res: AxiosResponse = await this.client.post('/charges', {
+        amount,
+        currency: 'THB',
+        return_uri: this.configService.get<string>('app.url') + '/payment/success',
+        card: token,
+      });
+      console.log(res.data);
+      return res.data;
     } catch (err) {
       console.log(err.response.data);
     }

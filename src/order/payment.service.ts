@@ -37,7 +37,7 @@ export class PaymentService {
     private googleGmail: GoogleGmail,
   ) {}
 
-  async checkout(paymentDto: PaymentDto): Promise<string> {
+  async checkoutInternetBanking(paymentDto: PaymentDto): Promise<string> {
     // TODO Create customer if doesn't exist
 
     const ids = await paymentDto.basket.map(item => item.productId);
@@ -58,7 +58,7 @@ export class PaymentService {
 
     await this.orderService.create(orderDto);
 
-    const authorize_uri = await this.omiseService.createCharge(
+    const authorize_uri = await this.omiseService.createInternetBankingCharge(
       paymentDto.source.amount,
       paymentDto.source.id,
     );
@@ -66,12 +66,111 @@ export class PaymentService {
     return authorize_uri;
   }
 
+  async checkoutPromptPay(paymentDto: PaymentDto): Promise<string> {
+    // TODO Create customer if doesn't exist
+
+    const ids = await paymentDto.basket.map(item => item.productId);
+    const items = await this.itemService.findMulti(ids);
+    const customer = await this.createCustomer(paymentDto);
+
+    const orderDto = new OrderDto({
+      sourceId: paymentDto.source.id,
+      amount: paymentDto.source.amount,
+      paymentMethod: paymentDto.source.type,
+      items,
+      customer,
+    });
+
+    if (paymentDto.promotionCode) {
+      orderDto.code = await this.promotionCodeService.getPromotionCode(paymentDto.promotionCode);
+    }
+
+    await this.orderService.create(orderDto);
+
+    const download_uri = await this.omiseService.createPromptPayCharge(
+      paymentDto.source.amount,
+      paymentDto.source.id,
+    );
+
+    return download_uri;
+  }
+
+  async checkoutCreditCard(paymentDto: PaymentDto): Promise<boolean> {
+    // TODO Create customer if doesn't exist
+
+    const ids = await paymentDto.basket.map(item => item.productId);
+    const items = await this.itemService.findMulti(ids);
+    const customer = await this.createCustomer(paymentDto);
+
+    const orderDto = new OrderDto({
+      sourceId: paymentDto.source.id,
+      amount: paymentDto.source.amount,
+      paymentMethod: paymentDto.source.type,
+      items,
+      customer,
+    });
+
+    if (paymentDto.promotionCode) {
+      orderDto.code = await this.promotionCodeService.getPromotionCode(paymentDto.promotionCode);
+    }
+
+    await this.orderService.create(orderDto);
+
+    const res = await this.omiseService.createCreditCardCharge(
+      paymentDto.source.amount,
+      paymentDto.source.id,
+    );
+
+    res.source = { id: paymentDto.source.id };
+
+    await this.sendRecieptCreditCard(res);
+
+    return true;
+  }
+
   async sendReciept(paymentCompleteDto: PaymentCompleteDto): Promise<OrderDto> {
+    // TODO Implement for token payment
+
     const order = await this.orderService.findBySourceId(paymentCompleteDto.data.source.id);
 
     order.chargeId = paymentCompleteDto.data.id;
     order.transactionId = paymentCompleteDto.data.transaction;
     order.paidAt = paymentCompleteDto.data.paid_at;
+    order.status = PaymentStatus.SUCCESS;
+
+    const orderDto = await this.orderService.update(order.id, order, ['customer', 'items']);
+
+    const emailRef: GoogleEmailRef = {
+      email: orderDto.customer.email,
+      firstname: orderDto.customer.firstname,
+      lastname: orderDto.customer.lastname,
+    };
+
+    // TODO send email and webhook
+
+    await this.sendEmail(
+      emailRef,
+      PaymentMessage.RECEIPT,
+      receiptMessage(emailRef.firstname, emailRef.lastname, orderDto),
+    );
+
+    await this.discordService.sendMessage(
+      Discord.SHOP_USERNAME,
+      Discord.SHOP_AVATAR_URL,
+      DiscordShopMessage(orderDto),
+    );
+
+    return orderDto;
+  }
+
+  async sendRecieptCreditCard(paidCharge: OmiseCharge): Promise<OrderDto> {
+    // TODO Implement for token payment
+
+    const order = await this.orderService.findBySourceId(paidCharge.source.id);
+
+    order.chargeId = paidCharge.id;
+    order.transactionId = paidCharge.transaction;
+    order.paidAt = paidCharge.paid_at;
     order.status = PaymentStatus.SUCCESS;
 
     const orderDto = await this.orderService.update(order.id, order, ['customer', 'items']);

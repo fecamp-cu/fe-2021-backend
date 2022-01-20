@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { OrderDto } from './dto/order.dto';
@@ -13,6 +14,7 @@ export class ShopController {
   constructor(
     private readonly orderService: OrderService,
     private paymentService: PaymentService,
+    private configService: ConfigService,
   ) {}
 
   @Post()
@@ -20,10 +22,24 @@ export class ShopController {
     return this.orderService.create(orderDto);
   }
 
-  @Post('checkout')
-  async checkout(@Body() paymentDto: PaymentDto, @Res() res: Response) {
-    const authorize_uri = await this.paymentService.checkout(paymentDto);
+  @Post('checkout/internet-banking')
+  async checkoutInternetBanking(@Body() paymentDto: PaymentDto, @Res() res: Response) {
+    const authorize_uri = await this.paymentService.checkoutInternetBanking(paymentDto);
     res.status(HttpStatus.MOVED_PERMANENTLY).redirect(authorize_uri);
+  }
+
+  @Post('checkout/promptpay')
+  async checkoutPromptPay(@Body() paymentDto: PaymentDto, @Res() res: Response) {
+    const download_uri = await this.paymentService.checkoutPromptPay(paymentDto);
+    return res.status(HttpStatus.OK).json({ download_uri });
+  }
+
+  @Post('checkout/credit-card')
+  async checkoutCreditCard(@Body() paymentDto: PaymentDto, @Res() res: Response) {
+    await this.paymentService.checkoutCreditCard(paymentDto);
+    res
+      .status(HttpStatus.MOVED_PERMANENTLY)
+      .redirect(this.configService.get<string>('app.url') + '/payment/success');
   }
 
   @Post('omise/callback')
