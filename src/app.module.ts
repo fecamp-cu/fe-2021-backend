@@ -37,6 +37,7 @@ import { UserModule } from './user/user.module';
     AuthModule,
     ProfileModule,
     CaslModule,
+    SettingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
