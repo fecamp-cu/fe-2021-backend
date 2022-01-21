@@ -10,7 +10,9 @@ export const receiptMessage = (
     `Hello ${firstname} ${lastname}, <br/>`,
     `Thank you for your recent transaction on FE Shop <br/>`,
     `Your order number is ${orderDto.id} <br/>`,
-    `Please enjoy, your items, ${orderDto.items.map(item => showItem(item)).join(' ')} <br/>`,
+    `Please enjoy, your items, ${orderDto.items
+      .map(orderItem => showItem(orderItem.item))
+      .join(' ')} <br/>`,
     `Hope we will see you again soon! <br/>`,
   ];
 };

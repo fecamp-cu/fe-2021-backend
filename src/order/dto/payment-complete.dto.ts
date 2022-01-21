@@ -16,4 +16,8 @@ export class PaymentCompleteDto {
   key: 'charge.complete';
 
   created_at: Date;
+
+  constructor(partial: Partial<PaymentCompleteDto>) {
+    Object.assign(this, partial);
+  }
 }

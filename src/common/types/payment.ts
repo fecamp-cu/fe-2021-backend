@@ -14,7 +14,7 @@ export type OmiseSource = {
   name: string;
   mobile_number: string;
   phone_number: string;
-  scannable_code: object;
+  scannable_code: ScannableCode;
   references: object;
   store_id: string;
   store_name: string;
@@ -38,30 +38,12 @@ export type OmiseCharge = {
   interest_vat: number;
   funding_amount: number;
   refunded_amount: number;
-  transaction_fees: {
-    fee_flat: string;
-    fee_rate: string;
-    vat_rate: string;
-  };
-  platform_fee: {
-    fixed: string;
-    amount: string;
-    percentage: string;
-  };
+  transaction_fees: TransactionFee;
+  platform_fee: PlatformFee;
   currency: string;
   funding_currency: string;
   ip: string;
-  refunds: {
-    object: string;
-    data: [];
-    limit: number;
-    offset: number;
-    total: number;
-    location: string;
-    order: string;
-    from: string;
-    to: string;
-  };
+  refunds: Refund;
   link: string;
   description: string;
   metadata: object;
@@ -96,7 +78,56 @@ export type OmiseCharge = {
   expired: boolean;
 };
 
+export type TransactionFee = {
+  fee_flat: string;
+  fee_rate: string;
+  vat_rate: string;
+};
+
+export type PlatformFee = {
+  fixed: string;
+  amount: string;
+  percentage: string;
+};
+
+export type Refund = {
+  object: string;
+  data: [];
+  limit: number;
+  offset: number;
+  total: number;
+  location: string;
+  order: string;
+  from: string;
+  to: string;
+};
+
+export type ScannableCode = {
+  object: string;
+  type: string;
+  image: Image;
+};
+
+export type Image = {
+  object: string;
+  livemode: boolean;
+  id: string;
+  deleted: boolean;
+  filename: string;
+  location: string;
+  download_uri: string;
+  created_at: Date;
+};
+
 export type Basket = {
   productId: number;
   quantity: number;
+};
+
+export type ChargeRequest = {
+  amount: number;
+  currency: 'THB';
+  return_uri: string;
+  source?: string;
+  card?: string;
 };

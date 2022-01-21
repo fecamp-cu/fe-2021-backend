@@ -2,6 +2,8 @@ import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } fr
 import { ConfigService } from '@nestjs/config';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { PaymentType } from 'src/common/enums/shop';
+import { OmiseCharge } from 'src/common/types/payment';
 import { OrderDto } from './dto/order.dto';
 import { PaymentCompleteDto } from './dto/payment-complete.dto';
 import { PaymentDto } from './dto/payment.dto';
@@ -24,19 +26,25 @@ export class ShopController {
 
   @Post('checkout/internet-banking')
   async checkoutInternetBanking(@Body() paymentDto: PaymentDto, @Res() res: Response) {
-    const authorize_uri = await this.paymentService.checkoutInternetBanking(paymentDto);
+    const authorize_uri: string = (await this.paymentService.checkout(
+      paymentDto,
+      PaymentType.INTERNET_BANKING,
+    )) as string;
     res.status(HttpStatus.MOVED_PERMANENTLY).redirect(authorize_uri);
   }
 
   @Post('checkout/promptpay')
   async checkoutPromptPay(@Body() paymentDto: PaymentDto, @Res() res: Response) {
-    const download_uri = await this.paymentService.checkoutPromptPay(paymentDto);
+    const download_uri: string = (await this.paymentService.checkout(
+      paymentDto,
+      PaymentType.PROMPT_PAY,
+    )) as string;
     return res.status(HttpStatus.OK).json({ download_uri });
   }
 
   @Post('checkout/credit-card')
   async checkoutCreditCard(@Body() paymentDto: PaymentDto, @Res() res: Response) {
-    await this.paymentService.checkoutCreditCard(paymentDto);
+    (await this.paymentService.checkout(paymentDto, PaymentType.CREDIT_CARD)) as OmiseCharge;
     res
       .status(HttpStatus.MOVED_PERMANENTLY)
       .redirect(this.configService.get<string>('app.url') + '/payment/success');

@@ -4,10 +4,10 @@ import { ThirdPartyAuthService } from 'src/auth/third-party-auth.service';
 import { DiscordShopMessage } from 'src/common/constants/discord-message.constant';
 import { receiptMessage } from 'src/common/constants/shop-message.constants';
 import { ServiceType } from 'src/common/enums/service-type';
-import { PaymentMessage, PaymentStatus } from 'src/common/enums/shop';
+import { PaymentMessage, PaymentStatus, PaymentType } from 'src/common/enums/shop';
 import { Discord } from 'src/common/enums/third-party';
 import { GoogleEmailRef } from 'src/common/types/google/google-gmail';
-import { OmiseCharge } from 'src/common/types/payment';
+import { OmiseCharge, OmiseSource } from 'src/common/types/payment';
 import { ItemService } from 'src/item/item.service';
 import { DiscordService } from 'src/third-party/discord/discord.service';
 import { GoogleGmail } from 'src/third-party/google-cloud/google-gmail.service';
@@ -37,100 +37,23 @@ export class PaymentService {
     private googleGmail: GoogleGmail,
   ) {}
 
-  async checkoutInternetBanking(paymentDto: PaymentDto): Promise<string> {
-    // TODO Create customer if doesn't exist
+  async checkout(paymentDto: PaymentDto, paymentType: PaymentType): Promise<string | OmiseCharge> {
+    await this.createOrder(paymentDto);
 
-    const ids = await paymentDto.basket.map(item => item.productId);
-    const items = await this.itemService.findMulti(ids);
-    const customer = await this.createCustomer(paymentDto);
-
-    const orderDto = new OrderDto({
-      sourceId: paymentDto.source.id,
-      amount: paymentDto.source.amount,
-      paymentMethod: paymentDto.source.type,
-      items,
-      customer,
-    });
-
-    if (paymentDto.promotionCode) {
-      orderDto.code = await this.promotionCodeService.getPromotionCode(paymentDto.promotionCode);
-    }
-
-    await this.orderService.create(orderDto);
-
-    const authorize_uri = await this.omiseService.createInternetBankingCharge(
+    const charge: OmiseCharge = await this.omiseService.createCharge(
       paymentDto.source.amount,
       paymentDto.source.id,
+      paymentType,
     );
 
-    return authorize_uri;
-  }
-
-  async checkoutPromptPay(paymentDto: PaymentDto): Promise<string> {
-    // TODO Create customer if doesn't exist
-
-    const ids = await paymentDto.basket.map(item => item.productId);
-    const items = await this.itemService.findMulti(ids);
-    const customer = await this.createCustomer(paymentDto);
-
-    const orderDto = new OrderDto({
-      sourceId: paymentDto.source.id,
-      amount: paymentDto.source.amount,
-      paymentMethod: paymentDto.source.type,
-      items,
-      customer,
-    });
-
-    if (paymentDto.promotionCode) {
-      orderDto.code = await this.promotionCodeService.getPromotionCode(paymentDto.promotionCode);
+    if (paymentType === PaymentType.CREDIT_CARD) {
+      charge.source = { id: paymentDto.source.id } as OmiseSource;
+      this.sendReciept(new PaymentCompleteDto({ data: charge }));
     }
-
-    await this.orderService.create(orderDto);
-
-    const download_uri = await this.omiseService.createPromptPayCharge(
-      paymentDto.source.amount,
-      paymentDto.source.id,
-    );
-
-    return download_uri;
-  }
-
-  async checkoutCreditCard(paymentDto: PaymentDto): Promise<boolean> {
-    // TODO Create customer if doesn't exist
-
-    const ids = await paymentDto.basket.map(item => item.productId);
-    const items = await this.itemService.findMulti(ids);
-    const customer = await this.createCustomer(paymentDto);
-
-    const orderDto = new OrderDto({
-      sourceId: paymentDto.source.id,
-      amount: paymentDto.source.amount,
-      paymentMethod: paymentDto.source.type,
-      items,
-      customer,
-    });
-
-    if (paymentDto.promotionCode) {
-      orderDto.code = await this.promotionCodeService.getPromotionCode(paymentDto.promotionCode);
-    }
-
-    await this.orderService.create(orderDto);
-
-    const res = await this.omiseService.createCreditCardCharge(
-      paymentDto.source.amount,
-      paymentDto.source.id,
-    );
-
-    res.source = { id: paymentDto.source.id };
-
-    await this.sendRecieptCreditCard(res);
-
-    return true;
+    return this.getPaymentResult(charge, paymentType);
   }
 
   async sendReciept(paymentCompleteDto: PaymentCompleteDto): Promise<OrderDto> {
-    // TODO Implement for token payment
-
     const order = await this.orderService.findBySourceId(paymentCompleteDto.data.source.id);
 
     order.chargeId = paymentCompleteDto.data.id;
@@ -138,50 +61,15 @@ export class PaymentService {
     order.paidAt = paymentCompleteDto.data.paid_at;
     order.status = PaymentStatus.SUCCESS;
 
-    const orderDto = await this.orderService.update(order.id, order, ['customer', 'items']);
+    await this.orderService.update(order.id, order);
+
+    const orderDto: OrderDto = await this.orderService.getOrderWithItems(order.id);
 
     const emailRef: GoogleEmailRef = {
       email: orderDto.customer.email,
       firstname: orderDto.customer.firstname,
       lastname: orderDto.customer.lastname,
     };
-
-    // TODO send email and webhook
-
-    await this.sendEmail(
-      emailRef,
-      PaymentMessage.RECEIPT,
-      receiptMessage(emailRef.firstname, emailRef.lastname, orderDto),
-    );
-
-    await this.discordService.sendMessage(
-      Discord.SHOP_USERNAME,
-      Discord.SHOP_AVATAR_URL,
-      DiscordShopMessage(orderDto),
-    );
-
-    return orderDto;
-  }
-
-  async sendRecieptCreditCard(paidCharge: OmiseCharge): Promise<OrderDto> {
-    // TODO Implement for token payment
-
-    const order = await this.orderService.findBySourceId(paidCharge.source.id);
-
-    order.chargeId = paidCharge.id;
-    order.transactionId = paidCharge.transaction;
-    order.paidAt = paidCharge.paid_at;
-    order.status = PaymentStatus.SUCCESS;
-
-    const orderDto = await this.orderService.update(order.id, order, ['customer', 'items']);
-
-    const emailRef: GoogleEmailRef = {
-      email: orderDto.customer.email,
-      firstname: orderDto.customer.firstname,
-      lastname: orderDto.customer.lastname,
-    };
-
-    // TODO send email and webhook
 
     await this.sendEmail(
       emailRef,
@@ -232,6 +120,42 @@ export class PaymentService {
     }
 
     return customer;
+  }
+
+  private getPaymentResult(res: OmiseCharge, paymentType: PaymentType): string | OmiseCharge {
+    switch (paymentType) {
+      case PaymentType.CREDIT_CARD:
+        return res;
+      case PaymentType.INTERNET_BANKING:
+        return res.authorize_uri;
+      case PaymentType.PROMPT_PAY:
+        return res.source.scannable_code.image.download_uri;
+      default:
+        return null;
+    }
+  }
+
+  private async createOrder(paymentDto: PaymentDto): Promise<OrderDto> {
+    const ids = await paymentDto.basket.map(item => item.productId);
+    const quantities = await paymentDto.basket.map(item => item.quantity);
+    const items = await this.itemService.findMulti(ids);
+    const customer = await this.createCustomer(paymentDto);
+
+    const orderDto = new OrderDto({
+      sourceId: paymentDto.source.id,
+      amount: paymentDto.source.amount,
+      paymentMethod: paymentDto.source.type,
+      customer,
+    });
+
+    if (paymentDto.promotionCode) {
+      orderDto.code = await this.promotionCodeService.getPromotionCode(paymentDto.promotionCode);
+    }
+
+    const createdOrder = await this.orderService.create(orderDto);
+
+    await this.orderService.createMultiOrderItems(items, createdOrder, quantities);
+    return createdOrder;
   }
 
   private async sendEmail(emailRef: GoogleEmailRef, subject: string, message: string[]) {

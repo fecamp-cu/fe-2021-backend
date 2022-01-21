@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosResponse } from 'axios';
-import { OmiseCharge, OmiseSource } from 'src/common/types/payment';
+import { PaymentType } from 'src/common/enums/shop';
+import { ChargeRequest, OmiseCharge, OmiseSource } from 'src/common/types/payment';
 
 @Injectable()
 export class OmiseService {
@@ -44,45 +45,41 @@ export class OmiseService {
     }
   }
 
-  public async createInternetBankingCharge(amount: number, source: string) {
-    try {
-      const res: AxiosResponse = await this.client.post('/charges', {
-        amount,
-        currency: 'THB',
-        return_uri: this.configService.get<string>('app.url') + '/payment/success',
-        source,
-      });
-      return res.data.authorize_uri;
-    } catch (err) {
-      console.log(err.response.data);
+  public async createCharge(
+    amount: number,
+    source: string,
+    paymentType: PaymentType,
+  ): Promise<OmiseCharge> {
+    let isCreditCard = false;
+    if (paymentType === PaymentType.CREDIT_CARD) {
+      isCreditCard = true;
     }
+    const res: OmiseCharge = await this.sendCharge(amount, source, isCreditCard);
+
+    return res;
   }
 
-  // TODO create function for promptpay and credit card
+  async sendCharge(
+    amount: number,
+    sourceIdOrTokenId: string,
+    isCreditCard: boolean,
+  ): Promise<OmiseCharge> {
+    const data: ChargeRequest = {
+      amount,
+      currency: 'THB',
+      return_uri: this.configService.get<string>('app.url') + '/payment/success',
+    };
 
-  public async createPromptPayCharge(amount: number, source: string) {
-    try {
-      const res: AxiosResponse = await this.client.post('/charges', {
-        amount,
-        currency: 'THB',
-        return_uri: this.configService.get<string>('app.url') + '/payment/success',
-        source,
-      });
-      return res.data.source.scannable_code.image.download_uri;
-    } catch (err) {
-      console.log(err.response.data);
+    if (isCreditCard) {
+      data.card = sourceIdOrTokenId;
     }
-  }
 
-  public async createCreditCardCharge(amount: number, token: string) {
+    if (!isCreditCard) {
+      data.source = sourceIdOrTokenId;
+    }
+
     try {
-      const res: AxiosResponse = await this.client.post('/charges', {
-        amount,
-        currency: 'THB',
-        return_uri: this.configService.get<string>('app.url') + '/payment/success',
-        card: token,
-      });
-      console.log(res.data);
+      const res: AxiosResponse = await this.client.post('/charges', data);
       return res.data;
     } catch (err) {
       console.log(err.response.data);
