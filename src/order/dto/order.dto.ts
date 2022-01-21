@@ -1,6 +1,6 @@
 import { PaymentStatus } from 'src/common/enums/shop';
-import { ItemDto } from 'src/item/dto/item.dto';
 import { CustomerDto } from './customer.dto';
+import { OrderItemDto } from './order-item.dto';
 import { PromotionCodeDto } from './promotion-code.dto';
 
 export class OrderDto {
@@ -22,7 +22,7 @@ export class OrderDto {
 
   customer: CustomerDto;
 
-  items: ItemDto[];
+  items: OrderItemDto[];
 
   code?: PromotionCodeDto;
 

@@ -1,5 +1,4 @@
 import { PaymentStatus } from 'src/common/enums/shop';
-import { Item } from 'src/item/entities/item.entity';
 import {
   Column,
   CreateDateColumn,
@@ -8,13 +7,14 @@ import {
   Index,
   JoinColumn,
   JoinTable,
-  ManyToMany,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Customer } from './customer.entity';
+import { OrderItem } from './order-item.entity';
 import { PromotionCode } from './promotion-code.entity';
 
 @Entity()
@@ -47,9 +47,9 @@ export class Order {
   @ManyToOne(() => Customer, cumtomer => cumtomer.orders)
   customer: Customer;
 
-  @ManyToMany(() => Item, item => item.orders)
+  @OneToMany(() => OrderItem, item => item.order)
   @JoinTable()
-  items: Item[];
+  items: OrderItem[];
 
   @OneToOne(() => PromotionCode, promotionCode => promotionCode.order, {
     persistence: false,
