@@ -1,5 +1,10 @@
 import {
+  Body,
   Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
   Post,
   Req,
   Res,
@@ -12,8 +17,11 @@ import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RedeemTokenHandler } from 'src/auth/redeem-token.guard';
+import { PoliciesGuard } from 'src/casl/policies.guard';
+import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
 import { RequestWithUserId } from 'src/common/types/auth';
 import { UserService } from 'src/user/user.service';
+import { ProfileDto } from './dto/profile.dto';
 import { Profile } from './entities/profile.entity';
 import { ProfileService } from './profile.service';
 
@@ -25,32 +33,38 @@ export class ProfileController {
     private readonly profileService: ProfileService,
     private readonly userService: UserService,
   ) {}
-
-  // @Post()
-  // create(@Body() createProfileDto: CreateProfileDto) {
-  //   return this.profileService.create(createProfileDto);
-  // }
-
-  // @Get()
-  // findAll() {
-  //   return this.profileService.findAll();
-  // }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.profileService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateProfileDto: UpdateProfileDto) {
-  //   return this.profileService.update(+id, updateProfileDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.profileService.remove(+id);
-  // }
-
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies(new ManagePolicyHandler())
+  @Post()
+  create(@Body() profileDto: ProfileDto) {
+    return this.profileService.create(profileDto);
+  }
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies(new ManagePolicyHandler())
+  @Get()
+  findAll() {
+    return this.profileService.findAll();
+  }
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies(new ManagePolicyHandler())
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.profileService.findOne(+id);
+  }
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies(new ManagePolicyHandler())
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() profileDto: ProfileDto) {
+    return this.profileService.update(+id, profileDto);
+  }
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies(new ManagePolicyHandler())
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.profileService.remove(+id);
+  }
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies(new ManagePolicyHandler())
   @Post('upload')
   @UseInterceptors(FileInterceptor('avatar'))
   async uploadImage(
