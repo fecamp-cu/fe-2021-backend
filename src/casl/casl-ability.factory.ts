@@ -8,9 +8,10 @@ import {
 import { Injectable } from '@nestjs/common';
 import { Action } from 'src/common/enums/action';
 import { Role } from 'src/common/enums/role';
+import { Profile } from 'src/profile/entities/profile.entity';
 import { User } from 'src/user/entities/user.entity';
 
-type Subjects = InferSubjects<typeof User | User> | 'all';
+type Subjects = InferSubjects<typeof User | User | Profile | typeof Profile> | 'all';
 
 export type AppAbility = Ability<[Action, Subjects]>;
 
