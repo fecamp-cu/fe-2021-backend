@@ -1,5 +1,10 @@
 import {
+  Body,
   Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
   Post,
   Req,
   Res,
@@ -14,6 +19,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RedeemTokenHandler } from 'src/auth/redeem-token.guard';
 import { RequestWithUserId } from 'src/common/types/auth';
 import { UserService } from 'src/user/user.service';
+import { ProfileDto } from './dto/profile.dto';
 import { Profile } from './entities/profile.entity';
 import { ProfileService } from './profile.service';
 
@@ -26,30 +32,30 @@ export class ProfileController {
     private readonly userService: UserService,
   ) {}
 
-  // @Post()
-  // create(@Body() createProfileDto: CreateProfileDto) {
-  //   return this.profileService.create(createProfileDto);
-  // }
+  @Post()
+  create(@Body() profileDto: ProfileDto) {
+    return this.profileService.create(profileDto);
+  }
 
-  // @Get()
-  // findAll() {
-  //   return this.profileService.findAll();
-  // }
+  @Get()
+  findAll() {
+    return this.profileService.findAll();
+  }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.profileService.findOne(+id);
-  // }
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.profileService.findOne(+id);
+  }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateProfileDto: UpdateProfileDto) {
-  //   return this.profileService.update(+id, updateProfileDto);
-  // }
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() profileDto: ProfileDto) {
+    return this.profileService.update(+id, profileDto);
+  }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.profileService.remove(+id);
-  // }
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.profileService.remove(+id);
+  }
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('avatar'))
