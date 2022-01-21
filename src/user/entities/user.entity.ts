@@ -1,13 +1,18 @@
 import { Token } from 'src/auth/entities/token.entity';
 import { ValidateCode } from 'src/auth/entities/validate-code.entity';
 import { Role } from 'src/common/enums/role';
+import { Item } from 'src/item/entities/item.entity';
+import { Customer } from 'src/order/entities/customer.entity';
 import { Profile } from 'src/profile/entities/profile.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  Index,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -25,6 +30,7 @@ export class User {
   @Column({ select: false })
   password: string;
 
+  @Index()
   @Column({ unique: true })
   email: string;
 
@@ -39,6 +45,17 @@ export class User {
     cascade: true,
   })
   verifiedCodes: ValidateCode[];
+
+  @ManyToMany(() => Item, item => item.users, { persistence: false, cascade: true })
+  @JoinTable()
+  items: Item[];
+
+  @OneToOne(() => Customer, customer => customer.user, {
+    persistence: false,
+    cascade: true,
+  })
+  @JoinColumn()
+  customer?: Customer;
 
   @Column({ default: Role.USER })
   role: Role;

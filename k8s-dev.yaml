@@ -84,6 +84,11 @@ spec:
                 configMapKeyRef:
                   name: fecamp-config
                   key: url
+            - name: DISCORD_WEBHOOK_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: discord_webhook_url
             - name: ENCRYPT_KEY
               valueFrom:
                 secretKeyRef:
@@ -213,6 +218,11 @@ spec:
                 configMapKeyRef:
                   name: fecamp-config
                   key: facebook_scope
+            - name: OMISE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: omise-secret
+                  key: secret_key
           livenessProbe:
             httpGet:
               path: /api

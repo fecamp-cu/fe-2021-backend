@@ -25,15 +25,14 @@ export class UserDto {
   isEmailVerified: boolean;
 
   @ApiProperty()
+  @IsEmpty()
   role: Role;
 
   @ApiProperty()
   profile?: ProfileDto;
 
-  @ApiProperty()
   tokens?: TokenDto[];
 
-  @ApiProperty()
   verifiedCodes: ValidateCodeDto[];
 
   constructor(partial: Partial<UserDto>) {

@@ -8,9 +8,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from 'src/auth/dto/login.dto';
-import { TokenDto } from 'src/auth/dto/token.dto';
 import { FindUser } from 'src/common/types/user';
-import { ProfileDto } from 'src/profile/dto/profile.dto';
 import { Profile } from 'src/profile/entities/profile.entity';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -100,20 +98,32 @@ export class UserService {
     return this.rawToDTO(user);
   }
 
-  async findOne(id: number, relations: string[] = []): Promise<User> {
+  async findOne(id: number, relations: string[] = ['profile']): Promise<User> {
     const user: User = await this.userRepository.findOne(id, { relations });
 
     if (!user) {
-      throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found user' });
+      throw new NotFoundException({
+        reason: 'NOT_FOUND_ENTITY',
+        message: 'Not found user',
+      });
     }
-    return new User({
+
+    const result = new User({
       id: user.id,
       username: user.username,
       email: user.email,
-      profile: user.profile,
-      tokens: user.tokens,
       role: user.role,
     });
+
+    if (user.profile) {
+      result.profile = user.profile;
+    }
+
+    if (user.tokens) {
+      result.tokens = user.tokens;
+    }
+
+    return result;
   }
 
   async update(id: number, userDto: UpdateUserDto, relations: string[] = []): Promise<UserDto> {
@@ -153,7 +163,7 @@ export class UserService {
     return await this.userRepository.count(key);
   }
 
-  public async rawToDTO(user: User): Promise<UserDto> {
+  public rawToDTO(user: User): UserDto {
     const userDto: UserDto = new UserDto({
       id: user.id,
       username: user.username,
@@ -161,36 +171,15 @@ export class UserService {
       profile: user.profile,
       role: user.role,
     });
+
     if (user.tokens) {
-      const tokenDto: TokenDto[] = user.tokens.map(
-        token =>
-          new TokenDto({
-            id: token.id,
-            serviceType: token.serviceType,
-            accessToken: token.accessToken,
-            refreshToken: token.refreshToken,
-            expiresDate: token.expiresDate,
-          }),
-      );
-      userDto.tokens = tokenDto;
+      userDto.tokens = user.tokens;
     }
+
     if (user.profile) {
-      const profileDto: ProfileDto = new ProfileDto({
-        id: user.profile.id,
-        firstName: user.profile.firstName,
-        lastName: user.profile.lastName,
-        imageUrl: user.profile.imageUrl,
-        address: user.profile.address,
-        district: user.profile.district,
-        subdistrict: user.profile.subdistrict,
-        province: user.profile.province,
-        postcode: user.profile.postcode,
-        tel: user.profile.tel,
-        grade: user.profile.grade,
-        school: user.profile.school,
-      });
-      userDto.profile = profileDto;
+      userDto.profile = user.profile;
     }
+
     return userDto;
   }
 

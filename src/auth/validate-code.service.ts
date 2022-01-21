@@ -1,6 +1,11 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CodeType } from 'src/common/types/validate-code';
+import { CodeType } from 'src/common/enums/validate-code-type';
 import { UserDto } from 'src/user/dto/user.dto';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
@@ -32,7 +37,14 @@ export class ValidateCodeService {
     return this.rawToDTO(createdValidateCode);
   }
 
-  async validateCode(uid: number, codeType: CodeType, token: string): Promise<boolean> {
+  async use(uid: number, codeType: CodeType, token: string): Promise<boolean> {
+    if (!token) {
+      throw new BadRequestException({
+        reason: 'MALFORM_INPUT',
+        message: 'You must included a token',
+      });
+    }
+
     const queriedCode: ValidateCodeDto = await this.validateCodeRepository.findOne(
       {
         code: token,
@@ -42,9 +54,9 @@ export class ValidateCodeService {
     );
 
     if (!queriedCode) {
-      throw new BadRequestException({
-        reason: 'MALFORM_INPUT',
-        message: 'You must included a token',
+      throw new NotFoundException({
+        reason: 'NOT_FOUND',
+        message: 'Token not match with any code',
       });
     }
 
@@ -70,7 +82,7 @@ export class ValidateCodeService {
     }
 
     queriedCode.isUsed = true;
-    this.validateCodeRepository.save(queriedCode);
+    await this.validateCodeRepository.save(queriedCode);
 
     return true;
   }

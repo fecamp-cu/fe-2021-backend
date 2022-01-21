@@ -16,6 +16,14 @@ import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import * as faker from 'faker';
 import * as moment from 'moment';
+import {
+  accountPasswordMessage,
+  emailVerifyMessage,
+  resetPasswordMessage,
+} from 'src/common/constants/email-message.constant';
+import { ServiceType } from 'src/common/enums/service-type';
+import { EmailMessage } from 'src/common/enums/third-party';
+import { CodeType } from 'src/common/enums/validate-code-type';
 import { GoogleAuthData, RequestWithUserId } from 'src/common/types/auth';
 import { FacebookUserInfo } from 'src/common/types/facebook/facebook';
 import { GoogleUserInfo } from 'src/common/types/google/google-api';
@@ -52,14 +60,16 @@ export class AuthController {
   @Post('register')
   async register(@Body() registerDto: RegisterDto, @Res() res: Response): Promise<Response> {
     const user: UserDto = await this.authService.createUser(registerDto);
-    const tokenDto = await this.validateCodeService.generate(user, 'confirm_email');
-    this.sendEmail(user, 'Welcome to our FE Camp Family', [
-      `Welcome to our FE Camp Family, N. ${user.profile.firstName} ${user.profile.lastName}<br/>`,
-      `the next step is you need to verify your email address.<br/>`,
-      `please click this link ${this.configService.get<string>('app.url')}/verify-email?token=${
-        tokenDto.code
-      }&userId=${user.id} <br/>`,
-    ]);
+    const tokenDto = await this.validateCodeService.generate(user, CodeType.VERIFY_EMAIL);
+
+    const url =
+      this.configService.get<string>('app.url') +
+      '/verify-email?token=' +
+      tokenDto.code +
+      '&userId=' +
+      user.id;
+
+    this.sendEmail(user, EmailMessage.VERIFY_SUBJECT, emailVerifyMessage(url, user));
     return res.status(HttpStatus.CREATED).json({ message: 'Successfully registered user', user });
   }
 
@@ -96,17 +106,21 @@ export class AuthController {
       const expireDate = moment().add(1, 'day').toDate();
       const validateCodeDto: ValidateCodeDto = await this.validateCodeService.generate(
         user,
-        'reset_password',
+        CodeType.RESET_PASSWORD,
         expireDate,
       );
-      this.sendEmail(user, 'Reset Password', [
-        `You are receiving this email because you have requested a password reset.<br/>`,
-        `Please click on the following link to reset your password:<br/>`,
-        `This link valid until ${moment(expireDate).format('llll')}<br/>`,
-        `${this.configService.get<string>('app.url')}/reset-password?${
-          validateCodeDto.code
-        }&userId=${user.id}`,
-      ]);
+      const url =
+        this.configService.get<string>('app.url') +
+        '/reset-password?' +
+        validateCodeDto.code +
+        '&userId=' +
+        user.id;
+
+      this.sendEmail(
+        user,
+        EmailMessage.RESET_PASSWORD_SUBJECT,
+        resetPasswordMessage(url, moment(expireDate).format('llll')),
+      );
     }
     return res.status(HttpStatus.OK).json({ message: 'Successfully sent email' });
   }
@@ -118,7 +132,7 @@ export class AuthController {
     @Body() resetPasswordDto: ResetPasswordDto,
     @Res() res: Response,
   ): Promise<Response> {
-    await this.validateCodeService.validateCode(resetPasswordDto.id, 'reset_password', token);
+    await this.validateCodeService.use(resetPasswordDto.id, CodeType.RESET_PASSWORD, token);
 
     const user: UserDto = await this.userService.update(
       resetPasswordDto.id,
@@ -134,7 +148,7 @@ export class AuthController {
     @Query('userId') userId: string,
     @Res() res: Response,
   ) {
-    await this.validateCodeService.validateCode(+userId, 'confirm_email', token);
+    await this.validateCodeService.use(+userId, CodeType.VERIFY_EMAIL, token);
     await this.userService.update(+userId, new UserDto({ isEmailVerified: true }));
     res.status(HttpStatus.OK).json({ message: 'Successfully verified email' });
   }
@@ -148,7 +162,7 @@ export class AuthController {
   }
 
   @Get('google/callback')
-  async OAuthCallbackGoogle(@Query('code') code: string, @Res() res: Response): Promise<Response> {
+  async OAuthCallbackGoogle(@Query('code') code: string, @Res() res: Response): Promise<void> {
     const tokens: GoogleAuthData = await this.googleClient.getTokens(code);
     this.googleClient.setCredentials(tokens);
     const userInfo: GoogleUserInfo = await this.googleClient.getUserInfo();
@@ -168,16 +182,17 @@ export class AuthController {
       });
 
       user = await this.authService.createUser(registerDto, true);
-      this.sendEmail(user, 'Welcome to FE Camp 2022', [
-        `Welcome to our FE Camp Family, ${userInfo.name}<br/>`,
-        `your password is ${password}`,
-      ]);
+      this.sendEmail(
+        user,
+        EmailMessage.ACCOUNT_PASSWORD_SUBJECT,
+        accountPasswordMessage(user, password),
+      );
     }
 
     user = await this.thirdPartyAuthService.storeGoogleToken(tokens, user, userInfo.id);
 
     await this.signToken(user, res);
-    return res.status(HttpStatus.OK).json(user);
+    res.status(HttpStatus.MOVED_PERMANENTLY).redirect(this.configService.get<string>('app.url'));
   }
 
   @Get('facebook')
@@ -193,7 +208,7 @@ export class AuthController {
     @Query('code') code: string,
     @Query('state') state: string,
     @Res() res: Response,
-  ): Promise<Response> {
+  ): Promise<void> {
     const tokens = await this.facebookClient.redeemCode(state, code);
     this.facebookClient.setCredentials(tokens);
     const userInfo: FacebookUserInfo = await this.facebookClient.getUserInfo();
@@ -217,16 +232,17 @@ export class AuthController {
 
       user = await this.authService.createUser(registerDto, true);
 
-      this.sendEmail(user, 'Welcome to FE Camp 2022', [
-        'Welcome to our FE Camp Family, ${userInfo.name}<br/>',
-        `your password is ${password}`,
-      ]);
+      this.sendEmail(
+        user,
+        EmailMessage.ACCOUNT_PASSWORD_SUBJECT,
+        accountPasswordMessage(user, password),
+      );
     }
 
     user = await this.thirdPartyAuthService.storeFacebookToken(tokens, user, userInfo.id);
 
     await this.signToken(user, res);
-    return res.status(HttpStatus.OK).json(user);
+    res.status(HttpStatus.MOVED_PERMANENTLY).redirect(this.configService.get<string>('app.url'));
   }
 
   private async signToken(user: UserDto, res: Response) {
@@ -237,7 +253,7 @@ export class AuthController {
   }
 
   private async sendEmail(userDto: UserDto, subject: string, message: string[]) {
-    let tokenDto = await this.thirdPartyAuthService.getAdminToken('google');
+    let tokenDto = await this.thirdPartyAuthService.getAdminToken(ServiceType.GOOGLE);
     tokenDto = await this.thirdPartyAuthService.validateAndRefreshServiceToken(tokenDto);
 
     const emailRef: GoogleEmailRef = {
