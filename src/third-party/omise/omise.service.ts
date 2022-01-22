@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosResponse } from 'axios';
 import { PaymentType } from 'src/common/enums/shop';
+import { OmiseException } from 'src/common/exceptions/omise.exception';
 import { ChargeRequest, OmiseCharge, OmiseSource } from 'src/common/types/payment';
 
 @Injectable()
@@ -24,6 +25,7 @@ export class OmiseService {
       return res.data;
     } catch (err) {
       console.log(err.response.data);
+      throw new OmiseException(err.response.data.message);
     }
   }
 
@@ -33,6 +35,7 @@ export class OmiseService {
       return res.data;
     } catch (err) {
       console.log(err.response.data);
+      throw new OmiseException(err.response.data.message);
     }
   }
 
@@ -42,6 +45,7 @@ export class OmiseService {
       return res.data;
     } catch (err) {
       console.log(err.response.data);
+      throw new OmiseException(err.response.data.message);
     }
   }
 
@@ -83,6 +87,7 @@ export class OmiseService {
       return res.data;
     } catch (err) {
       console.log(err.response.data);
+      throw new OmiseException(err.response.data.message);
     }
   }
 }

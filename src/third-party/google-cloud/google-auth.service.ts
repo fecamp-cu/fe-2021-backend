@@ -1,8 +1,9 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosInstance } from 'axios';
 import { google } from 'googleapis';
 import { TokenDto } from 'src/auth/dto/token.dto';
+import { GoogleException } from 'src/common/exceptions/google.exception';
 import { GoogleAuthData } from 'src/common/types/auth';
 import { GoogleUserInfo } from 'src/common/types/google/google-api';
 
@@ -66,7 +67,7 @@ export class GoogleAuthentication {
       });
       return res.data as GoogleAuthData;
     } catch (err) {
-      throw new HttpException(err.response.statusText, err.response.status);
+      throw new GoogleException('Failed to redeem refresh token', err.response.status);
     }
   }
 
