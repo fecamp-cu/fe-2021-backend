@@ -6,6 +6,7 @@ export type OmiseSource = {
   amount: number;
   barcode: string;
   bank: string;
+  card: PaymentCard;
   created_at: string;
   currency: string;
   email: string;
@@ -24,6 +25,32 @@ export type OmiseSource = {
   charge_status: string;
   receipt_amount: number;
   discounts: [];
+};
+
+export type PaymentCard = {
+  object: 'card';
+  id: string;
+  livemode: boolean;
+  location: string;
+  deleted: boolean;
+  street1: string;
+  street2: string;
+  city: string;
+  state: string;
+  phone_number: string;
+  postal_code: string;
+  country: string;
+  financing: 'credit';
+  bank: string;
+  brand: string;
+  fingerprint: string;
+  first_digits: string;
+  last_digits: string;
+  name: string;
+  expiration_month: number;
+  expiration_year: number;
+  security_code_check: boolean;
+  created_at: Date;
 };
 
 export type OmiseCharge = {
