@@ -32,7 +32,11 @@ export class UserService {
       });
     }
 
-    const count = await this.count({ username: userDto.username });
+    const count = await this.userRepository
+      .createQueryBuilder('user')
+      .where('"user"."username" like :username', { username: `${userDto.username}%` })
+      .getCount();
+
     if (count > 0) {
       userDto.username = userDto.username + '#' + (count + 1);
     }
