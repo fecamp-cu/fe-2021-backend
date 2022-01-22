@@ -23,7 +23,7 @@ export class PromotionCodeService {
   async generate(
     type: PromotionCodeType,
     expiresDate: Date,
-    isReuseable: boolean,
+    isReuseable: boolean = false,
     code: string = crypto
       .SHA256(
         faker.datatype.string(faker.datatype.number(100)) +
