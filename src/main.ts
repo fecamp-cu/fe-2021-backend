@@ -29,6 +29,11 @@ async function bootstrap() {
     .addTag('Profile')
     .addTag('Shop')
     .addTag('Setting')
+    .addTag('AboutFeContainer')
+    .addTag('PhotoPreview')
+    .addTag('QualificationPreview')
+    .addTag('SponcerContainer')
+    .addTag('TimelineEvent')
     .addTag('Item')
     .build();
 
