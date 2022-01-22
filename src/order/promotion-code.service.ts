@@ -55,7 +55,7 @@ export class PromotionCodeService {
     const promotionCode = await this.promotionCodeRepository.create(promotionCodeDto);
     await this.promotionCodeRepository.save(promotionCode);
 
-    return promotionCode;
+    return this.rawToDTO(promotionCode);
   }
 
   async use(code: string): Promise<PromotionCodeDto> {
@@ -94,7 +94,7 @@ export class PromotionCodeService {
       await this.promotionCodeRepository.save(promotionCode);
     }
 
-    return promotionCode;
+    return this.rawToDTO(promotionCode);
   }
 
   async getPromotionCode(code: string): Promise<PromotionCodeDto> {
@@ -114,6 +114,16 @@ export class PromotionCodeService {
       });
     }
 
-    return promotionCode;
+    return this.rawToDTO(promotionCode);
+  }
+
+  private rawToDTO(promotionCode: PromotionCode) {
+    return new PromotionCodeDto({
+      code: promotionCode.code,
+      type: promotionCode.type,
+      value: promotionCode.value,
+      isReuseable: promotionCode.isReuseable,
+      expiresDate: promotionCode.expiresDate,
+    });
   }
 }
