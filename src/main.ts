@@ -6,6 +6,7 @@ import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as csurf from 'csurf';
 import { AppModule } from './app.module';
+import { ServiceDownFilter } from './logger/service-down.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +19,7 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
+  const configService = app.get(ConfigService);
   app.use(cookieParser());
   if (configService.get<boolean>('devMode')) {
     app.use(bodyParser.urlencoded({ extended: false }));
@@ -25,6 +27,7 @@ async function bootstrap() {
   }
 
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new ServiceDownFilter(configService));
 
   const config = new DocumentBuilder()
     .setTitle('FE Camp API')
