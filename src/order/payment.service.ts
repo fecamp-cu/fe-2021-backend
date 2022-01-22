@@ -7,7 +7,7 @@ import { ServiceType } from 'src/common/enums/service-type';
 import { PaymentMessage, PaymentStatus, PaymentType } from 'src/common/enums/shop';
 import { Discord } from 'src/common/enums/third-party';
 import { GoogleEmailRef } from 'src/common/types/google/google-gmail';
-import { OmiseCharge, OmiseSource } from 'src/common/types/payment';
+import { OmiseCharge } from 'src/common/types/payment';
 import { ItemService } from 'src/item/item.service';
 import { DiscordService } from 'src/third-party/discord/discord.service';
 import { GoogleGmail } from 'src/third-party/google-cloud/google-gmail.service';
@@ -46,15 +46,23 @@ export class PaymentService {
       paymentType,
     );
 
-    if (paymentType === PaymentType.CREDIT_CARD) {
-      charge.source = { id: paymentDto.source.id } as OmiseSource;
-      this.sendReciept(new PaymentCompleteDto({ data: charge }));
-    }
     return this.getPaymentResult(charge, paymentType);
   }
 
   async sendReciept(paymentCompleteDto: PaymentCompleteDto): Promise<OrderDto> {
-    const order = await this.orderService.findBySourceId(paymentCompleteDto.data.source.id);
+    let key = null;
+
+    if (!paymentCompleteDto.data.source) {
+      key = paymentCompleteDto.data.card.id;
+    }
+
+    if (!key) {
+      key = paymentCompleteDto.data.source.id;
+    }
+
+    const order = await this.orderService.findBySourceId(key);
+
+    console.log(order);
 
     order.chargeId = paymentCompleteDto.data.id;
     order.transactionId = paymentCompleteDto.data.transaction;
@@ -141,12 +149,14 @@ export class PaymentService {
     const items = await this.itemService.findMulti(ids);
     const customer = await this.createCustomer(paymentDto);
 
+    let sourceId: string = paymentDto.source.id;
     if (paymentDto.source.card) {
       paymentDto.source.type = PaymentType.CREDIT_CARD;
+      sourceId = paymentDto.source.card.id;
     }
 
     const orderDto = new OrderDto({
-      sourceId: paymentDto.source.id,
+      sourceId,
       amount: paymentDto.source.amount,
       paymentMethod: paymentDto.source.type,
       customer,

@@ -74,7 +74,7 @@ export type OmiseCharge = {
   link: string;
   description: string;
   metadata: object;
-  card: string;
+  card: PaymentCard;
   source: OmiseSource;
   schedule: string;
   customer: string;
