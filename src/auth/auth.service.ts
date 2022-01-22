@@ -77,7 +77,7 @@ export class AuthService {
   }
 
   public async createUser(registerDto: RegisterDto, isVerified: boolean = false): Promise<UserDto> {
-    const nFindUserByEmail = await this.userService.count({ email: userDto.email });
+    const nFindUserByEmail = await this.userService.count({ email: registerDto.email });
     if (nFindUserByEmail) {
       throw new UnprocessableEntityException({
         reason: 'INVALID_INPUT',
