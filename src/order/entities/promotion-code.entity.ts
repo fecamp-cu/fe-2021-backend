@@ -19,10 +19,13 @@ export class PromotionCode {
   type: PromotionCodeType;
 
   @Column()
-  code: string;
+  code?: string;
 
   @Column()
-  value: number;
+  value?: number;
+
+  @Column({ name: 'is_reuseable', default: false })
+  isReuseable: boolean;
 
   @Column({ name: 'is_actived', default: false })
   isActived: boolean;
