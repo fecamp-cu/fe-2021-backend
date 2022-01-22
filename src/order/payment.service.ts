@@ -62,8 +62,6 @@ export class PaymentService {
 
     const order = await this.orderService.findBySourceId(key);
 
-    console.log(order);
-
     order.chargeId = paymentCompleteDto.data.id;
     order.transactionId = paymentCompleteDto.data.transaction;
     order.paidAt = paymentCompleteDto.data.paid_at;
@@ -88,7 +86,9 @@ export class PaymentService {
     await this.discordService.sendMessage(
       Discord.SHOP_USERNAME,
       Discord.SHOP_AVATAR_URL,
+      Discord.SHOP_TITLE_SOLD,
       DiscordShopMessage(orderDto),
+      Discord.SHOP_COLOR,
     );
 
     return orderDto;
