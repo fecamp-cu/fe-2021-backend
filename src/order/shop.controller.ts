@@ -7,14 +7,17 @@ import { OmiseCharge } from 'src/common/types/payment';
 import { OrderDto } from './dto/order.dto';
 import { PaymentCompleteDto } from './dto/payment-complete.dto';
 import { PaymentDto } from './dto/payment.dto';
+import { PromotionCodeDto } from './dto/promotion-code.dto';
 import { OrderService } from './order.service';
 import { PaymentService } from './payment.service';
+import { PromotionCodeService } from './promotion-code.service';
 
 @ApiTags('Shop')
 @Controller('shop')
 export class ShopController {
   constructor(
     private readonly orderService: OrderService,
+    private promotionCodeService: PromotionCodeService,
     private paymentService: PaymentService,
     private configService: ConfigService,
   ) {}
@@ -56,6 +59,24 @@ export class ShopController {
       this.paymentService.sendReciept(paymentCompleteDto);
     }
     return res.status(HttpStatus.OK).json(paymentCompleteDto);
+  }
+
+  @Post('/generate-code')
+  async generateCode(@Body() promotionCodeDto: PromotionCodeDto) {
+    const promotionCode = await this.promotionCodeService.generate(
+      promotionCodeDto.type,
+      promotionCodeDto.expiresDate,
+      promotionCodeDto.isReuseable,
+      promotionCodeDto.code,
+      promotionCodeDto.value,
+    );
+    return promotionCode;
+  }
+
+  @Post('/verify/:code')
+  async verifyPromotionCode(@Param('code') code: string) {
+    const promotionCode = await this.promotionCodeService.use(code);
+    return promotionCode;
   }
 
   @Get('charges')

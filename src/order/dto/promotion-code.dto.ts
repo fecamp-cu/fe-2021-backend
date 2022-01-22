@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmpty, IsString } from 'class-validator';
+import { IsEmpty, IsIn, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { PromotionCodeType } from 'src/common/enums/promotion-code';
 import { OrderDto } from './order.dto';
 
@@ -7,22 +7,28 @@ export class PromotionCodeDto {
   id: number;
 
   @ApiProperty()
-  @IsEmpty()
+  @IsIn([PromotionCodeType.AMOUNT, PromotionCodeType.PERCENTAGE])
   type: PromotionCodeType;
 
   @ApiProperty()
+  @IsOptional()
   @IsString()
-  code: string;
+  code?: string;
 
   @ApiProperty()
-  @IsEmpty()
-  value: number;
+  @IsOptional()
+  @IsInt()
+  value?: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  isReuseable: boolean;
 
   @IsEmpty()
   isActived: boolean;
 
   @ApiProperty()
-  @IsEmpty()
+  @IsNotEmpty()
   expiresDate: Date;
 
   @IsEmpty()
