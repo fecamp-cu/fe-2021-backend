@@ -33,36 +33,42 @@ export class ProfileController {
     private readonly profileService: ProfileService,
     private readonly userService: UserService,
   ) {}
+
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new ManagePolicyHandler())
   @Post()
   create(@Body() profileDto: ProfileDto) {
     return this.profileService.create(profileDto);
   }
+
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new ManagePolicyHandler())
   @Get()
   findAll() {
     return this.profileService.findAll();
   }
+
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new ManagePolicyHandler())
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.profileService.findOne(+id);
   }
+
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new ManagePolicyHandler())
   @Patch(':id')
   update(@Param('id') id: string, @Body() profileDto: ProfileDto) {
     return this.profileService.update(+id, profileDto);
   }
+
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new ManagePolicyHandler())
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.profileService.remove(+id);
   }
+
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new ManagePolicyHandler())
   @Post('upload')
