@@ -4,6 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
+import { ServiceDownFilter } from './logger/service-down.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,10 +16,11 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
+  const configService = app.get(ConfigService);
 
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
-  const configService = app.get(ConfigService);
+  app.useGlobalFilters(new ServiceDownFilter(configService));
 
   const config = new DocumentBuilder()
     .setTitle('FE Camp API')
