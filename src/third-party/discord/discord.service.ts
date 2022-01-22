@@ -15,13 +15,18 @@ export class DiscordService {
   public async sendMessage(
     username: string = Discord.DEFAULT_USERNAME,
     avatarUrl: string = Discord.DEFAULT_AVATAR_URL,
-    content: string = Discord.DEFAULT_MESSAGE,
+    title: string = Discord.DEFAULT_TOPIC,
+    description: string = Discord.DEFAULT_MESSAGE,
+    color: number = Discord.DEFAULT_COLOR,
+    content: string = '',
   ): Promise<boolean> {
+    console.log(content);
     try {
       await this.client.post('', {
         username,
         avatar_url: avatarUrl,
-        content,
+        // content,
+        embeds: [{ title, description, color }],
       });
       return true;
     } catch (err) {
