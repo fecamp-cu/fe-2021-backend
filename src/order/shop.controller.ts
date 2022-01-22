@@ -62,7 +62,7 @@ export class ShopController {
   }
 
   @Post('/generate-code')
-  async generateCode(@Body() promotionCodeDto: PromotionCodeDto) {
+  async generateCode(@Body() promotionCodeDto: PromotionCodeDto, @Res() res: Response) {
     const promotionCode = await this.promotionCodeService.generate(
       promotionCodeDto.type,
       promotionCodeDto.expiresDate,
@@ -70,13 +70,13 @@ export class ShopController {
       promotionCodeDto.code,
       promotionCodeDto.value,
     );
-    return promotionCode;
+    return res.status(HttpStatus.CREATED).json(promotionCode);
   }
 
   @Post('/verify/:code')
-  async verifyPromotionCode(@Param('code') code: string) {
+  async verifyPromotionCode(@Param('code') code: string, @Res() res: Response) {
     const promotionCode = await this.promotionCodeService.use(code);
-    return promotionCode;
+    return res.status(HttpStatus.OK).json(promotionCode);
   }
 
   @Get('charges')
