@@ -77,9 +77,12 @@ export class AuthService {
   }
 
   public async createUser(registerDto: RegisterDto, isVerified: boolean = false): Promise<UserDto> {
-    const count = await this.userService.count({ username: registerDto.username });
-    if (count > 0) {
-      registerDto.username = registerDto.username + '#' + (count + 1);
+    const nFindUserByEmail = await this.userService.count({ email: userDto.email });
+    if (nFindUserByEmail) {
+      throw new UnprocessableEntityException({
+        reason: 'INVALID_INPUT',
+        message: 'Email already existed',
+      });
     }
 
     const profileDto = new ProfileDto({
@@ -101,14 +104,6 @@ export class AuthService {
       username: registerDto.username,
       password: registerDto.password,
     });
-
-    const nFindUserByEmail = await this.userService.count({ email: userDto.email });
-    if (nFindUserByEmail) {
-      throw new UnprocessableEntityException({
-        reason: 'INVALID_INPUT',
-        message: 'Email already existed',
-      });
-    }
 
     const profile: Profile = await this.profileService.create(profileDto);
     const user = await this.userService.create(userDto, profile, isVerified);

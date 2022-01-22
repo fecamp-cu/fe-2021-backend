@@ -32,13 +32,11 @@ export class UserService {
       });
     }
 
-    const nFindUserByUsername = await this.count({ username: userDto.username });
-    if (nFindUserByUsername) {
-      throw new UnprocessableEntityException({
-        reason: 'INVALID_INPUT',
-        message: 'User already existed',
-      });
+    const count = await this.count({ username: userDto.username });
+    if (count > 0) {
+      userDto.username = userDto.username + '#' + (count + 1);
     }
+
     const nFindUserByEmail = await this.count({ email: userDto.email });
     if (nFindUserByEmail) {
       throw new UnprocessableEntityException({
