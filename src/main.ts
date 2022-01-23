@@ -15,16 +15,10 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   app.enableCors({
-    origin: true,
+    origin: configService.get<string | boolean>('app.origin'),
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
-  const configService = app.get(ConfigService);
-  app.use(cookieParser());
-  if (configService.get<boolean>('devMode')) {
-    app.use(bodyParser.urlencoded({ extended: false }));
-    app.use(csurf({ cookie: { key: '_csrf', sameSite: true } }));
-  }
 
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new ServiceDownFilter(configService));
