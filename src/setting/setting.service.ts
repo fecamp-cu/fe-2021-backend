@@ -3,16 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { SettingDto } from './dto/setting.dto';
 import { Setting } from './entities/setting.entity';
-import { SponcerContainer } from './entities/sponcerContainer.entity';
-import { TimelineEvent } from './entities/timelineEvent.entity';
 
 export class SettingService {
-  constructor(
-    @InjectRepository(Setting) private settingRepository: Repository<Setting>,
-    @InjectRepository(TimelineEvent) private timelineEventRepository: Repository<TimelineEvent>,
-    @InjectRepository(SponcerContainer)
-    private sponcerContainerRepository: Repository<SponcerContainer>,
-  ) {}
+  constructor(@InjectRepository(Setting) private settingRepository: Repository<Setting>) {}
   async createSetting(settingDto: SettingDto): Promise<SettingDto> {
     const setting: Setting = this.settingRepository.create(settingDto);
 
