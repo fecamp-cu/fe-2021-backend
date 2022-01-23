@@ -44,7 +44,6 @@ export default () => ({
       client_x509_cert_url: process.env.GOOGLE_CREDENTIALS_CLIENT_X509_CERT_URL,
     },
     gcs: {
-      serviceAccountKey: process.env.GCS_SA_KEY,
       bucketName: process.env.GCS_BUCKET_NAME,
       publicURL: process.env.GCS_PUBLIC_IMAGE_URL,
       secret: process.env.IMG_FILE_NAME_SECRET,
