@@ -105,11 +105,6 @@ spec:
                   name: fecamp-config
                   key: migration_path
             # Google Cloud Storage
-            - name: GCS_SA_KEY
-              valueFrom:
-                configMapKeyRef:
-                  name: fecamp-config
-                  key: gcs_sa_key
             - name: GCS_BUCKET_NAME
               valueFrom:
                 configMapKeyRef:
