@@ -43,7 +43,7 @@ export class Setting {
   @OneToMany(() => QualificationPreview, qualificationPreview => qualificationPreview.setting)
   qualificationPreviews: QualificationPreview[];
 
-  @OneToMany(() => QualificationPreview, photoPreview => photoPreview.setting)
+  @OneToMany(() => PhotoPreview, photoPreview => photoPreview.setting)
   photoPreviews: PhotoPreview[];
 
   @OneToMany(() => AboutFeContainer, aboutFeContainer => aboutFeContainer.setting)
