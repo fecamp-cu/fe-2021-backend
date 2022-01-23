@@ -19,7 +19,7 @@ async function bootstrap() {
     credentials: true,
   });
   app.use(cookieParser());
-  if (!configService.get<boolean>('devMode')) {
+  if (configService.get<boolean>('devMode')) {
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(csurf({ cookie: { key: '_csrf', sameSite: true } }));
   }
