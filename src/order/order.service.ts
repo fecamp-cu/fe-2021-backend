@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { TypeORMException } from 'src/common/exceptions/typeorm.exception';
 import { ItemDto } from 'src/item/dto/item.dto';
 import { Repository, UpdateResult } from 'typeorm';
 import { OrderItemDto } from './dto/order-item.dto';
@@ -16,8 +17,12 @@ export class OrderService {
 
   async create(orderDto: OrderDto): Promise<OrderDto> {
     const order = await this.orderRepository.create(orderDto);
-    const savedOrder = await this.orderRepository.save(order);
-    return this.rawToDTO(savedOrder);
+    try {
+      const savedOrder = await this.orderRepository.save(order);
+      return this.rawToDTO(savedOrder);
+    } catch (err) {
+      throw new TypeORMException(err);
+    }
   }
 
   async findAll() {
