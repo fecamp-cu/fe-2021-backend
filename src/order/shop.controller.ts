@@ -33,7 +33,7 @@ export class ShopController {
       paymentDto,
       PaymentType.INTERNET_BANKING,
     )) as string;
-    res.status(HttpStatus.MOVED_PERMANENTLY).redirect(authorize_uri);
+    return res.status(HttpStatus.OK).json({ authorize_uri });
   }
 
   @Post('checkout/promptpay')
