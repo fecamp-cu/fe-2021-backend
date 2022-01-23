@@ -9,14 +9,14 @@ import { ServiceDownFilter } from './logger/service-down.filter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const configService = app.get(ConfigService);
   app.setGlobalPrefix('api');
 
   app.enableCors({
-    origin: true,
+    origin: configService.get<string | boolean>('app.origin'),
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
-  const configService = app.get(ConfigService);
 
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
