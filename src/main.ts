@@ -2,12 +2,15 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
+import * as csurf from 'csurf';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const configService = app.get(ConfigService);
   app.setGlobalPrefix('api');
 
   app.enableCors({
@@ -15,10 +18,13 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
-
   app.use(cookieParser());
+  if (!configService.get<boolean>('devMode')) {
+    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(csurf({ cookie: { key: '_csrf', sameSite: true } }));
+  }
+
   app.useGlobalPipes(new ValidationPipe());
-  const configService = app.get(ConfigService);
 
   const config = new DocumentBuilder()
     .setTitle('FE Camp API')
