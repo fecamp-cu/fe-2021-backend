@@ -38,13 +38,13 @@ export class PaymentService {
   ) {}
 
   async checkout(paymentDto: PaymentDto, paymentType: PaymentType): Promise<string | OmiseCharge> {
-    await this.createOrder(paymentDto);
-
     const charge: OmiseCharge = await this.omiseService.createCharge(
       paymentDto.source.amount,
       paymentDto.source.id,
       paymentType,
     );
+
+    await this.createOrder(paymentDto, charge);
 
     return this.getPaymentResult(charge, paymentType);
   }
@@ -133,16 +133,16 @@ export class PaymentService {
     }
   }
 
-  private async createOrder(paymentDto: PaymentDto): Promise<OrderDto> {
+  public async createOrder(paymentDto: PaymentDto, charge: OmiseCharge): Promise<OrderDto> {
     const ids = await paymentDto.basket.map(item => item.productId);
     const quantities = await paymentDto.basket.map(item => item.quantity);
     const items = await this.itemService.findMulti(ids);
     const customer = await this.createCustomer(paymentDto);
 
     let sourceId: string = paymentDto.source.id;
-    if (paymentDto.source.card) {
+    if (charge.card) {
       paymentDto.source.type = PaymentType.CREDIT_CARD;
-      sourceId = paymentDto.source.card.id;
+      sourceId = paymentDto.source.id;
     }
 
     const orderDto = new OrderDto({
@@ -150,6 +150,7 @@ export class PaymentService {
       amount: paymentDto.source.amount,
       paymentMethod: paymentDto.source.type,
       customer,
+      chargeId: charge.id,
     });
 
     if (paymentDto.promotionCode) {
