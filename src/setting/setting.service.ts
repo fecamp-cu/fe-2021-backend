@@ -3,16 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { SettingDto } from './dto/setting.dto';
 import { Setting } from './entities/setting.entity';
-import { SponcerContainer } from './entities/sponcerContainer.entity';
-import { TimelineEvent } from './entities/timelineEvent.entity';
 
 export class SettingService {
-  constructor(
-    @InjectRepository(Setting) private settingRepository: Repository<Setting>,
-    @InjectRepository(TimelineEvent) private timelineEventRepository: Repository<TimelineEvent>,
-    @InjectRepository(SponcerContainer)
-    private sponcerContainerRepository: Repository<SponcerContainer>,
-  ) {}
+  constructor(@InjectRepository(Setting) private settingRepository: Repository<Setting>) {}
   async createSetting(settingDto: SettingDto): Promise<SettingDto> {
     const setting: Setting = this.settingRepository.create(settingDto);
 
@@ -29,6 +22,9 @@ export class SettingService {
   }
   async findAll(): Promise<SettingDto[]> {
     return await this.settingRepository.find();
+  }
+  async findAllActive(): Promise<SettingDto[]> {
+    return await this.settingRepository.find({ where: { isActive: true } });
   }
 
   async findOne(id: number): Promise<Setting> {
@@ -73,12 +69,13 @@ export class SettingService {
   async activate(id: number): Promise<SettingDto> {
     const setting: Setting = await this.findOne(id);
     setting.isActive = true;
+    const createdSetting = await this.settingRepository.save(setting);
     return new SettingDto({
-      id: setting.id,
-      title: setting.title,
-      youtubeUrl: setting.youtubeUrl,
-      registerFormUrl: setting.registerFormUrl,
-      isActive: setting.isActive,
+      id: createdSetting.id,
+      title: createdSetting.title,
+      youtubeUrl: createdSetting.youtubeUrl,
+      registerFormUrl: createdSetting.registerFormUrl,
+      isActive: createdSetting.isActive,
     });
   }
 

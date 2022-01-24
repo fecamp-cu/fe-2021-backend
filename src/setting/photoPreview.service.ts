@@ -8,7 +8,6 @@ import { SettingService } from './setting.service';
 
 export class PhotoPreviewService {
   constructor(
-    @InjectRepository(Setting) private settingRepository: Repository<Setting>,
     @InjectRepository(PhotoPreview)
     private photoPreviewRepository: Repository<PhotoPreview>,
     private readonly settingService: SettingService,
@@ -36,7 +35,7 @@ export class PhotoPreviewService {
     if (!PhotoPreview) {
       throw new NotFoundException({
         reason: 'NOT_FOUND_ENTITY',
-        message: 'Not found sponcer_container',
+        message: 'Not found preview photo',
       });
     }
 
@@ -56,7 +55,7 @@ export class PhotoPreviewService {
     if (update.affected === 0) {
       throw new NotFoundException({
         reason: 'NOT_FOUND',
-        message: 'Not found sponcer_container',
+        message: 'Not found preview photo',
       });
     }
     return await this.findOne(id, relations);
@@ -67,7 +66,7 @@ export class PhotoPreviewService {
     if (deleted.affected === 0) {
       throw new NotFoundException({
         reason: 'NOT_FOUND',
-        message: 'Not found sponcer_container',
+        message: 'Not found preview photo',
       });
     }
     return await this.findOne(id);
