@@ -9,7 +9,7 @@ export default () => ({
     port: parseInt(process.env.PORT) || 8000,
     url: process.env.URL,
     apiUrl: process.env.URL + '/api',
-    devMode: envType === 'development',
+    devMode: process.env.DEBUG === 'true',
     origin: envType === 'development' ? '*' : true,
   },
   secret: {
