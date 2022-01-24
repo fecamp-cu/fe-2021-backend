@@ -20,6 +20,13 @@ async function bootstrap() {
     credentials: true,
   });
 
+  app.use(cookieParser());
+
+  if (configService.get<boolean>('app.devMode')) {
+    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(csurf({ cookie: { key: '_csrf', sameSite: true } }));
+  }
+
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new ServiceDownFilter(configService));
 

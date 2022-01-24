@@ -1,6 +1,7 @@
 import { Controller, Get, Request } from '@nestjs/common';
-import { classToPlain } from 'class-transformer';
+import { instanceToPlain } from 'class-transformer';
 import { AppService } from './app.service';
+import { RequestWithUserId } from './common/types/auth';
 import { User } from './user/entities/user.entity';
 
 @Controller()
@@ -13,8 +14,8 @@ export class AppController {
   }
 
   @Get('who-am-I')
-  async whoAmI(@Request() req: any) {
-    const user = req.user ? classToPlain(new User(req.user)) : undefined;
+  async whoAmI(@Request() req: RequestWithUserId) {
+    const user = req.user ? instanceToPlain(new User(req.user)) : undefined;
 
     return {
       user,

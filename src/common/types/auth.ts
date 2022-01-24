@@ -4,6 +4,7 @@ export type RequestWithUserId = Request & {
     access_token: string;
     refresh_token: string;
   };
+  csrfToken;
 };
 
 export type TokenPayload = {
