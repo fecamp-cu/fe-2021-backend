@@ -8,7 +8,6 @@ import { SettingService } from './setting.service';
 
 export class QualificationPreviewService {
   constructor(
-    @InjectRepository(Setting) private settingRepository: Repository<Setting>,
     @InjectRepository(QualificationPreview)
     private qualificationPreviewRepository: Repository<QualificationPreview>,
     private readonly settingService: SettingService,

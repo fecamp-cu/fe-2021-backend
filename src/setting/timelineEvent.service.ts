@@ -8,7 +8,6 @@ import { SettingService } from './setting.service';
 
 export class TimelineEventService {
   constructor(
-    @InjectRepository(Setting) private settingRepository: Repository<Setting>,
     @InjectRepository(TimelineEvent) private timelineEventRepository: Repository<TimelineEvent>,
     private readonly settingService: SettingService,
   ) {}
