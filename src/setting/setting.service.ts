@@ -23,6 +23,9 @@ export class SettingService {
   async findAll(): Promise<SettingDto[]> {
     return await this.settingRepository.find();
   }
+  async findAllActive(): Promise<SettingDto[]> {
+    return await this.settingRepository.find({ where: { isActive: true } });
+  }
 
   async findOne(id: number): Promise<Setting> {
     const setting: Setting = await this.settingRepository
@@ -38,7 +41,6 @@ export class SettingService {
       .addOrderBy('"sponcer_container"."order"', 'ASC')
       .addOrderBy('"qualification_preview"."order"', 'ASC')
       .addOrderBy('"about_fe_container"."order"', 'ASC')
-      .cache(true)
       .getOne();
     if (!setting) {
       throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found setting' });
@@ -66,12 +68,13 @@ export class SettingService {
   async activate(id: number): Promise<SettingDto> {
     const setting: Setting = await this.findOne(id);
     setting.isActive = true;
+    const createdSetting = await this.settingRepository.save(setting);
     return new SettingDto({
-      id: setting.id,
-      title: setting.title,
-      youtubeUrl: setting.youtubeUrl,
-      registerFormUrl: setting.registerFormUrl,
-      isActive: setting.isActive,
+      id: createdSetting.id,
+      title: createdSetting.title,
+      youtubeUrl: createdSetting.youtubeUrl,
+      registerFormUrl: createdSetting.registerFormUrl,
+      isActive: createdSetting.isActive,
     });
   }
 
