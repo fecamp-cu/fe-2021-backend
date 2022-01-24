@@ -87,7 +87,7 @@ export class OmiseService {
       return res.data;
     } catch (err) {
       console.log(err.response.data);
-      throw new OmiseException(err.response.data.message);
+      throw new OmiseException(err.response.data.message, 'Omise Charge Error');
     }
   }
 }
