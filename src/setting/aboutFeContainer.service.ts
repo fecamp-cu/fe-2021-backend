@@ -8,7 +8,6 @@ import { SettingService } from './setting.service';
 
 export class AboutFeContainerService {
   constructor(
-    @InjectRepository(Setting) private settingRepository: Repository<Setting>,
     @InjectRepository(AboutFeContainer)
     private aboutFeContainerRepository: Repository<AboutFeContainer>,
     private readonly settingService: SettingService,
