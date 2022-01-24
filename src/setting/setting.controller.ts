@@ -34,6 +34,11 @@ export class SettingController {
     return this.settingService.findAll();
   }
   @ApiTags('Setting')
+  @Get('active')
+  findAllActive() {
+    return this.settingService.findAllActive();
+  }
+  @ApiTags('Setting')
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.settingService.findOne(+id);
