@@ -1,6 +1,6 @@
 import { OmiseCharge } from 'src/common/types/payment';
 
-export class PaymentCompleteDto {
+export class OmiseWebhookDto {
   object: 'event';
 
   id: string;
@@ -13,11 +13,11 @@ export class PaymentCompleteDto {
 
   data: OmiseCharge;
 
-  key: 'charge.complete';
+  key: 'charge.create' | 'charge.complete';
 
   created_at: Date;
 
-  constructor(partial: Partial<PaymentCompleteDto>) {
+  constructor(partial: Partial<OmiseWebhookDto>) {
     Object.assign(this, partial);
   }
 }

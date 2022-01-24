@@ -22,10 +22,10 @@ export class Order {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Index()
   @Column({ name: 'source_id', nullable: true })
   sourceId: string;
 
+  @Index()
   @Column({ name: 'charge_id', nullable: true })
   chargeId: string;
 

@@ -3,9 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { PaymentType } from 'src/common/enums/shop';
-import { OmiseCharge } from 'src/common/types/payment';
+import { OmiseWebhookDto } from './dto/omise-webhook.dto';
 import { OrderDto } from './dto/order.dto';
-import { PaymentCompleteDto } from './dto/payment-complete.dto';
 import { PaymentDto } from './dto/payment.dto';
 import { PromotionCodeDto } from './dto/promotion-code.dto';
 import { OrderService } from './order.service';
@@ -47,18 +46,18 @@ export class ShopController {
 
   @Post('checkout/credit-card')
   async checkoutCreditCard(@Body() paymentDto: PaymentDto, @Res() res: Response) {
-    (await this.paymentService.checkout(paymentDto, PaymentType.CREDIT_CARD)) as OmiseCharge;
+    await this.paymentService.checkout(paymentDto, PaymentType.CREDIT_CARD);
     res
       .status(HttpStatus.MOVED_PERMANENTLY)
       .redirect(this.configService.get<string>('app.url') + '/payment/success');
   }
 
   @Post('omise/callback')
-  async callback(@Body() paymentCompleteDto: PaymentCompleteDto, @Res() res: Response) {
-    if (paymentCompleteDto.data.status === 'successful') {
-      this.paymentService.sendReciept(paymentCompleteDto);
+  async callback(@Body() omiseWebhookDto: OmiseWebhookDto, @Res() res: Response) {
+    if (omiseWebhookDto.data.status === 'successful') {
+      this.paymentService.sendReciept(omiseWebhookDto);
     }
-    return res.status(HttpStatus.OK).json(paymentCompleteDto);
+    return res.status(HttpStatus.OK).json(omiseWebhookDto);
   }
 
   @Post('/generate-code')

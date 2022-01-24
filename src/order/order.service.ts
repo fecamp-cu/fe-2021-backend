@@ -21,7 +21,7 @@ export class OrderService {
       const savedOrder = await this.orderRepository.save(order);
       return this.rawToDTO(savedOrder);
     } catch (err) {
-      throw new TypeORMException(err);
+      throw new TypeORMException(err, 'Create Order');
     }
   }
 
@@ -42,8 +42,8 @@ export class OrderService {
     return this.rawToDTO(order);
   }
 
-  async findBySourceId(sourceId: string, relations: string[] = []): Promise<OrderDto> {
-    const order = await this.orderRepository.findOne({ sourceId }, { relations });
+  async findByChargeId(chargeId: string, relations: string[] = []): Promise<OrderDto> {
+    const order = await this.orderRepository.findOne({ chargeId }, { relations });
 
     if (!order) {
       throw new NotFoundException({
