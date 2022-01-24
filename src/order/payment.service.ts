@@ -16,8 +16,8 @@ import { UserDto } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 import { CustomerDto } from './dto/customer.dto';
+import { OmiseWebhookDto } from './dto/omise-webhook.dto';
 import { OrderDto } from './dto/order.dto';
-import { PaymentCompleteDto } from './dto/payment-complete.dto';
 import { PaymentDto } from './dto/payment.dto';
 import { Customer } from './entities/customer.entity';
 import { OrderService } from './order.service';
@@ -49,22 +49,12 @@ export class PaymentService {
     return this.getPaymentResult(charge, paymentType);
   }
 
-  async sendReciept(paymentCompleteDto: PaymentCompleteDto): Promise<OrderDto> {
-    let key = null;
+  async sendReciept(omiseWebhookDto: OmiseWebhookDto): Promise<OrderDto> {
+    const order = await this.orderService.findByChargeId(omiseWebhookDto.data.id);
 
-    if (!paymentCompleteDto.data.source) {
-      key = paymentCompleteDto.data.card.id;
-    }
-
-    if (!key) {
-      key = paymentCompleteDto.data.source.id;
-    }
-
-    const order = await this.orderService.findBySourceId(key);
-
-    order.chargeId = paymentCompleteDto.data.id;
-    order.transactionId = paymentCompleteDto.data.transaction;
-    order.paidAt = paymentCompleteDto.data.paid_at;
+    order.chargeId = omiseWebhookDto.data.id;
+    order.transactionId = omiseWebhookDto.data.transaction;
+    order.paidAt = omiseWebhookDto.data.paid_at;
     order.status = PaymentStatus.SUCCESS;
 
     await this.orderService.update(order.id, order);
