@@ -42,7 +42,7 @@ export class OrderService {
     return this.rawToDTO(order);
   }
 
-  async findBySourceId(sourceId: string, relations: string[] = []) {
+  async findBySourceId(sourceId: string, relations: string[] = []): Promise<OrderDto> {
     const order = await this.orderRepository.findOne({ sourceId }, { relations });
 
     if (!order) {

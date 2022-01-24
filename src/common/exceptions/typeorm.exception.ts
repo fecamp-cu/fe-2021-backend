@@ -1,10 +1,12 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { CustomException } from './custom.exception';
 
-export class TypeORMException extends HttpException {
+export class TypeORMException extends CustomException {
   constructor(
-    message: string = 'Typeorm Error',
+    name: string = 'Typeorm Error',
+    message: string = 'Something Wrong :(',
     status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
   ) {
-    super({ status, error: message }, status);
+    super(name, message, status);
   }
 }

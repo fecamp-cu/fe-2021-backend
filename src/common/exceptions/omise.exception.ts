@@ -1,10 +1,12 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { CustomException } from './custom.exception';
 
-export class OmiseException extends HttpException {
+export class OmiseException extends CustomException {
   constructor(
-    message: string = 'Omise API Error',
+    name: string = 'Omise API Error',
+    message: string = 'Something Wrong :(',
     status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
   ) {
-    super({ status, error: message }, status);
+    super(name, message, status);
   }
 }
