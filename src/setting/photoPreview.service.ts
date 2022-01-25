@@ -1,5 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { PhotoPreviewException } from 'src/common/exceptions/photoPreview.exception';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { PhotoPreviewDto } from './dto/photoPreview.dto';
 import { PhotoPreview } from './entities/photoPreview.entity';
@@ -25,7 +26,11 @@ export class PhotoPreviewService {
   }
 
   async findAll(): Promise<PhotoPreviewDto[]> {
-    return await this.photoPreviewRepository.find();
+    try {
+      return await this.photoPreviewRepository.find();
+    } catch (error) {
+      throw new PhotoPreviewException('Failed to find all photo preview', error.response.status);
+    }
   }
 
   async findOne(id: number, relations: string[] = []): Promise<PhotoPreviewDto> {

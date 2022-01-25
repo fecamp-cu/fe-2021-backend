@@ -1,5 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AboutFeContainerException } from 'src/common/exceptions/aboutFeContainer.exception';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { AboutFeContainerDto } from './dto/aboutFeContainer.dto';
 import { AboutFeContainer } from './entities/aboutFeContainer.entity';
@@ -31,7 +32,14 @@ export class AboutFeContainerService {
   }
 
   async findAll(): Promise<AboutFeContainerDto[]> {
-    return await this.aboutFeContainerRepository.find();
+    try {
+      return await this.aboutFeContainerRepository.find();
+    } catch (error) {
+      throw new AboutFeContainerException(
+        'Failed to find all about fe container',
+        error.response.status,
+      );
+    }
   }
 
   async findOne(id: number, relations: string[] = []): Promise<AboutFeContainerDto> {
