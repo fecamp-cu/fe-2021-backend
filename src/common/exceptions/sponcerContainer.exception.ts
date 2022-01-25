@@ -2,9 +2,10 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 
 export class SponcerContainerException extends HttpException {
   constructor(
-    message: string = 'SponcerContainer API Error',
+    name: string = 'SponcerContainer API Error',
+    message: string = 'Something Wrong :(',
     status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
   ) {
-    super({ status, error: message }, status);
+    super({ name, status, error: message }, status);
   }
 }

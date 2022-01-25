@@ -2,9 +2,10 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 
 export class QualificationPreviewException extends HttpException {
   constructor(
-    message: string = 'QualificationPreview API Error',
+    name: string = 'QualificationPreview API Error',
+    message: string = 'Something Wrong :(',
     status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
   ) {
-    super({ status, error: message }, status);
+    super({ name, status, error: message }, status);
   }
 }
