@@ -8,12 +8,11 @@ import { ItemDto } from './dto/item.dto';
 import { ItemService } from './item.service';
 
 @ApiTags('Item')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('item')
 export class ItemController {
   constructor(private readonly itemService: ItemService) {}
 
-  @UseGuards(PoliciesGuard)
   @CheckPolicies(new ManagePolicyHandler())
   @Post()
   create(@Body() itemDto: ItemDto) {
@@ -32,14 +31,12 @@ export class ItemController {
     return this.itemService.findOne(+id);
   }
 
-  @UseGuards(PoliciesGuard)
   @CheckPolicies(new ManagePolicyHandler())
   @Patch(':id')
   update(@Param('id') id: string, @Body() itemDto: ItemDto) {
     return this.itemService.update(+id, itemDto);
   }
 
-  @UseGuards(PoliciesGuard)
   @CheckPolicies(new ManagePolicyHandler())
   @Delete(':id')
   remove(@Param('id') id: string) {
