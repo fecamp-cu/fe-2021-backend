@@ -4,18 +4,26 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Put,
   Req,
   Res,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
-import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { PoliciesGuard } from 'src/casl/policies.guard';
+import {
+  CheckPolicies,
+  ManagePolicyHandler,
+  UpdateProfilePolicyHandler,
+} from 'src/casl/policyhandler';
 import { RequestWithUserId } from 'src/common/types/auth';
 import { UserService } from 'src/user/user.service';
 import { ProfileDto } from './dto/profile.dto';
@@ -23,6 +31,7 @@ import { Profile } from './entities/profile.entity';
 import { ProfileService } from './profile.service';
 
 @ApiTags('Profile')
+@UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('profile')
 export class ProfileController {
   constructor(
@@ -44,19 +53,23 @@ export class ProfileController {
 
   @Get(':id')
   @CheckPolicies(new ManagePolicyHandler())
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: string) {
     return this.profileService.findOne(+id);
   }
 
   @Patch(':id')
-  @CheckPolicies(new ManagePolicyHandler())
-  update(@Param('id') id: string, @Body() profileDto: ProfileDto) {
+  @CheckPolicies(new UpdateProfilePolicyHandler())
+  update(
+    @Req() req: RequestWithUserId,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() profileDto: ProfileDto,
+  ) {
     return this.profileService.update(+id, profileDto);
   }
 
   @Delete(':id')
   @CheckPolicies(new ManagePolicyHandler())
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: string) {
     return this.profileService.remove(+id);
   }
 
