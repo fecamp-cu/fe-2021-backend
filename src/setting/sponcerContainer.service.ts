@@ -1,5 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { SettingException } from 'src/common/exceptions/settting.exception';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { SponcerContainerDto } from './dto/sponcerContainer.dto';
 import { Setting } from './entities/setting.entity';
@@ -30,7 +31,11 @@ export class SponcerContainerService {
   }
 
   async findAll(): Promise<SponcerContainerDto[]> {
-    return await this.sponcerContainerRepository.find();
+    try {
+      return await this.sponcerContainerRepository.find();
+    } catch (error) {
+      throw new SettingException('Failed to find all sponcer container', error.response.status);
+    }
   }
 
   async findOne(id: number, relations: string[] = []): Promise<SponcerContainerDto> {

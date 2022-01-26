@@ -1,11 +1,13 @@
 import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { SettingException } from 'src/common/exceptions/settting.exception';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { SettingDto } from './dto/setting.dto';
 import { Setting } from './entities/setting.entity';
 
 export class SettingService {
   constructor(@InjectRepository(Setting) private settingRepository: Repository<Setting>) {}
+
   async createSetting(settingDto: SettingDto): Promise<SettingDto> {
     const setting: Setting = this.settingRepository.create(settingDto);
 
@@ -21,10 +23,18 @@ export class SettingService {
     });
   }
   async findAll(): Promise<SettingDto[]> {
-    return await this.settingRepository.find();
+    try {
+      return await this.settingRepository.find();
+    } catch (error) {
+      throw new SettingException('Failed to find all setting', error.response.status);
+    }
   }
   async findAllActive(): Promise<SettingDto[]> {
-    return await this.settingRepository.find({ where: { isActive: true } });
+    try {
+      return await this.settingRepository.find({ where: { isActive: true } });
+    } catch (error) {
+      throw new SettingException('Failed to find all activated setting', error.response.status);
+    }
   }
 
   async findOne(id: number): Promise<Setting> {

@@ -1,5 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { SettingException } from 'src/common/exceptions/settting.exception';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { QualificationPreviewDto } from './dto/qualificationPreview.dto';
 import { QualificationPreview } from './entities/qualificationPreview.entity';
@@ -31,7 +32,11 @@ export class QualificationPreviewService {
   }
 
   async findAll(): Promise<QualificationPreviewDto[]> {
-    return await this.qualificationPreviewRepository.find();
+    try {
+      return await this.qualificationPreviewRepository.find();
+    } catch (error) {
+      throw new SettingException('Failed to find all qualification preview', error.response.status);
+    }
   }
 
   async findOne(id: number, relations: string[] = []): Promise<QualificationPreviewDto> {
