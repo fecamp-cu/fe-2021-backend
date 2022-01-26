@@ -6,39 +6,61 @@ import { UserDto } from 'src/user/dto/user.dto';
 import { ItemIndexDto } from './item-index.dto';
 
 export class ItemDto {
-  @ApiProperty()
-  @IsInt()
   id: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: ItemType.EXAM_PREP,
+    description: 'The type of the item',
+    enum: ItemType,
+  })
   @IsIn([ItemType.EXAM_PREP, ItemType.OLD_PAPERS])
   type: ItemType;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'https://www.imgurl.com/img.png',
+    description: 'URL of the item picture',
+  })
   @IsUrl()
   thumbnail: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'https://www.imgurl.com/img.png',
+    description: 'URL of the file',
+  })
   @IsUrl()
   fileURL: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 300,
+    description: 'Price of the item',
+  })
   @IsInt()
   price: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'Fe Camp Book',
+    description: 'Title of the item',
+  })
   @IsString()
   title: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'The pre exam preparation book',
+    description: 'Description of the item',
+  })
   @IsString()
   summary: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'FE Staff',
+    description: 'Author of the item',
+  })
   @IsString()
   author: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'The index of the item',
+  })
   @ValidateNested()
   indexes?: ItemIndexDto[];
 

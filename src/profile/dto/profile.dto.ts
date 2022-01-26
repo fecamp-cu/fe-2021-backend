@@ -5,57 +5,67 @@ import { Grade } from 'src/common/enums/profile';
 export class ProfileDto {
   id: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'Fe Camp',
+  })
   @IsString()
   @IsOptional()
   firstName: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'Admin',
+  })
   @IsString()
   @IsOptional()
   lastName: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'https://imgurl.com',
+    description: 'URL of the avatar',
+  })
   @IsUrl()
   @IsOptional()
   imageUrl: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: '0812345678',
+    description: 'Phone number',
+  })
   @IsPhoneNumber('TH')
   @IsOptional()
   tel: string;
 
-  @ApiProperty()
+  @ApiProperty({ enum: Grade, example: Grade.M4 })
   @IsString()
   @IsOptional()
   grade: Grade;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'Chulalongkorn University' })
   @IsString()
   @IsOptional()
   school: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: '254 Phayathai Rd.' })
   @IsString()
   @IsOptional()
   address: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'Wanmai' })
   @IsString()
   @IsOptional()
   subdistrict: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'Pathumwan' })
   @IsString()
   @IsOptional()
   district: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'Bangkok' })
   @IsString()
   @IsOptional()
   province: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: '10330' })
   @IsPostalCode('TH')
   @IsOptional()
   postcode: string;

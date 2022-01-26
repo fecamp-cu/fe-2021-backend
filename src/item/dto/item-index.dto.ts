@@ -3,17 +3,17 @@ import { IsInt, IsString } from 'class-validator';
 import { ItemDto } from './item.dto';
 
 export class ItemIndexDto {
-  @ApiProperty()
   id: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @IsInt()
   order: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'Ep 1 - Introduction' })
   @IsString()
   text: string;
 
+  @ApiProperty({ type: ItemDto })
   item: ItemDto;
 
   constructor(partial: Partial<ItemIndexDto>) {
