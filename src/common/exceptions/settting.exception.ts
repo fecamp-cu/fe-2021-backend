@@ -1,10 +1,12 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { CustomException } from './custom.exception';
 
-export class SettingException extends HttpException {
+export class SettingException extends CustomException {
   constructor(
-    message: string = 'Setting API Error',
+    name: string = 'Setting API Error',
+    message: string = 'Something Wrong :(',
     status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
   ) {
-    super({ status, error: message }, status);
+    super(name, message, status);
   }
 }

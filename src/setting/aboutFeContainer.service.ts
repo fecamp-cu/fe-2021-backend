@@ -1,6 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AboutFeContainerException } from 'src/common/exceptions/aboutFeContainer.exception';
+import { SettingException } from 'src/common/exceptions/settting.exception';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { AboutFeContainerDto } from './dto/aboutFeContainer.dto';
 import { AboutFeContainer } from './entities/aboutFeContainer.entity';
@@ -35,10 +35,7 @@ export class AboutFeContainerService {
     try {
       return await this.aboutFeContainerRepository.find();
     } catch (error) {
-      throw new AboutFeContainerException(
-        'Failed to find all about fe container',
-        error.response.status,
-      );
+      throw new SettingException('Failed to find all about fe container', error.response.status);
     }
   }
 

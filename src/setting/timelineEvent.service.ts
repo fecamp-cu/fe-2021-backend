@@ -1,6 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TimelineEventException } from 'src/common/exceptions/timelineEvent.exception';
+import { SettingException } from 'src/common/exceptions/settting.exception';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { TimelineEventDto } from './dto/timelineEvent.dto';
 import { Setting } from './entities/setting.entity';
@@ -30,7 +30,7 @@ export class TimelineEventService {
     try {
       return await this.timelineEventRepository.find();
     } catch (error) {
-      throw new TimelineEventException('Failed to find all timeline event', error.response.status);
+      throw new SettingException('Failed to find all timeline event', error.response.status);
     }
   }
 
