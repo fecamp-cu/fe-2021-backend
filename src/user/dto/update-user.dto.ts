@@ -4,6 +4,7 @@ import { Role } from 'src/common/enums/role';
 
 export class UpdateUserDto {
   @ApiPropertyOptional()
+  @IsOptional()
   username: string;
 
   @ApiPropertyOptional()
@@ -12,6 +13,7 @@ export class UpdateUserDto {
   password: string;
 
   @ApiPropertyOptional()
+  @IsOptional()
   @IsIn([Role.USER, Role.ADMIN])
   role: Role;
 }
