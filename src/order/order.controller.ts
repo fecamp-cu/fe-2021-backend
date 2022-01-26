@@ -7,8 +7,8 @@ import { OrderDto } from './dto/order.dto';
 import { OrderService } from './order.service';
 import { PaymentService } from './payment.service';
 
-@UseGuards(JwtAuthGuard, PoliciesGuard)
 @ApiTags('Order')
+@UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('order')
 export class OrderController {
   constructor(private orderService: OrderService, private paymentService: PaymentService) {}

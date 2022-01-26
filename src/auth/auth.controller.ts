@@ -43,9 +43,9 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 import { ThirdPartyAuthService } from './third-party-auth.service';
 import { ValidateCodeService } from './validate-code.service';
 
-@UseGuards(JwtAuthGuard)
-@Controller('auth')
 @ApiTags('Auth')
+@Controller('auth')
+@UseGuards(JwtAuthGuard)
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
