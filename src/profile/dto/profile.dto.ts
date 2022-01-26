@@ -1,51 +1,62 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsPhoneNumber, IsPostalCode } from 'class-validator';
+import { IsOptional, IsPhoneNumber, IsPostalCode, IsString, IsUrl } from 'class-validator';
 
 export class ProfileDto {
   id: number;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsString()
+  @IsOptional()
   firstName: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsString()
+  @IsOptional()
   lastName: string;
 
   @ApiProperty()
+  @IsUrl()
+  @IsOptional()
   imageUrl: string;
 
   @ApiProperty()
-  @IsNotEmpty()
   @IsPhoneNumber('TH')
+  @IsOptional()
   tel: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsString()
+  @IsOptional()
   grade: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsString()
+  @IsOptional()
   school: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsString()
+  @IsOptional()
   address: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsString()
+  @IsOptional()
   subdistrict: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsString()
+  @IsOptional()
   district: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsString()
+  @IsOptional()
   province: string;
 
   @ApiProperty()
   @IsPostalCode('TH')
+  @IsOptional()
   postcode: string;
 
   constructor(partial: Partial<ProfileDto>) {

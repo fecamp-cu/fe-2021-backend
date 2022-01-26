@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 export type RequestWithUserId = Request & {
   user: { id: number };
   cookies: {

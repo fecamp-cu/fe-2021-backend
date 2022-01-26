@@ -1,19 +1,10 @@
-import {
-  Ability,
-  AbilityBuilder,
-  AbilityClass,
-  ExtractSubjectType,
-  InferSubjects,
-} from '@casl/ability';
+import { Ability, AbilityBuilder, AbilityClass, ExtractSubjectType } from '@casl/ability';
 import { Injectable } from '@nestjs/common';
 import { Action } from 'src/common/enums/action';
 import { Role } from 'src/common/enums/role';
+import { AppAbility, Subjects } from 'src/common/types/casl';
 import { Profile } from 'src/profile/entities/profile.entity';
 import { User } from 'src/user/entities/user.entity';
-
-type Subjects = InferSubjects<typeof User | User | Profile | typeof Profile> | 'all';
-
-export type AppAbility = Ability<[Action, Subjects]>;
 
 @Injectable()
 export class CaslAbilityFactory {
@@ -22,15 +13,36 @@ export class CaslAbilityFactory {
       Ability as AbilityClass<AppAbility>,
     );
 
-    cannot(Action.UPDATE, 'all');
+    cannot(Action.UPDATE, 'all').because('Not enough permissions');
+
     if (user.role === Role.ADMIN) {
-      can(Action.MANAGE, 'all'); // read-write access to everything
-    }
-    if (user.role === Role.USER) {
-      can(Action.UPDATE, User, { id: user.id });
+      can(Action.MANAGE, 'all');
     }
 
-    can(Action.READ, 'all'); // read-only access to everything
+    if (user.role === Role.USER) {
+      can(
+        Action.UPDATE,
+        Profile,
+        [
+          'firstName',
+          'lastName',
+          'imageUrl',
+          'address',
+          'district',
+          'subdistrict',
+          'province',
+          'postcode',
+          'tel',
+          'school',
+          'grade',
+        ],
+        { id: user.profile.id },
+      );
+      can(Action.UPDATE, User, ['username', 'password'], { id: user.id });
+      console.log(user.id);
+    }
+
+    can(Action.READ, 'all');
     return build({
       // Read https://casl.js.org/v5/en/guide/subject-type-detection#use-classes-as-subject-types for details
       detectSubjectType: item => item.constructor as ExtractSubjectType<Subjects>,

@@ -1,8 +1,9 @@
 import { SetMetadata } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Action } from 'src/common/enums/action';
+import { AppAbility } from 'src/common/types/casl';
+import { Profile } from 'src/profile/entities/profile.entity';
 import { User } from 'src/user/entities/user.entity';
-import { AppAbility } from './casl-ability.factory';
 
 interface IPolicyHandler {
   handle(ability: AppAbility): boolean;
@@ -33,8 +34,24 @@ export class CreatePolicyHandler implements IPolicyHandler {
   }
 }
 export class UpdateUserPolicyHandler implements IPolicyHandler {
+  private user;
   handle(ability: AppAbility) {
-    return ability.can(Action.UPDATE, User);
+    return ability.can(Action.UPDATE, this.user);
+  }
+
+  setUser(user: User) {
+    this.user = user;
+  }
+}
+
+export class UpdateProfilePolicyHandler implements IPolicyHandler {
+  private profile: Profile;
+  handle(ability: AppAbility) {
+    return ability.can(Action.UPDATE, this.profile);
+  }
+
+  setProfile(profile: Profile) {
+    this.profile = profile;
   }
 }
 
