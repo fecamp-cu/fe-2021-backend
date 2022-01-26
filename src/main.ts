@@ -8,17 +8,24 @@ import * as csurf from 'csurf';
 import { AppModule } from './app.module';
 import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { CaslAbilityFactory } from './casl/casl-ability.factory';
+import { PoliciesGuard } from './casl/policies.guard';
 import { ServiceDownFilter } from './logger/service-down.filter';
+import { UserService } from './user/user.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get(ConfigService);
-  app.setGlobalPrefix('api');
-
   const reflector = app.get(Reflector);
   const authService = app.get(AuthService);
+  const userService = app.get(UserService);
+  const CASLAbilityFactory = app.get(CaslAbilityFactory);
+
+  app.setGlobalPrefix('api');
+
   app.useGlobalGuards(new JwtAuthGuard(authService, reflector));
+  app.useGlobalGuards(new PoliciesGuard(reflector, CASLAbilityFactory, userService, configService));
 
   app.enableCors({
     origin: configService.get<string | boolean>('app.origin'),
