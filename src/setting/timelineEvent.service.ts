@@ -22,7 +22,8 @@ export class TimelineEventService {
     return new TimelineEventDto({
       id: createdTimelineEvent.id,
       text: createdTimelineEvent.text,
-      eventDate: createdTimelineEvent.eventDate,
+      eventStartDate: createdTimelineEvent.eventStartDate,
+      eventEndDate: createdTimelineEvent.eventEndDate,
     });
   }
 
@@ -47,7 +48,8 @@ export class TimelineEventService {
     return new TimelineEventDto({
       id: timelineEvent.id,
       text: timelineEvent.text,
-      eventDate: timelineEvent.eventDate,
+      eventStartDate: timelineEvent.eventStartDate,
+      eventEndDate: timelineEvent.eventEndDate,
     });
   }
 
