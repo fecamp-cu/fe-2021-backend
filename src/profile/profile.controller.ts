@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Req,
   Res,
   UploadedFile,
@@ -15,8 +16,6 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { RedeemTokenHandler } from 'src/auth/redeem-token.guard';
 import { PoliciesGuard } from 'src/casl/policies.guard';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
 import { RequestWithUserId } from 'src/common/types/auth';
@@ -26,7 +25,6 @@ import { Profile } from './entities/profile.entity';
 import { ProfileService } from './profile.service';
 
 @ApiTags('Profile')
-@UseGuards(RedeemTokenHandler, JwtAuthGuard)
 @Controller('profile')
 export class ProfileController {
   constructor(
@@ -71,7 +69,7 @@ export class ProfileController {
 
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new ManagePolicyHandler())
-  @Post('upload')
+  @Put('upload')
   @UseInterceptors(FileInterceptor('avatar'))
   async uploadImage(
     @Req() req: RequestWithUserId,

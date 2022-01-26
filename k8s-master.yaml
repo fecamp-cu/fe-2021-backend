@@ -84,6 +84,11 @@ spec:
                 configMapKeyRef:
                   name: fecamp-config
                   key: url
+            - name: DEBUG
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: debug
             - name: DISCORD_WEBHOOK_URL
               valueFrom:
                 configMapKeyRef:

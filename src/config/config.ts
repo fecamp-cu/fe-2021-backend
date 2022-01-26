@@ -9,7 +9,8 @@ export default () => ({
     port: parseInt(process.env.PORT) || 8000,
     url: process.env.URL,
     apiUrl: process.env.URL + '/api',
-    origin: process.env.ORIGIN === 'true' ? true : '*',
+    devMode: process.env.DEBUG === 'true',
+    origin: envType === 'development' ? '*' : true,
   },
   secret: {
     policykey: process.env.CHECK_POLICIES_KEY,
@@ -44,7 +45,6 @@ export default () => ({
       client_x509_cert_url: process.env.GOOGLE_CREDENTIALS_CLIENT_X509_CERT_URL,
     },
     gcs: {
-      serviceAccountKey: process.env.GCS_SA_KEY,
       bucketName: process.env.GCS_BUCKET_NAME,
       publicURL: process.env.GCS_PUBLIC_IMAGE_URL,
       secret: process.env.IMG_FILE_NAME_SECRET,

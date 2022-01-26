@@ -1,11 +1,13 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Param, Post, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { Auth, Public } from 'src/auth/auth.decorator';
+import { PoliciesGuard } from 'src/casl/policies.guard';
+import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
 import { PaymentType } from 'src/common/enums/shop';
-import { OmiseCharge } from 'src/common/types/payment';
+import { OmiseWebhookDto } from './dto/omise-webhook.dto';
 import { OrderDto } from './dto/order.dto';
-import { PaymentCompleteDto } from './dto/payment-complete.dto';
 import { PaymentDto } from './dto/payment.dto';
 import { PromotionCodeDto } from './dto/promotion-code.dto';
 import { OrderService } from './order.service';
@@ -13,6 +15,7 @@ import { PaymentService } from './payment.service';
 import { PromotionCodeService } from './promotion-code.service';
 
 @ApiTags('Shop')
+@Public()
 @Controller('shop')
 export class ShopController {
   constructor(
@@ -33,7 +36,7 @@ export class ShopController {
       paymentDto,
       PaymentType.INTERNET_BANKING,
     )) as string;
-    res.status(HttpStatus.MOVED_PERMANENTLY).redirect(authorize_uri);
+    return res.status(HttpStatus.OK).json({ authorize_uri });
   }
 
   @Post('checkout/promptpay')
@@ -47,21 +50,24 @@ export class ShopController {
 
   @Post('checkout/credit-card')
   async checkoutCreditCard(@Body() paymentDto: PaymentDto, @Res() res: Response) {
-    (await this.paymentService.checkout(paymentDto, PaymentType.CREDIT_CARD)) as OmiseCharge;
+    await this.paymentService.checkout(paymentDto, PaymentType.CREDIT_CARD);
     res
       .status(HttpStatus.MOVED_PERMANENTLY)
       .redirect(this.configService.get<string>('app.url') + '/payment/success');
   }
 
   @Post('omise/callback')
-  async callback(@Body() paymentCompleteDto: PaymentCompleteDto, @Res() res: Response) {
-    if (paymentCompleteDto.data.status === 'successful') {
-      this.paymentService.sendReciept(paymentCompleteDto);
+  async callback(@Body() omiseWebhookDto: OmiseWebhookDto, @Res() res: Response) {
+    if (omiseWebhookDto.data.status === 'successful') {
+      this.paymentService.sendReciept(omiseWebhookDto);
     }
-    return res.status(HttpStatus.OK).json(paymentCompleteDto);
+    return res.status(HttpStatus.OK).json(omiseWebhookDto);
   }
 
   @Post('/generate-code')
+  @Auth()
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies(new ManagePolicyHandler())
   async generateCode(@Body() promotionCodeDto: PromotionCodeDto, @Res() res: Response) {
     const promotionCode = await this.promotionCodeService.generate(
       promotionCodeDto.type,
@@ -77,30 +83,5 @@ export class ShopController {
   async verifyPromotionCode(@Param('code') code: string, @Res() res: Response) {
     const promotionCode = await this.promotionCodeService.use(code);
     return res.status(HttpStatus.OK).json(promotionCode);
-  }
-
-  @Get('charges')
-  getAllCharge() {
-    return this.paymentService.getAllCharges();
-  }
-
-  @Get()
-  async findAll() {
-    return await this.orderService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.orderService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() orderDto: OrderDto) {
-    return this.orderService.update(+id, orderDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.orderService.remove(+id);
   }
 }

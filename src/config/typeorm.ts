@@ -21,7 +21,7 @@ const options: ConnectionOptionsWithSeed = {
   entities: [process.env.ENTITY_PATH],
   migrations: [process.env.MIGRATION_PATH],
   seeds: [process.env.SEEDS_PATH],
-  factories: [process.env.FATORIES_PATH],
+  factories: [process.env.FACTORIES_PATH],
   cli: {
     migrationsDir: 'src/database/migrations',
   },
