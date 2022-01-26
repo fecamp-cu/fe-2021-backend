@@ -53,4 +53,8 @@ export class Profile {
 
   @DeleteDateColumn({ name: 'deleted_date', select: false })
   deletedDate: Date;
+
+  constructor(partial: Partial<Profile>) {
+    Object.assign(this, partial);
+  }
 }
