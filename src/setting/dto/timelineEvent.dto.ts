@@ -9,7 +9,11 @@ export class TimelineEventDto {
 
   @ApiProperty()
   @IsISO8601()
-  eventDate: Date;
+  eventStartDate: Date;
+
+  @ApiProperty()
+  @IsISO8601()
+  eventEndDate: Date;
 
   constructor(partial: Partial<TimelineEventDto>) {
     Object.assign(this, partial);
