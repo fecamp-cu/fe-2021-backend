@@ -24,7 +24,7 @@ async function bootstrap() {
 
   if (!configService.get<boolean>('app.devMode')) {
     app.use(bodyParser.urlencoded({ extended: false }));
-    app.use(csurf({ cookie: { key: '_csrf', sameSite: true } }));
+    app.use(csurf({ cookie: { key: '_csrf', sameSite: true, httpOnly: true } }));
   }
 
   app.useGlobalPipes(new ValidationPipe());
