@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Req,
   Res,
   UploadedFile,
@@ -71,7 +72,7 @@ export class ProfileController {
 
   @UseGuards(PoliciesGuard)
   @CheckPolicies(new ManagePolicyHandler())
-  @Post('upload')
+  @Put('upload')
   @UseInterceptors(FileInterceptor('avatar'))
   async uploadImage(
     @Req() req: RequestWithUserId,
