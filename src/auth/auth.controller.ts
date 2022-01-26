@@ -9,7 +9,6 @@ import {
   Query,
   Req,
   Res,
-  UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
@@ -33,12 +32,12 @@ import { GoogleAuthentication } from 'src/third-party/google-cloud/google-auth.s
 import { GoogleGmail } from 'src/third-party/google-cloud/google-gmail.service';
 import { UserDto } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
+import { Public } from './auth.decorator';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ValidateCodeDto } from './dto/validate-code.dto';
-import { JwtAuthGuard } from './jwt-auth.guard';
 import { ThirdPartyAuthService } from './third-party-auth.service';
 import { ValidateCodeService } from './validate-code.service';
 
@@ -57,6 +56,7 @@ export class AuthController {
   ) {}
 
   @Post('register')
+  @Public()
   async register(@Body() registerDto: RegisterDto, @Res() res: Response): Promise<Response> {
     const user: UserDto = await this.authService.createUser(registerDto);
     const tokenDto = await this.validateCodeService.generate(user, CodeType.VERIFY_EMAIL);
@@ -73,6 +73,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @Public()
   async login(@Body() loginDto: LoginDto, @Res() res: Response): Promise<Response> {
     const user: UserDto = await this.userService.Login(loginDto);
     await this.signToken(user, res);
@@ -80,13 +81,13 @@ export class AuthController {
   }
 
   @Get('me')
-  @UseGuards(JwtAuthGuard)
   async profile(@Req() req, @Res() res: Response): Promise<Response> {
     const user: UserDto = await this.userService.findOne(req.user.id, ['profile']);
     return res.status(HttpStatus.OK).json(user);
   }
 
   @Get('logout')
+  @Public()
   @HttpCode(HttpStatus.NO_CONTENT)
   logout(@Req() req: RequestWithUserId, @Res() res: Response): Response {
     this.authService.clearRefreshToken(req.cookies['refresh_token']);
@@ -96,6 +97,7 @@ export class AuthController {
   }
 
   @Post('reset-password/request')
+  @Public()
   async requestResetPassword(
     @Body() ResetPasswordDto: ResetPasswordDto,
     @Res() res: Response,
@@ -126,6 +128,7 @@ export class AuthController {
 
   @ApiParam({ name: 'token' })
   @Post('reset-password/:token')
+  @Public()
   async resetPassword(
     @Param('token') token,
     @Body() resetPasswordDto: ResetPasswordDto,
@@ -142,6 +145,7 @@ export class AuthController {
   }
 
   @Get('verify-email')
+  @Public()
   async verifyEmail(
     @Query('token') token: string,
     @Query('userId') userId: string,
@@ -153,6 +157,7 @@ export class AuthController {
   }
 
   @Get('google')
+  @Public()
   googleLogin(@Res() res: Response): void {
     const url: string = this.googleClient.getUrl(
       this.configService.get<string[]>('google.oauth.scope'),
@@ -161,6 +166,7 @@ export class AuthController {
   }
 
   @Get('google/callback')
+  @Public()
   async OAuthCallbackGoogle(@Query('code') code: string, @Res() res: Response): Promise<void> {
     const tokens: GoogleAuthData = await this.googleClient.getTokens(code);
     this.googleClient.setCredentials(tokens);
@@ -195,6 +201,7 @@ export class AuthController {
   }
 
   @Get('facebook')
+  @Public()
   facebookLogin(@Res() res: Response): void {
     const url: string = this.facebookClient.getUrl(
       this.configService.get<string[]>('facebook.scope'),
@@ -203,6 +210,7 @@ export class AuthController {
   }
 
   @Get('facebook/callback')
+  @Public()
   async OAuthCallbackFacebook(
     @Query('code') code: string,
     @Query('state') state: string,
