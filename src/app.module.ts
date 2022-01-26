@@ -7,7 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { CaslModule } from './casl/casl.module';
 import config from './config/config';
 import { ItemModule } from './item/item.module';
-import { OrderModule } from './order/order.module';
+import { ShopModule } from './order/shop.module';
 import { ProfileModule } from './profile/profile.module';
 import { SettingModule } from './setting/setting.module';
 import { UserModule } from './user/user.module';
@@ -37,7 +37,7 @@ import { UserModule } from './user/user.module';
     ProfileModule,
     CaslModule,
     SettingModule,
-    OrderModule,
+    ShopModule,
     ItemModule,
   ],
   controllers: [AppController],
