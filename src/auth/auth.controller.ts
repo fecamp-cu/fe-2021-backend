@@ -39,7 +39,6 @@ import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ValidateCodeDto } from './dto/validate-code.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { RedeemTokenHandler } from './redeem-token.guard';
 import { ThirdPartyAuthService } from './third-party-auth.service';
 import { ValidateCodeService } from './validate-code.service';
 
@@ -81,7 +80,7 @@ export class AuthController {
   }
 
   @Get('me')
-  @UseGuards(RedeemTokenHandler, JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async profile(@Req() req, @Res() res: Response): Promise<Response> {
     const user: UserDto = await this.userService.findOne(req.user.id, ['profile']);
     return res.status(HttpStatus.OK).json(user);
