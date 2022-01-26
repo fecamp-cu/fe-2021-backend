@@ -1,6 +1,6 @@
 import { Body, Controller, HttpStatus, Param, Post, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiHeaders, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { Auth, Public } from 'src/auth/auth.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -16,6 +16,7 @@ import { PaymentService } from './payment.service';
 import { PromotionCodeService } from './promotion-code.service';
 
 @ApiTags('Shop')
+@ApiHeaders([{ name: 'XSRF-TOKEN', required: true, description: 'CSRF Token' }])
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @Public()
 @Controller('shop')

@@ -1,5 +1,5 @@
 import { ItemDto } from 'src/item/dto/item.dto';
-import { OrderDto } from 'src/order/dto/order.dto';
+import { OrderDto } from 'src/shop/dto/order.dto';
 
 export const receiptMessage = (
   firstname: string,
