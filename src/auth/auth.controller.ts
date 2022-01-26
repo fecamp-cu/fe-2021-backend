@@ -9,6 +9,7 @@ import {
   Query,
   Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
@@ -38,9 +39,11 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ValidateCodeDto } from './dto/validate-code.dto';
+import { JwtAuthGuard } from './jwt-auth.guard';
 import { ThirdPartyAuthService } from './third-party-auth.service';
 import { ValidateCodeService } from './validate-code.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {

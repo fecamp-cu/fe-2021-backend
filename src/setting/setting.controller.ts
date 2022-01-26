@@ -1,11 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/auth/auth.decorator';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { PoliciesGuard } from 'src/casl/policies.guard';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
 import { SettingDto } from './dto/setting.dto';
 import { SettingService } from './setting.service';
 
 @ApiTags('Setting')
+@UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('setting')
 export class SettingController {
   constructor(private readonly settingService: SettingService) {}

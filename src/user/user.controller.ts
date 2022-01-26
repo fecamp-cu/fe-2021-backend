@@ -1,6 +1,18 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RegisterDto } from 'src/auth/dto/register.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { PoliciesGuard } from 'src/casl/policies.guard';
 import {
   CheckPolicies,
   ManagePolicyHandler,
@@ -10,13 +22,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { UserService } from './user.service';
 
+@UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('user')
 @ApiTags('User')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @CheckPolicies(new ManagePolicyHandler())
   @Post()
+  @CheckPolicies(new ManagePolicyHandler())
   create(@Body() registerDto: RegisterDto) {
     const userDto = new UserDto({
       email: registerDto.email,
@@ -26,26 +39,26 @@ export class UserController {
     return this.userService.create(userDto);
   }
 
-  @CheckPolicies(new ManagePolicyHandler())
   @Get()
+  @CheckPolicies(new ManagePolicyHandler())
   findAll() {
     return this.userService.findAll();
   }
 
-  @CheckPolicies(new ManagePolicyHandler())
   @Get(':id')
+  @CheckPolicies(new ManagePolicyHandler())
   findById(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findOne(id);
   }
 
-  @CheckPolicies(new UpdateUserPolicyHandler())
   @Patch(':id')
+  @CheckPolicies(new UpdateUserPolicyHandler())
   update(@Param('id', ParseIntPipe) id: number, @Body() userDto: UpdateUserDto) {
     return this.userService.update(id, userDto);
   }
 
-  @CheckPolicies(new ManagePolicyHandler())
   @Delete(':id')
+  @CheckPolicies(new ManagePolicyHandler())
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.userService.remove(id);
   }

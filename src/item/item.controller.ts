@@ -2,12 +2,13 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@n
 import { ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/auth/auth.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { PoliciesGuard } from 'src/casl/policies.guard';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
 import { ItemDto } from './dto/item.dto';
 import { ItemService } from './item.service';
 
 @ApiTags('Item')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('item')
 export class ItemController {
   constructor(private readonly itemService: ItemService) {}

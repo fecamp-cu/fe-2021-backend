@@ -1,10 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { PoliciesGuard } from 'src/casl/policies.guard';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
 import { PhotoPreviewDto } from './dto/photoPreview.dto';
 import { PhotoPreviewService } from './photoPreview.service';
 
 @ApiTags('PhotoPreview')
+@UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('photo_preview')
 export class PhotoPreviewController {
   constructor(private readonly photoPreviewService: PhotoPreviewService) {}

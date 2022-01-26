@@ -1,31 +1,19 @@
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NestFactory, Reflector } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as csurf from 'csurf';
 import { AppModule } from './app.module';
-import { AuthService } from './auth/auth.service';
-import { JwtAuthGuard } from './auth/jwt-auth.guard';
-import { CaslAbilityFactory } from './casl/casl-ability.factory';
-import { PoliciesGuard } from './casl/policies.guard';
 import { ServiceDownFilter } from './logger/service-down.filter';
-import { UserService } from './user/user.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get(ConfigService);
-  const reflector = app.get(Reflector);
-  const authService = app.get(AuthService);
-  const userService = app.get(UserService);
-  const CASLAbilityFactory = app.get(CaslAbilityFactory);
 
   app.setGlobalPrefix('api');
-
-  app.useGlobalGuards(new JwtAuthGuard(authService, reflector));
-  app.useGlobalGuards(new PoliciesGuard(reflector, CASLAbilityFactory, userService, configService));
 
   app.enableCors({
     origin: configService.get<string | boolean>('app.origin'),

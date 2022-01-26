@@ -1,10 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { PoliciesGuard } from 'src/casl/policies.guard';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
 import { QualificationPreviewDto } from './dto/qualificationPreview.dto';
 import { QualificationPreviewService } from './qualificationPreview.service';
 
 @ApiTags('QualificationPreview')
+@UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('qualification_preview')
 export class QualificationPreviewController {
   constructor(private readonly qualificationPreviewService: QualificationPreviewService) {}

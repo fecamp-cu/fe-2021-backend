@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { Auth, Public } from 'src/auth/auth.decorator';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PoliciesGuard } from 'src/casl/policies.guard';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
 import { PaymentType } from 'src/common/enums/shop';
@@ -15,6 +16,7 @@ import { PaymentService } from './payment.service';
 import { PromotionCodeService } from './promotion-code.service';
 
 @ApiTags('Shop')
+@UseGuards(JwtAuthGuard, PoliciesGuard)
 @Public()
 @Controller('shop')
 export class ShopController {
@@ -66,7 +68,6 @@ export class ShopController {
 
   @Post('/generate-code')
   @Auth()
-  @UseGuards(PoliciesGuard)
   @CheckPolicies(new ManagePolicyHandler())
   async generateCode(@Body() promotionCodeDto: PromotionCodeDto, @Res() res: Response) {
     const promotionCode = await this.promotionCodeService.generate(

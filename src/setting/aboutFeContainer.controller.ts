@@ -1,10 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { PoliciesGuard } from 'src/casl/policies.guard';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
 import { AboutFeContainerService } from './aboutFeContainer.service';
 import { AboutFeContainerDto } from './dto/aboutFeContainer.dto';
 
 @ApiTags('AboutFeContainer')
+@UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('about_fe_container')
 export class AboutFeContainerController {
   constructor(private readonly aboutFeContainerService: AboutFeContainerService) {}
