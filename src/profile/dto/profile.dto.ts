@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsPhoneNumber, IsPostalCode, IsString, IsUrl } from 'class-validator';
+import { Grade } from 'src/common/enums/profile';
 
 export class ProfileDto {
   id: number;
@@ -27,7 +28,7 @@ export class ProfileDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
-  grade: string;
+  grade: Grade;
 
   @ApiProperty()
   @IsString()
