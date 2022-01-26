@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiHeaders, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PoliciesGuard } from 'src/casl/policies.guard';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
@@ -7,6 +7,7 @@ import { PhotoPreviewDto } from './dto/photoPreview.dto';
 import { PhotoPreviewService } from './photoPreview.service';
 
 @ApiTags('PhotoPreview')
+@ApiHeaders([{ name: 'XSRF-TOKEN', required: true, description: 'CSRF Token' }])
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('photo_preview')
 export class PhotoPreviewController {

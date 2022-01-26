@@ -12,7 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiHeaders, ApiParam, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import * as faker from 'faker';
 import * as moment from 'moment';
@@ -44,6 +44,7 @@ import { ThirdPartyAuthService } from './third-party-auth.service';
 import { ValidateCodeService } from './validate-code.service';
 
 @ApiTags('Auth')
+@ApiHeaders([{ name: 'XSRF-TOKEN', required: true, description: 'CSRF Token' }])
 @Controller('auth')
 @UseGuards(JwtAuthGuard)
 export class AuthController {

@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiHeaders, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PoliciesGuard } from 'src/casl/policies.guard';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
@@ -7,13 +7,14 @@ import { AboutFeContainerService } from './aboutFeContainer.service';
 import { AboutFeContainerDto } from './dto/aboutFeContainer.dto';
 
 @ApiTags('AboutFeContainer')
+@ApiHeaders([{ name: 'XSRF-TOKEN', required: true, description: 'CSRF Token' }])
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('about_fe_container')
 export class AboutFeContainerController {
   constructor(private readonly aboutFeContainerService: AboutFeContainerService) {}
 
-  @CheckPolicies(new ManagePolicyHandler())
   @Post(':settingid')
+  @CheckPolicies(new ManagePolicyHandler())
   createAboutFeContainer(
     @Body() aboutFeContainerDto: AboutFeContainerDto,
     @Param('settingid') settingid: string,
@@ -21,20 +22,20 @@ export class AboutFeContainerController {
     return this.aboutFeContainerService.create(aboutFeContainerDto, +settingid);
   }
 
-  @CheckPolicies(new ManagePolicyHandler())
   @Get()
+  @CheckPolicies(new ManagePolicyHandler())
   findAllAboutFeContainer() {
     return this.aboutFeContainerService.findAll();
   }
 
-  @CheckPolicies(new ManagePolicyHandler())
   @Get(':id')
+  @CheckPolicies(new ManagePolicyHandler())
   findOneAboutFeContainer(@Param('id') id: string) {
     return this.aboutFeContainerService.findOne(+id);
   }
 
-  @CheckPolicies(new ManagePolicyHandler())
   @Patch(':id')
+  @CheckPolicies(new ManagePolicyHandler())
   updateAboutFeContainer(
     @Param('id') id: string,
     @Body() aboutFeContainerDto: AboutFeContainerDto,
@@ -42,8 +43,8 @@ export class AboutFeContainerController {
     return this.aboutFeContainerService.update(+id, aboutFeContainerDto);
   }
 
-  @CheckPolicies(new ManagePolicyHandler())
   @Delete(':id')
+  @CheckPolicies(new ManagePolicyHandler())
   removeAboutFeContainer(@Param('id') id: string) {
     return this.aboutFeContainerService.remove(+id);
   }

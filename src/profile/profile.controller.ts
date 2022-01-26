@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Patch,
@@ -15,7 +16,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiHeaders, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PoliciesGuard } from 'src/casl/policies.guard';
@@ -31,6 +32,7 @@ import { Profile } from './entities/profile.entity';
 import { ProfileService } from './profile.service';
 
 @ApiTags('Profile')
+@ApiHeaders([{ name: 'XSRF-TOKEN', required: true, description: 'CSRF Token' }])
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('profile')
 export class ProfileController {
@@ -84,6 +86,8 @@ export class ProfileController {
     const user = await this.userService.findOne(req.user.id, ['profile']);
     const { buffer } = avatar;
     const profile: Profile = await this.profileService.uploadImage(user, buffer);
-    return res.status(201).json({ message: 'Successfully uploaded profile avatar', profile });
+    return res
+      .status(HttpStatus.CREATED)
+      .json({ message: 'Successfully uploaded profile avatar', profile });
   }
 }
