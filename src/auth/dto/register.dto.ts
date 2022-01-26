@@ -1,71 +1,77 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEmail,
-  IsEmpty,
-  IsNotEmpty,
-  IsPhoneNumber,
-  IsPostalCode,
-  MinLength,
-} from 'class-validator';
-import { Role } from 'src/common/enums/role';
+import { IsEmail, IsNotEmpty, IsPhoneNumber, IsPostalCode, MinLength } from 'class-validator';
+import { Grade } from 'src/common/enums/profile';
 
 export class RegisterDto {
-  @ApiProperty()
+  @ApiProperty({ example: 'Fe Camp', description: 'Just a displayname' })
   @IsNotEmpty()
   username: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'password',
+    description: 'Password must at least 8 character',
+    minLength: 8,
+  })
   @MinLength(8, { message: 'Password must at least 8 character' })
   password: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'example@gmail.com',
+    description: 'Email must not duplicated from the existed in the database',
+  })
   @IsEmail()
   email: string;
 
-  @ApiProperty()
-  @IsEmpty()
-  role: Role;
-
-  @ApiProperty()
+  @ApiProperty({
+    example: 'Fe Camp',
+  })
   @IsNotEmpty()
   firstName: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'Admin',
+  })
   @IsNotEmpty()
   lastName: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'https://imgurl.com',
+    description: 'URL of the avatar',
+  })
   imageUrl: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: '0812345678',
+    description: 'Phone number',
+  })
   @IsPhoneNumber('TH')
   tel: string;
 
-  @ApiProperty()
+  @ApiProperty({ enum: Grade, example: Grade.M4 })
   @IsNotEmpty()
-  grade: string;
+  grade: Grade;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'Chulalongkorn University' })
   @IsNotEmpty()
   school: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: '254 Phayathai Rd.' })
   @IsNotEmpty()
   address: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'Wanmai' })
   @IsNotEmpty()
   subdistrict: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'Pathumwan' })
   @IsNotEmpty()
   district: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'Bangkok' })
   @IsNotEmpty()
   province: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: '10330' })
   @IsPostalCode('TH')
   postcode: string;
 
