@@ -1,4 +1,5 @@
 import { ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import * as moment from 'moment';
 import { AuthService } from './auth.service';
@@ -6,11 +7,18 @@ import { TokenDto } from './dto/token.dto';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService, private readonly reflector: Reflector) {
     super();
   }
 
   async canActivate(context: ExecutionContext) {
+    const isNeedAuth = this.reflector.get<boolean>('isNeedAuth', context.getHandler());
+    const isPublic = this.reflector.get<boolean>('isPublic', context.getHandler());
+
+    if (isPublic && !isNeedAuth) {
+      return true;
+    }
+
     const req = context.switchToHttp().getRequest();
     const res = context.switchToHttp().getResponse();
 

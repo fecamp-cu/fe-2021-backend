@@ -1,11 +1,13 @@
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as csurf from 'csurf';
 import { AppModule } from './app.module';
+import { AuthService } from './auth/auth.service';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { ServiceDownFilter } from './logger/service-down.filter';
 
 async function bootstrap() {
@@ -13,6 +15,10 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
   app.setGlobalPrefix('api');
+
+  const reflector = app.get(Reflector);
+  const authService = app.get(AuthService);
+  app.useGlobalGuards(new JwtAuthGuard(authService, reflector));
 
   app.enableCors({
     origin: configService.get<string | boolean>('app.origin'),
@@ -38,13 +44,14 @@ async function bootstrap() {
     .addTag('User')
     .addTag('Profile')
     .addTag('Shop')
+    .addTag('Item')
+    .addTag('Order')
     .addTag('Setting')
     .addTag('AboutFeContainer')
     .addTag('PhotoPreview')
     .addTag('QualificationPreview')
     .addTag('SponcerContainer')
     .addTag('TimelineEvent')
-    .addTag('Item')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
