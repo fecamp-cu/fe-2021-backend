@@ -8,7 +8,7 @@ import { ItemDto } from './dto/item.dto';
 import { ItemService } from './item.service';
 
 @ApiTags('Item')
-@ApiHeaders([{ name: 'XSRF-TOKEN', required: true, description: 'CSRF Token' }])
+@ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('item')
 export class ItemController {

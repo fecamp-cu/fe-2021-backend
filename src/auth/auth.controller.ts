@@ -51,7 +51,7 @@ import { ThirdPartyAuthService } from './third-party-auth.service';
 import { ValidateCodeService } from './validate-code.service';
 
 @ApiTags('Auth')
-@ApiHeaders([{ name: 'XSRF-TOKEN', required: true, description: 'CSRF Token' }])
+@ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @Controller('auth')
 @UseGuards(JwtAuthGuard)
 export class AuthController {

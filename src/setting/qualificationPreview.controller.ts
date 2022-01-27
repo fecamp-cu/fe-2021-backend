@@ -7,7 +7,7 @@ import { QualificationPreviewDto } from './dto/qualificationPreview.dto';
 import { QualificationPreviewService } from './qualificationPreview.service';
 
 @ApiTags('QualificationPreview')
-@ApiHeaders([{ name: 'XSRF-TOKEN', required: true, description: 'CSRF Token' }])
+@ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('qualification_preview')
 export class QualificationPreviewController {

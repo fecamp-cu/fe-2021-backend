@@ -7,7 +7,7 @@ import { TimelineEventDto } from './dto/timelineEvent.dto';
 import { TimelineEventService } from './timelineEvent.service';
 
 @ApiTags('TimelineEvent')
-@ApiHeaders([{ name: 'XSRF-TOKEN', required: true, description: 'CSRF Token' }])
+@ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('timeline_event')
 export class TimelineEventController {

@@ -7,7 +7,7 @@ import { AboutFeContainerService } from './aboutFeContainer.service';
 import { AboutFeContainerDto } from './dto/aboutFeContainer.dto';
 
 @ApiTags('AboutFeContainer')
-@ApiHeaders([{ name: 'XSRF-TOKEN', required: true, description: 'CSRF Token' }])
+@ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('about_fe_container')
 export class AboutFeContainerController {

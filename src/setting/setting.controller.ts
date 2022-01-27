@@ -8,7 +8,7 @@ import { SettingDto } from './dto/setting.dto';
 import { SettingService } from './setting.service';
 
 @ApiTags('Setting')
-@ApiHeaders([{ name: 'XSRF-TOKEN', required: true, description: 'CSRF Token' }])
+@ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('setting')
 export class SettingController {

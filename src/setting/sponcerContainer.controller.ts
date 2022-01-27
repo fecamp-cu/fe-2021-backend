@@ -7,7 +7,7 @@ import { SponcerContainerDto } from './dto/sponcerContainer.dto';
 import { SponcerContainerService } from './sponcerContainer.service';
 
 @ApiTags('SponcerContainer')
-@ApiHeaders([{ name: 'XSRF-TOKEN', required: true, description: 'CSRF Token' }])
+@ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('sponcer_container')
 export class SponcerContainerController {

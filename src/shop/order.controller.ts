@@ -8,7 +8,7 @@ import { OrderService } from './order.service';
 import { PaymentService } from './payment.service';
 
 @ApiTags('Order')
-@ApiHeaders([{ name: 'XSRF-TOKEN', required: true, description: 'CSRF Token' }])
+@ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('order')
 export class OrderController {

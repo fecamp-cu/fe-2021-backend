@@ -32,7 +32,7 @@ import { Profile } from './entities/profile.entity';
 import { ProfileService } from './profile.service';
 
 @ApiTags('Profile')
-@ApiHeaders([{ name: 'XSRF-TOKEN', required: true, description: 'CSRF Token' }])
+@ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('profile')
 export class ProfileController {

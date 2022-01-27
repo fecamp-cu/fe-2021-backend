@@ -16,7 +16,7 @@ import { PaymentService } from './payment.service';
 import { PromotionCodeService } from './promotion-code.service';
 
 @ApiTags('Shop')
-@ApiHeaders([{ name: 'XSRF-TOKEN', required: true, description: 'CSRF Token' }])
+@ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @Public()
 @Controller('shop')

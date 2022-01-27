@@ -23,7 +23,7 @@ import { UserDto } from './dto/user.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
-@ApiHeaders([{ name: 'XSRF-TOKEN', required: true, description: 'CSRF Token' }])
+@ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @ApiTags('User')
 export class UserController {
