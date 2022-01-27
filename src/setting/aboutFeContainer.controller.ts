@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiHeaders, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeaders, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PoliciesGuard } from 'src/casl/policies.guard';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
@@ -8,6 +8,7 @@ import { AboutFeContainerDto } from './dto/aboutFeContainer.dto';
 
 @ApiTags('AboutFeContainer')
 @ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('about_fe_container')
 export class AboutFeContainerController {
