@@ -38,25 +38,30 @@ export class SettingService {
   }
 
   async findOne(id: number): Promise<Setting> {
-    const setting: Setting = await this.settingRepository
-      .createQueryBuilder('setting')
-      .where('setting.id = :id', { id: id })
-      .leftJoinAndSelect('setting.timelineEvents', 'timeline_event')
-      .leftJoinAndSelect('setting.photoPreviews', 'photo_preview')
-      .leftJoinAndSelect('setting.sponcerContainers', 'sponcer_container')
-      .leftJoinAndSelect('setting.qualificationPreviews', 'qualification_preview')
-      .leftJoinAndSelect('setting.aboutFeContainers', 'about_fe_container')
-      .orderBy('event_date', 'ASC')
-      .addOrderBy('"photo_preview"."order"', 'ASC')
-      .addOrderBy('"sponcer_container"."order"', 'ASC')
-      .addOrderBy('"qualification_preview"."order"', 'ASC')
-      .addOrderBy('"about_fe_container"."order"', 'ASC')
-      .cache(true)
-      .getOne();
-    if (!setting) {
-      throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found setting' });
+    try {
+      const setting: Setting = await this.settingRepository
+        .createQueryBuilder('setting')
+        .where('setting.id = :id', { id: id })
+        .leftJoinAndSelect('setting.timelineEvents', 'timeline_event')
+        .leftJoinAndSelect('setting.photoPreviews', 'photo_preview')
+        .leftJoinAndSelect('setting.sponcerContainers', 'sponcer_container')
+        .leftJoinAndSelect('setting.qualificationPreviews', 'qualification_preview')
+        .leftJoinAndSelect('setting.aboutFeContainers', 'about_fe_container')
+        .orderBy('event_start_date', 'ASC')
+        .addOrderBy('"photo_preview"."order"', 'ASC')
+        .addOrderBy('"sponcer_container"."order"', 'ASC')
+        .addOrderBy('"qualification_preview"."order"', 'ASC')
+        .addOrderBy('"about_fe_container"."order"', 'ASC')
+        .cache(true)
+        .getOne();
+
+      if (!setting) {
+        throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found setting' });
+      }
+      return setting;
+    } catch (err) {
+      throw new SettingException('Setting Query Error', err.response);
     }
-    return setting;
   }
 
   async update(id: number, settingDto: SettingDto): Promise<SettingDto> {
