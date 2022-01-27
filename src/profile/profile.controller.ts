@@ -17,6 +17,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiHeaders,
   ApiNoContentResponse,
@@ -40,6 +41,7 @@ import { ProfileService } from './profile.service';
 
 @ApiTags('Profile')
 @ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('profile')
 export class ProfileController {

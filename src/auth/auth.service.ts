@@ -3,7 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as crypto from 'crypto-js';
+import * as moment from 'moment';
 import { ServiceType } from 'src/common/enums/service-type';
+import { TokenQuery } from 'src/common/types/auth';
 import { ProfileDto } from 'src/profile/dto/profile.dto';
 import { Profile } from 'src/profile/entities/profile.entity';
 import { ProfileService } from 'src/profile/profile.service';
@@ -32,25 +34,30 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
-  async createRefreshToken(uid: number): Promise<string> {
+  async createRefreshToken(uid: number, token: string): Promise<TokenDto> {
     const serviceType = ServiceType.FE_CAMP;
-    const refreshToken = await crypto.AES.encrypt(
-      await uuidv4(),
-      this.configService.get<string>('secret.encryptionKey'),
-    ).toString();
+
+    const refreshToken = await uuidv4();
+
     const user = await this.userService.findOne(uid, ['tokens']);
+    const tokenDuration = parseInt(this.configService.get<string>('jwt.tokenDuration'));
+
     const tokenDto = new TokenDto({
+      accessToken: token,
       refreshToken,
-      expiresDate: new Date(
-        Date.now() + parseInt(this.configService.get<string>('jwt.tokenDuration')) * 1000,
-      ),
+      expiresDate: moment().add(tokenDuration, 's').toDate(),
       serviceType,
       user,
     });
 
     await this.storeToken(tokenDto, user, serviceType);
 
-    return refreshToken;
+    tokenDto.refreshToken = await crypto.AES.encrypt(
+      refreshToken,
+      this.configService.get<string>('secret.encryptionKey'),
+    ).toString();
+
+    return tokenDto;
   }
 
   async createTokenEntity(tokenDto: TokenDto): Promise<TokenDto> {
@@ -59,20 +66,29 @@ export class AuthService {
     return this.rawToDTO(createdToken);
   }
 
-  async findRefreshToken(refreshToken: string): Promise<TokenDto> {
-    const token = await this.tokenRepository.findOne({
-      where: { refreshToken },
-      relations: ['user'],
-    });
+  async findByToken(query: TokenQuery): Promise<TokenDto> {
+    if (query.refreshToken) {
+      query.refreshToken = await crypto.AES.decrypt(
+        query.refreshToken,
+        this.configService.get<string>('secret.encryptionKey'),
+      ).toString(crypto.enc.Utf8);
+    }
 
-    if (!token) {
+    const queriedToken = await this.tokenRepository.findOne({ where: query, relations: ['user'] });
+
+    if (!queriedToken) {
       throw new UnauthorizedException();
     }
 
-    return this.rawToDTO(token);
+    return this.rawToDTO(queriedToken);
   }
 
   async clearRefreshToken(refreshToken: string): Promise<void> {
+    refreshToken = await crypto.AES.decrypt(
+      refreshToken,
+      this.configService.get<string>('secret.encryptionKey'),
+    ).toString(crypto.enc.Utf8);
+
     await this.tokenRepository.delete({ refreshToken });
   }
 
@@ -137,14 +153,14 @@ export class AuthService {
       expiresDate: token.expiresDate,
     });
 
-    if (token.accessToken) {
+    if (token.accessToken && token.serviceType !== ServiceType.FE_CAMP) {
       tokenDto.accessToken = await crypto.AES.decrypt(
         token.accessToken,
         this.configService.get<string>('secret.encryptionKey'),
       ).toString(crypto.enc.Utf8);
     }
 
-    if (token.refreshToken) {
+    if (token.refreshToken && token.serviceType !== ServiceType.FE_CAMP) {
       tokenDto.refreshToken = await crypto.AES.decrypt(
         token.refreshToken,
         this.configService.get<string>('secret.encryptionKey'),

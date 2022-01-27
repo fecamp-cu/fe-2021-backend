@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -13,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiHeaders,
   ApiNoContentResponse,
@@ -42,15 +44,18 @@ import { UserDto } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
 import { Public } from './auth.decorator';
 import { AuthService } from './auth.service';
+import { CredentialDto } from './dto/credentials.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { TokenDto } from './dto/token.dto';
 import { ValidateCodeDto } from './dto/validate-code.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { ThirdPartyAuthService } from './third-party-auth.service';
 import { ValidateCodeService } from './validate-code.service';
 
 @ApiTags('Auth')
+@ApiBearerAuth()
 @ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @Controller('auth')
 @UseGuards(JwtAuthGuard)
@@ -84,30 +89,39 @@ export class AuthController {
     return res.status(HttpStatus.CREATED).json({ message: 'Successfully registered user', user });
   }
 
-  @ApiOkResponse({ description: 'Successfully logged in', type: UserDto })
+  @ApiOkResponse({ description: 'Successfully logged in', type: CredentialDto })
   @Post('login')
   @Public()
   async login(@Body() loginDto: LoginDto, @Res() res: Response): Promise<Response> {
     const user: UserDto = await this.userService.Login(loginDto);
-    await this.signToken(user, res);
-    return res.status(HttpStatus.OK).json(user);
+    const credentials = await this.signToken(user);
+    return res.status(HttpStatus.OK).json(credentials);
   }
 
   @ApiOkResponse({ description: "Return user's information", type: UserDto })
   @Get('me')
-  async profile(@Req() req, @Res() res: Response): Promise<Response> {
+  async profile(@Req() req: RequestWithUserId, @Res() res: Response): Promise<Response> {
     const user: UserDto = await this.userService.findOne(req.user.id, ['profile']);
     return res.status(HttpStatus.OK).json(user);
   }
 
+  @ApiOkResponse({ description: 'Redeem new token with refresh token', type: CredentialDto })
+  @Post('token')
+  @Public()
+  async redeemToken(@Body() credentialDto: CredentialDto, @Res() res: Response): Promise<Response> {
+    const getRefreshToken: TokenDto = await this.authService.findByToken({
+      refreshToken: credentialDto.refreshToken,
+    });
+    const credentials: CredentialDto = await this.signToken(getRefreshToken.user);
+    return res.status(HttpStatus.OK).json(credentials);
+  }
+
   @ApiNoContentResponse({ description: 'Successfully logged out' })
-  @Get('logout')
+  @Delete('logout')
   @Public()
   @HttpCode(HttpStatus.NO_CONTENT)
-  logout(@Req() req: RequestWithUserId, @Res() res: Response): Response {
-    this.authService.clearRefreshToken(req.cookies['refresh_token']);
-    res.clearCookie('access_token');
-    res.clearCookie('refresh_token');
+  logout(credentialDto: CredentialDto, @Res() res: Response): Response {
+    this.authService.clearRefreshToken(credentialDto.refreshToken);
     return res.send();
   }
 
@@ -222,8 +236,10 @@ export class AuthController {
 
     user = await this.thirdPartyAuthService.storeGoogleToken(tokens, user, userInfo.id);
 
-    await this.signToken(user, res);
-    res.status(HttpStatus.MOVED_PERMANENTLY).redirect(this.configService.get<string>('app.url'));
+    const credentials: CredentialDto = await this.signToken(user);
+    res
+      .status(HttpStatus.OK)
+      .json({ ...credentials, redirectUrl: this.configService.get<string>('app.url') });
   }
 
   @Get('facebook')
@@ -274,15 +290,21 @@ export class AuthController {
 
     user = await this.thirdPartyAuthService.storeFacebookToken(tokens, user, userInfo.id);
 
-    await this.signToken(user, res);
-    res.status(HttpStatus.MOVED_PERMANENTLY).redirect(this.configService.get<string>('app.url'));
+    const credentials: CredentialDto = await this.signToken(user);
+    res
+      .status(HttpStatus.OK)
+      .json({ ...credentials, redirectUrl: this.configService.get<string>('app.url') });
   }
 
-  private async signToken(user: UserDto, res: Response) {
+  private async signToken(user: UserDto): Promise<CredentialDto> {
     const token: string = await this.authService.createToken(user);
-    const refreshToken: string = await this.authService.createRefreshToken(user.id);
-    res.cookie('access_token', token, { httpOnly: true, secure: false });
-    res.cookie('refresh_token', refreshToken, { httpOnly: true, secure: false });
+    const tokenDto: TokenDto = await this.authService.createRefreshToken(user.id, token);
+
+    return new CredentialDto({
+      accessToken: tokenDto.accessToken,
+      refreshToken: tokenDto.refreshToken,
+      expiresIn: parseInt(this.configService.get<string>('jwt.tokenDuration')),
+    });
   }
 
   private async sendEmail(userDto: UserDto, subject: string, message: string[]) {

@@ -1,8 +1,14 @@
 import { Body, Controller, HttpStatus, Param, Post, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiCreatedResponse, ApiHeaders, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiHeaders,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Response } from 'express';
-import { Auth, Public } from 'src/auth/auth.decorator';
+import { Public } from 'src/auth/auth.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PoliciesGuard } from 'src/casl/policies.guard';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
@@ -18,7 +24,6 @@ import { PromotionCodeService } from './promotion-code.service';
 @ApiTags('Shop')
 @ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @UseGuards(JwtAuthGuard, PoliciesGuard)
-@Public()
 @Controller('shop')
 export class ShopController {
   constructor(
@@ -29,6 +34,7 @@ export class ShopController {
   ) {}
 
   @Post()
+  @Public()
   create(@Body() orderDto: OrderDto) {
     return this.orderService.create(orderDto);
   }
@@ -40,6 +46,7 @@ export class ShopController {
     },
   })
   @Post('checkout/internet-banking')
+  @Public()
   async checkoutInternetBanking(@Body() paymentDto: PaymentDto, @Res() res: Response) {
     const authorize_uri: string = (await this.paymentService.checkout(
       paymentDto,
@@ -55,6 +62,7 @@ export class ShopController {
     },
   })
   @Post('checkout/promptpay')
+  @Public()
   async checkoutPromptPay(@Body() paymentDto: PaymentDto, @Res() res: Response) {
     const download_uri: string = (await this.paymentService.checkout(
       paymentDto,
@@ -64,6 +72,7 @@ export class ShopController {
   }
 
   @Post('checkout/credit-card')
+  @Public()
   async checkoutCreditCard(@Body() paymentDto: PaymentDto, @Res() res: Response) {
     await this.paymentService.checkout(paymentDto, PaymentType.CREDIT_CARD);
     res
@@ -72,6 +81,7 @@ export class ShopController {
   }
 
   @Post('omise/callback')
+  @Public()
   async callback(@Body() omiseWebhookDto: OmiseWebhookDto, @Res() res: Response) {
     if (omiseWebhookDto.data.status === 'successful') {
       this.paymentService.sendReciept(omiseWebhookDto);
@@ -83,8 +93,8 @@ export class ShopController {
     description: 'Successfully created promotion code',
     type: PromotionCodeDto,
   })
+  @ApiBearerAuth()
   @Post('/generate-code')
-  @Auth()
   @CheckPolicies(new ManagePolicyHandler())
   async generateCode(@Body() promotionCodeDto: PromotionCodeDto, @Res() res: Response) {
     const promotionCode: PromotionCodeDto = await this.promotionCodeService.generate(
@@ -102,6 +112,7 @@ export class ShopController {
     type: PromotionCodeDto,
   })
   @Post('/verify/:code')
+  @Public()
   async verifyPromotionCode(@Param('code') code: string, @Res() res: Response) {
     const promotionCode: PromotionCodeDto = await this.promotionCodeService.use(code);
     return res.status(HttpStatus.OK).json(promotionCode);

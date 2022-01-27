@@ -35,6 +35,7 @@ async function bootstrap() {
     .setTitle('FE Camp API')
     .setDescription('FE API Docs since 2022')
     .setVersion('1.0')
+    .addBearerAuth()
     .addTag('Auth')
     .addTag('User')
     .addTag('Profile')
