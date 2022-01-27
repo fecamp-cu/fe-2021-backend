@@ -10,7 +10,7 @@ import { AboutFeContainerDto } from './dto/aboutFeContainer.dto';
 @ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PoliciesGuard)
-@Controller('about_fe_container')
+@Controller('setting/about')
 export class AboutFeContainerController {
   constructor(private readonly aboutFeContainerService: AboutFeContainerService) {}
 

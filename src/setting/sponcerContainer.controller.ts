@@ -10,7 +10,7 @@ import { SponcerContainerService } from './sponcerContainer.service';
 @ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PoliciesGuard)
-@Controller('sponcer_container')
+@Controller('setting/sponsor')
 export class SponcerContainerController {
   constructor(private readonly sponcerContainerService: SponcerContainerService) {}
 

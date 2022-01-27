@@ -10,7 +10,7 @@ import { TimelineEventService } from './timelineEvent.service';
 @ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PoliciesGuard)
-@Controller('timeline_event')
+@Controller('setting/timeline')
 export class TimelineEventController {
   constructor(private readonly timelineEventService: TimelineEventService) {}
 

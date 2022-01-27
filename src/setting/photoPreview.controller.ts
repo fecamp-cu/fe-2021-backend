@@ -10,7 +10,7 @@ import { PhotoPreviewService } from './photoPreview.service';
 @ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PoliciesGuard)
-@Controller('photo_preview')
+@Controller('setting/photo')
 export class PhotoPreviewController {
   constructor(private readonly photoPreviewService: PhotoPreviewService) {}
 

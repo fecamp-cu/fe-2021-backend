@@ -10,7 +10,7 @@ import { QualificationPreviewService } from './qualificationPreview.service';
 @ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PoliciesGuard)
-@Controller('qualification_preview')
+@Controller('setting/qualification')
 export class QualificationPreviewController {
   constructor(private readonly qualificationPreviewService: QualificationPreviewService) {}
 
