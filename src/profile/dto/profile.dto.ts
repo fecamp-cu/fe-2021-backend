@@ -5,32 +5,22 @@ import { Grade } from 'src/common/enums/profile';
 export class ProfileDto {
   id: number;
 
-  @ApiProperty({
-    example: 'Fe Camp',
-  })
+  @ApiProperty({ example: 'Fe Camp' })
   @IsString()
   @IsOptional()
   firstName: string;
 
-  @ApiProperty({
-    example: 'Admin',
-  })
+  @ApiProperty({ example: 'Admin' })
   @IsString()
   @IsOptional()
   lastName: string;
 
-  @ApiProperty({
-    example: 'https://imgurl.com',
-    description: 'URL of the avatar',
-  })
+  @ApiProperty({ example: 'https://imgurl.com' })
   @IsUrl()
   @IsOptional()
   imageUrl: string;
 
-  @ApiProperty({
-    example: '0812345678',
-    description: 'Phone number',
-  })
+  @ApiProperty({ example: '0812345678' })
   @IsPhoneNumber('TH')
   @IsOptional()
   tel: string;

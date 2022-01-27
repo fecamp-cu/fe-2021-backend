@@ -7,19 +7,12 @@ export class UpdateUserDto {
   @IsOptional()
   username: string;
 
-  @ApiPropertyOptional({
-    example: 'password',
-    description: 'Password must at least 8 character',
-    minLength: 8,
-  })
+  @ApiPropertyOptional({ example: 'password', minLength: 8 })
   @IsOptional()
   @MinLength(8, { message: 'Password must at least 8 character' })
   password: string;
 
-  @ApiPropertyOptional({
-    example: Role.USER,
-    description: 'Role of the user',
-  })
+  @ApiPropertyOptional({ example: Role.USER })
   @IsOptional()
   @IsIn([Role.USER, Role.ADMIN])
   role: Role;

@@ -12,18 +12,11 @@ export class UserDto {
   @IsString()
   username: string;
 
-  @ApiProperty({
-    example: 'password',
-    description: 'Password must at least 8 character',
-    minLength: 8,
-  })
+  @ApiProperty({ example: 'password', minLength: 8 })
   @MinLength(8, { message: 'Password must at least 8 character' })
   password: string;
 
-  @ApiProperty({
-    example: 'example@gmail.com',
-    description: 'Email must not duplicated from the existed in the database',
-  })
+  @ApiProperty({ example: 'example@gmail.com' })
   @IsEmail()
   email: string;
 

@@ -8,59 +8,35 @@ import { ItemIndexDto } from './item-index.dto';
 export class ItemDto {
   id: number;
 
-  @ApiProperty({
-    example: ItemType.EXAM_PREP,
-    description: 'The type of the item',
-    enum: ItemType,
-  })
+  @ApiProperty({ example: ItemType.EXAM_PREP, enum: ItemType })
   @IsIn([ItemType.EXAM_PREP, ItemType.OLD_PAPERS])
   type: ItemType;
 
-  @ApiProperty({
-    example: 'https://www.imgurl.com/img.png',
-    description: 'URL of the item picture',
-  })
+  @ApiProperty({ example: 'https://www.imgurl.com/img.png' })
   @IsUrl()
   thumbnail: string;
 
-  @ApiProperty({
-    example: 'https://www.imgurl.com/img.png',
-    description: 'URL of the file',
-  })
+  @ApiProperty({ example: 'https://www.imgurl.com/img.png' })
   @IsUrl()
   fileURL: string;
 
-  @ApiProperty({
-    example: 300,
-    description: 'Price of the item',
-  })
+  @ApiProperty({ example: 300 })
   @IsInt()
   price: number;
 
-  @ApiProperty({
-    example: 'Fe Camp Book',
-    description: 'Title of the item',
-  })
+  @ApiProperty({ example: 'Fe Camp Book' })
   @IsString()
   title: string;
 
-  @ApiProperty({
-    example: 'The pre exam preparation book',
-    description: 'Description of the item',
-  })
+  @ApiProperty({ example: 'The pre exam preparation book' })
   @IsString()
   summary: string;
 
-  @ApiProperty({
-    example: 'FE Staff',
-    description: 'Author of the item',
-  })
+  @ApiProperty({ example: 'FE Staff' })
   @IsString()
   author: string;
 
-  @ApiProperty({
-    description: 'The index of the item',
-  })
+  @ApiProperty({})
   @ValidateNested()
   indexes?: ItemIndexDto[];
 

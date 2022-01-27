@@ -3,47 +3,30 @@ import { IsEmail, IsNotEmpty, IsPhoneNumber, IsPostalCode, MinLength } from 'cla
 import { Grade } from 'src/common/enums/profile';
 
 export class RegisterDto {
-  @ApiProperty({ example: 'Fe Camp', description: 'Just a displayname' })
+  @ApiProperty({ example: 'Fe Camp' })
   @IsNotEmpty()
   username: string;
 
-  @ApiProperty({
-    example: 'password',
-    description: 'Password must at least 8 character',
-    minLength: 8,
-  })
+  @ApiProperty({ example: 'password', minLength: 8 })
   @MinLength(8, { message: 'Password must at least 8 character' })
   password: string;
 
-  @ApiProperty({
-    example: 'example@gmail.com',
-    description: 'Email must not duplicated from the existed in the database',
-  })
+  @ApiProperty({ example: 'example@gmail.com' })
   @IsEmail()
   email: string;
 
-  @ApiProperty({
-    example: 'Fe Camp',
-  })
+  @ApiProperty({ example: 'Fe Camp' })
   @IsNotEmpty()
   firstName: string;
 
-  @ApiProperty({
-    example: 'Admin',
-  })
+  @ApiProperty({ example: 'Admin' })
   @IsNotEmpty()
   lastName: string;
 
-  @ApiProperty({
-    example: 'https://imgurl.com',
-    description: 'URL of the avatar',
-  })
+  @ApiProperty({ example: 'https://imgurl.com' })
   imageUrl: string;
 
-  @ApiProperty({
-    example: '0812345678',
-    description: 'Phone number',
-  })
+  @ApiProperty({ example: '0812345678' })
   @IsPhoneNumber('TH')
   tel: string;
 
