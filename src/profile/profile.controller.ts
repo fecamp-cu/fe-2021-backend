@@ -16,7 +16,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiHeaders, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiHeaders,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Response } from 'express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PoliciesGuard } from 'src/casl/policies.guard';
@@ -41,24 +48,29 @@ export class ProfileController {
     private readonly userService: UserService,
   ) {}
 
+  @ApiCreatedResponse({ description: "Successfully created user's profile", type: ProfileDto })
   @Post()
   @CheckPolicies(new ManagePolicyHandler())
   create(@Body() profileDto: ProfileDto) {
     return this.profileService.create(profileDto);
   }
 
+  @ApiOkResponse({ description: "Successfully get all user's profile", type: [ProfileDto] })
   @Get()
   @CheckPolicies(new ManagePolicyHandler())
   findAll() {
     return this.profileService.findAll();
   }
 
+  @ApiOkResponse({ description: "Successfully get user's profile", type: [ProfileDto] })
   @Get(':id')
   @CheckPolicies(new ManagePolicyHandler())
   findOne(@Param('id', ParseIntPipe) id: string) {
     return this.profileService.findOne(+id);
   }
 
+  @ApiOperation({ description: "Update user's profile (can only update your profile)" })
+  @ApiOkResponse({ description: "Successfully updated user's profile", type: ProfileDto })
   @Patch(':id')
   @CheckPolicies(new UpdateProfilePolicyHandler())
   update(
@@ -69,12 +81,17 @@ export class ProfileController {
     return this.profileService.update(+id, profileDto);
   }
 
+  @ApiNoContentResponse({ description: "Successfully deleted user's profile" })
   @Delete(':id')
   @CheckPolicies(new ManagePolicyHandler())
   remove(@Param('id', ParseIntPipe) id: string) {
     return this.profileService.remove(+id);
   }
 
+  @ApiCreatedResponse({
+    description: "Successfully upload user's profile avatar",
+    type: ProfileDto,
+  })
   @Put('upload')
   @CheckPolicies(new ManagePolicyHandler())
   @UseInterceptors(FileInterceptor('avatar'))
