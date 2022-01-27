@@ -13,6 +13,11 @@ export type TokenPayload = {
   id: number;
 };
 
+export type TokenQuery = {
+  accessToken?: string;
+  refreshToken?: string;
+};
+
 export type GoogleAuthData = {
   access_token: string;
   refresh_token?: string;
