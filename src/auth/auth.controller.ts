@@ -12,7 +12,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiHeaders, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiHeaders,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Response } from 'express';
 import * as faker from 'faker';
 import * as moment from 'moment';
@@ -59,6 +66,7 @@ export class AuthController {
     private facebookClient: FacebookAuthentication,
   ) {}
 
+  @ApiCreatedResponse({ description: 'Successfully registered user', type: UserDto })
   @Post('register')
   @Public()
   async register(@Body() registerDto: RegisterDto, @Res() res: Response): Promise<Response> {
@@ -76,6 +84,7 @@ export class AuthController {
     return res.status(HttpStatus.CREATED).json({ message: 'Successfully registered user', user });
   }
 
+  @ApiOkResponse({ description: 'Successfully logged in', type: UserDto })
   @Post('login')
   @Public()
   async login(@Body() loginDto: LoginDto, @Res() res: Response): Promise<Response> {
@@ -84,12 +93,14 @@ export class AuthController {
     return res.status(HttpStatus.OK).json(user);
   }
 
+  @ApiOkResponse({ description: "Return user's information", type: UserDto })
   @Get('me')
   async profile(@Req() req, @Res() res: Response): Promise<Response> {
     const user: UserDto = await this.userService.findOne(req.user.id, ['profile']);
     return res.status(HttpStatus.OK).json(user);
   }
 
+  @ApiNoContentResponse({ description: 'Successfully logged out' })
   @Get('logout')
   @Public()
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -100,6 +111,10 @@ export class AuthController {
     return res.send();
   }
 
+  @ApiOkResponse({
+    description: 'Successfully send email',
+    schema: { properties: { message: { type: 'string', example: 'Successfully sent email.' } } },
+  })
   @Post('reset-password/request')
   @Public()
   async requestResetPassword(
@@ -130,6 +145,7 @@ export class AuthController {
     return res.status(HttpStatus.OK).json({ message: 'Successfully sent email' });
   }
 
+  @ApiOkResponse({ description: 'Successfully reset password', type: UserDto })
   @ApiParam({ name: 'token' })
   @Post('reset-password/:token')
   @Public()
@@ -148,6 +164,12 @@ export class AuthController {
     return res.status(HttpStatus.OK).json(user);
   }
 
+  @ApiOkResponse({
+    description: 'Successfully validate code',
+    schema: {
+      properties: { message: { type: 'string', example: 'Successfully verified an email.' } },
+    },
+  })
   @Get('verify-email')
   @Public()
   async verifyEmail(
