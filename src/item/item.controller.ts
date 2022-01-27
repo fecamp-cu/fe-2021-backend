@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiHeaders, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/auth/auth.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PoliciesGuard } from 'src/casl/policies.guard';
@@ -8,6 +8,7 @@ import { ItemDto } from './dto/item.dto';
 import { ItemService } from './item.service';
 
 @ApiTags('Item')
+@ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('item')
 export class ItemController {

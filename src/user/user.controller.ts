@@ -9,7 +9,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiHeaders, ApiTags } from '@nestjs/swagger';
 import { RegisterDto } from 'src/auth/dto/register.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PoliciesGuard } from 'src/casl/policies.guard';
@@ -23,6 +23,7 @@ import { UserDto } from './dto/user.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
+@ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @ApiTags('User')
 export class UserController {

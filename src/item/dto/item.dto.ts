@@ -1,44 +1,42 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmpty, IsIn, IsInt, IsString, IsUrl, ValidateNested } from 'class-validator';
 import { ItemType } from 'src/common/enums/item-type';
-import { OrderItemDto } from 'src/order/dto/order-item.dto';
+import { OrderItemDto } from 'src/shop/dto/order-item.dto';
 import { UserDto } from 'src/user/dto/user.dto';
 import { ItemIndexDto } from './item-index.dto';
 
 export class ItemDto {
-  @ApiProperty()
-  @IsInt()
   id: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: ItemType.EXAM_PREP, enum: ItemType })
   @IsIn([ItemType.EXAM_PREP, ItemType.OLD_PAPERS])
   type: ItemType;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'https://www.imgurl.com/img.png' })
   @IsUrl()
   thumbnail: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'https://www.imgurl.com/img.png' })
   @IsUrl()
   fileURL: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 300 })
   @IsInt()
   price: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'Fe Camp Book' })
   @IsString()
   title: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'The pre exam preparation book' })
   @IsString()
   summary: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'FE Staff' })
   @IsString()
   author: string;
 
-  @ApiProperty()
+  @ApiProperty({})
   @ValidateNested()
   indexes?: ItemIndexDto[];
 

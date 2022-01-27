@@ -6,21 +6,21 @@ import { OrderDto } from './order.dto';
 export class PromotionCodeDto {
   id: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: PromotionCodeType.AMOUNT })
   @IsIn([PromotionCodeType.AMOUNT, PromotionCodeType.PERCENTAGE])
   type: PromotionCodeType;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'FECAMP-2022' })
   @IsOptional()
   @IsString()
   code?: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 50 })
   @IsOptional()
   @IsInt()
   value?: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: true })
   @IsOptional()
   @IsBoolean()
   isReuseable?: boolean;
@@ -28,7 +28,7 @@ export class PromotionCodeDto {
   @IsEmpty()
   isActived: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ example: new Date().toISOString() })
   @IsOptional()
   @IsISO8601()
   expiresDate: Date;

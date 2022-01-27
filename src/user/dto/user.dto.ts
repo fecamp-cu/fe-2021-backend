@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsEmpty, IsNotEmpty, MinLength } from 'class-validator';
+import { IsEmail, IsEmpty, IsString, MinLength } from 'class-validator';
 import { TokenDto } from 'src/auth/dto/token.dto';
 import { ValidateCodeDto } from 'src/auth/dto/validate-code.dto';
 import { Role } from 'src/common/enums/role';
@@ -8,15 +8,15 @@ import { ProfileDto } from 'src/profile/dto/profile.dto';
 export class UserDto {
   id: number;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiProperty({ example: 'Fe Camp', description: 'Just a displayname' })
+  @IsString()
   username: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'password', minLength: 8 })
   @MinLength(8, { message: 'Password must at least 8 character' })
   password: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'example@gmail.com' })
   @IsEmail()
   email: string;
 

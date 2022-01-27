@@ -1,4 +1,4 @@
-import { OrderDto } from 'src/order/dto/order.dto';
+import { OrderDto } from 'src/shop/dto/order.dto';
 
 export const DiscordShopMessage = (orderDto: OrderDto): string => {
   return `

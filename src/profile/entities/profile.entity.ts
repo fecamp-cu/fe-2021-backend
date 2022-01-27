@@ -1,3 +1,4 @@
+import { Grade } from 'src/common/enums/profile';
 import {
   Column,
   CreateDateColumn,
@@ -25,7 +26,7 @@ export class Profile {
   tel: string;
 
   @Column({ nullable: true })
-  grade: string;
+  grade: Grade;
 
   @Column({ nullable: true })
   school: string;

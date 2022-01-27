@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiHeaders, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/auth/auth.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PoliciesGuard } from 'src/casl/policies.guard';
@@ -8,6 +8,7 @@ import { SettingDto } from './dto/setting.dto';
 import { SettingService } from './setting.service';
 
 @ApiTags('Setting')
+@ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('setting')
 export class SettingController {
@@ -20,7 +21,7 @@ export class SettingController {
   }
 
   @Get()
-  @Public()
+  @CheckPolicies(new ManagePolicyHandler())
   findAll() {
     return this.settingService.findAll();
   }
@@ -32,7 +33,7 @@ export class SettingController {
   }
 
   @Get(':id')
-  @Public()
+  @CheckPolicies(new ManagePolicyHandler())
   findOne(@Param('id') id: string) {
     return this.settingService.findOne(+id);
   }

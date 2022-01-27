@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiHeaders, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PoliciesGuard } from 'src/casl/policies.guard';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
@@ -7,6 +7,7 @@ import { TimelineEventDto } from './dto/timelineEvent.dto';
 import { TimelineEventService } from './timelineEvent.service';
 
 @ApiTags('TimelineEvent')
+@ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('timeline_event')
 export class TimelineEventController {
