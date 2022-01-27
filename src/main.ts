@@ -49,7 +49,7 @@ async function bootstrap() {
     .addTag('TimelineEvent')
     .build();
 
-  const document = SwaggerModule.createDocument(app, config, { ignoreGlobalPrefix: true });
+  const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
   await app.listen(configService.get<number>('app.port'));
