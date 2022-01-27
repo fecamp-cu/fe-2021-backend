@@ -2,6 +2,7 @@ import { Controller, Get, Request } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { AppService } from './app.service';
+import { Public } from './auth/auth.decorator';
 import { RequestWithUserId } from './common/types/auth';
 
 @Controller()
@@ -9,6 +10,7 @@ export class AppController {
   constructor(private readonly appService: AppService, private configService: ConfigService) {}
 
   @Get()
+  @Public()
   getHello(): string {
     return this.appService.getHello();
   }
@@ -23,6 +25,7 @@ export class AppController {
     },
   })
   @Get('who-am-I')
+  @Public()
   async whoAmI(@Request() req: RequestWithUserId) {
     if (this.configService.get<boolean>('app.devMode')) {
       return 'CSRF token is not available in dev mode';
