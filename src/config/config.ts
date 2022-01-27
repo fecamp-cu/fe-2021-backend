@@ -10,7 +10,7 @@ export default () => ({
     url: process.env.URL,
     apiUrl: process.env.URL + '/api',
     devMode: process.env.DEBUG === 'true',
-    origin: envType === 'development' ? '*' : true,
+    origin: envType === 'development' ? true : '*',
   },
   secret: {
     policykey: process.env.CHECK_POLICIES_KEY,
