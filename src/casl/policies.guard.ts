@@ -72,9 +72,6 @@ export class PoliciesGuard implements CanActivate {
 
     this.setupHandler(handler, requestParams);
 
-    console.log(handler);
-    console.log(ability);
-
     return handler.handle(ability);
   }
 }

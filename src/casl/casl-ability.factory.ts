@@ -39,7 +39,6 @@ export class CaslAbilityFactory {
         { id: user.profile.id },
       );
       can(Action.UPDATE, User, ['username', 'password'], { id: user.id });
-      console.log(user.id);
     }
 
     can(Action.READ, 'all');
