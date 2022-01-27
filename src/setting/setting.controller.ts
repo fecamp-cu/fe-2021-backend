@@ -11,7 +11,7 @@ import { SettingService } from './setting.service';
 @ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PoliciesGuard)
-@Controller('setting')
+@Controller('settings')
 export class SettingController {
   constructor(private readonly settingService: SettingService) {}
 
