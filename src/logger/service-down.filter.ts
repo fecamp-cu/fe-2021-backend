@@ -19,7 +19,7 @@ export class ServiceDownFilter implements ExceptionFilter {
     const response = context.getResponse<Response>();
 
     if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
-      const topic = 'Caution!!\n' + exception.message;
+      const topic = 'Caution!!\n' + exception.name;
       const body = JSON.stringify({
         name: exception.name,
         error: exception.message,

@@ -45,12 +45,6 @@ export class SettingController {
     return this.settingService.update(+id, settingDto);
   }
 
-  @Patch(':id/activate')
-  @CheckPolicies(new ManagePolicyHandler())
-  activate(@Param('id') id: string) {
-    return this.settingService.activate(+id);
-  }
-
   @Delete(':id')
   @CheckPolicies(new ManagePolicyHandler())
   remove(@Param('id') id: string) {

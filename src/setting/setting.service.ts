@@ -25,15 +25,36 @@ export class SettingService {
   async findAll(): Promise<SettingDto[]> {
     try {
       return await this.settingRepository.find();
-    } catch (error) {
-      throw new SettingException('Failed to find all setting', error.response.status);
+    } catch (err) {
+      throw new SettingException('Setting Query Error', err.response);
     }
   }
-  async findAllActive(): Promise<SettingDto[]> {
+  async findAllActive(): Promise<SettingDto> {
     try {
-      return await this.settingRepository.find({ where: { isActive: true } });
+      const setting: Setting = await this.settingRepository
+        .createQueryBuilder('setting')
+        .where('setting.is_active = :isActive', { isActive: true })
+        .leftJoinAndSelect('setting.timelineEvents', 'timeline_event')
+        .leftJoinAndSelect('setting.photoPreviews', 'photo_preview')
+        .leftJoinAndSelect('setting.sponcerContainers', 'sponcer_container')
+        .leftJoinAndSelect('setting.qualificationPreviews', 'qualification_preview')
+        .leftJoinAndSelect('setting.aboutFeContainers', 'about_fe_container')
+        .orderBy('event_start_date', 'ASC')
+        .addOrderBy('"photo_preview"."order"', 'ASC')
+        .addOrderBy('"sponcer_container"."order"', 'ASC')
+        .addOrderBy('"qualification_preview"."order"', 'ASC')
+        .addOrderBy('"about_fe_container"."order"', 'ASC')
+        .cache(true)
+        .getOne();
+
+      if (!setting) {
+        throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found setting' });
+      }
+
+      return setting as SettingDto;
     } catch (error) {
-      throw new SettingException('Failed to find all activated setting', error.response.status);
+      console.error(error);
+      throw new SettingException('Failed to find activated setting', error.response);
     }
   }
 
