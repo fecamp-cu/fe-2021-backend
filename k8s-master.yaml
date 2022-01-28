@@ -6,7 +6,7 @@ metadata:
   labels:
     app: fecamp-2021-backend
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: fecamp-2021-backend
@@ -156,11 +156,6 @@ spec:
                   name: google-credentials
                   key: client_cert_uri
             # Google Cloud Storage
-            - name: GCS_SA_KEY
-              valueFrom:
-                configMapKeyRef:
-                  name: fecamp-config
-                  key: gcs_sa_key
             - name: GCS_BUCKET_NAME
               valueFrom:
                 configMapKeyRef:
@@ -237,8 +232,8 @@ spec:
             periodSeconds: 30
           resources:
             requests:
-              cpu: 70m
-              memory: 128Mi
+              cpu: 60m
+              memory: 150Mi
             limits:
-              cpu: 100m
-              memory: 512Mi
+              cpu: 90m
+              memory: 180Mi
