@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -84,10 +89,17 @@ export class AuthService {
   }
 
   async clearRefreshToken(refreshToken: string): Promise<void> {
-    refreshToken = await crypto.AES.decrypt(
-      refreshToken,
-      this.configService.get<string>('secret.encryptionKey'),
-    ).toString(crypto.enc.Utf8);
+    try {
+      refreshToken = await crypto.AES.decrypt(
+        refreshToken,
+        this.configService.get<string>('secret.encryptionKey'),
+      ).toString(crypto.enc.Utf8);
+    } catch (err) {
+      throw new BadRequestException({
+        reason: 'INVALID_INPUT',
+        message: 'Invalid refresh token',
+      });
+    }
 
     await this.tokenRepository.delete({ refreshToken });
   }

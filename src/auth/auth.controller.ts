@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -117,11 +116,10 @@ export class AuthController {
   }
 
   @ApiNoContentResponse({ description: 'Successfully logged out' })
-  @Delete('logout')
-  @Public()
+  @Get('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
-  logout(credentialDto: CredentialDto, @Res() res: Response): Response {
-    this.authService.clearRefreshToken(credentialDto.refreshToken);
+  async logout(@Req() req: RequestWithUserId, @Res() res: Response): Promise<Response> {
+    await this.signToken(req.user as UserDto);
     return res.send();
   }
 
