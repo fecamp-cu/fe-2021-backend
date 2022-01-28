@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  Index,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -27,6 +28,7 @@ export class Token {
   @Column({ name: 'access_token', nullable: true })
   accessToken: string;
 
+  @Index()
   @Column({ name: 'refresh_token', nullable: true })
   refreshToken: string;
 
