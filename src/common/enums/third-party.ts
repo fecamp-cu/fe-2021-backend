@@ -20,4 +20,6 @@ export enum Discord {
   ALERT_USERNAME = 'FE Alert',
   ALERT_AVATAR_URL = 'https://storage.googleapis.com/fe-camp/FE-Camp-Alerting-Icon.png',
   ALERT_COLOR = 0xff2b5e,
+
+  TAG_ADMIN = '<@&906181495356538921>',
 }

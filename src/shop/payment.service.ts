@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ThirdPartyAuthService } from 'src/auth/third-party-auth.service';
 import { DiscordShopMessage } from 'src/common/constants/discord-message.constant';
-import { receiptMessage } from 'src/common/constants/shop-message.constants';
+import { receiptMessage } from 'src/common/constants/email-message.constant';
 import { ServiceType } from 'src/common/enums/service-type';
 import { PaymentMessage, PaymentStatus, PaymentType } from 'src/common/enums/shop';
 import { Discord } from 'src/common/enums/third-party';
@@ -85,6 +85,7 @@ export class PaymentService {
       Discord.SHOP_TITLE_SOLD,
       DiscordShopMessage(orderDto),
       Discord.SHOP_COLOR,
+      Discord.TAG_ADMIN,
     );
 
     return orderDto;

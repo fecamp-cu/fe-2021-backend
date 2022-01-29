@@ -20,16 +20,19 @@ export class DiscordService {
     color: number = Discord.DEFAULT_COLOR,
     content: string = '',
   ): Promise<boolean> {
-    console.log(content);
     try {
       await this.client.post('', {
         username,
         avatar_url: avatarUrl,
-        // content,
+        content,
         embeds: [{ title, description, color }],
+        allowed_mentions: {
+          parse: ['roles'],
+        },
       });
       return true;
     } catch (err) {
+      console.error(err.response.data);
       return false;
     }
   }
