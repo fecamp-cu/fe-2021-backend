@@ -6,6 +6,7 @@ import { receiptMessage } from 'src/common/constants/shop-message.constants';
 import { ServiceType } from 'src/common/enums/service-type';
 import { PaymentMessage, PaymentStatus, PaymentType } from 'src/common/enums/shop';
 import { Discord } from 'src/common/enums/third-party';
+import { OmiseException } from 'src/common/exceptions/omise.exception';
 import { GoogleEmailRef } from 'src/common/types/google/google-gmail';
 import { OmiseCharge } from 'src/common/types/payment';
 import { ItemService } from 'src/item/item.service';
@@ -50,7 +51,12 @@ export class PaymentService {
   }
 
   async sendReciept(omiseWebhookDto: OmiseWebhookDto): Promise<OrderDto> {
-    const order = await this.orderService.findByChargeId(omiseWebhookDto.data.id);
+    let order;
+    try {
+      order = await this.orderService.findByChargeId(omiseWebhookDto.data.id);
+    } catch (err) {
+      throw new OmiseException(err.message, 'Webhook Error');
+    }
 
     order.chargeId = omiseWebhookDto.data.id;
     order.transactionId = omiseWebhookDto.data.transaction;
