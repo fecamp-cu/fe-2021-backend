@@ -4,6 +4,8 @@ import { CaslAbilityFactory } from 'src/casl/casl-ability.factory';
 import { ItemModule } from 'src/item/item.module';
 import { ThirdPartyModule } from 'src/third-party/third-party.module';
 import { UserModule } from 'src/user/user.module';
+import { CustomerController } from './customer.controller';
+import { CustomerService } from './customer.service';
 import { Customer } from './entities/customer.entity';
 import { OrderItem } from './entities/order-item.entity';
 import { Order } from './entities/order.entity';
@@ -21,7 +23,13 @@ import { ShopController } from './shop.controller';
     ItemModule,
     UserModule,
   ],
-  controllers: [ShopController, OrderController],
-  providers: [OrderService, PaymentService, PromotionCodeService, CaslAbilityFactory],
+  controllers: [ShopController, OrderController, CustomerController],
+  providers: [
+    OrderService,
+    PaymentService,
+    PromotionCodeService,
+    CaslAbilityFactory,
+    CustomerService,
+  ],
 })
 export class ShopModule {}

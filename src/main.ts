@@ -41,6 +41,7 @@ async function bootstrap() {
     .addTag('Profile')
     .addTag('Shop')
     .addTag('Item')
+    .addTag('Customer')
     .addTag('Order')
     .addTag('Setting')
     .addTag('AboutFeContainer')
