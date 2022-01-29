@@ -57,7 +57,7 @@ export class CustomerController {
   @ApiNoContentResponse({ description: "Successfully deleted user's customer" })
   @Delete(':id')
   @CheckPolicies(new ManagePolicyHandler())
-  remove(@Param('id', ParseIntPipe) id: string) {
-    return this.customerService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.customerService.remove(id);
   }
 }

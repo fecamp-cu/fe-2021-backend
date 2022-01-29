@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { Customer } from './entities/customer.entity';
 
 @Injectable()
@@ -35,7 +35,7 @@ export class CustomerService {
     return customer;
   }
   async remove(id: number): Promise<Customer> {
-    const deleted: DeleteResult = await this.customerRepository.softDelete(id);
+    const deleted: UpdateResult = await this.customerRepository.softDelete(id);
 
     if (deleted.affected === 0) {
       throw new NotFoundException({
