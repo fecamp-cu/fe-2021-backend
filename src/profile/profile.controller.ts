@@ -75,11 +75,7 @@ export class ProfileController {
   @ApiOkResponse({ description: "Successfully updated user's profile", type: ProfileDto })
   @Patch(':id')
   @CheckPolicies(new UpdateProfilePolicyHandler())
-  update(
-    @Req() req: RequestWithUserId,
-    @Param('id', ParseIntPipe) id: number,
-    @Body() profileDto: ProfileDto,
-  ) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() profileDto: ProfileDto) {
     return this.profileService.update(+id, profileDto);
   }
 
