@@ -71,7 +71,6 @@ export class OmiseService {
     const data: ChargeRequest = {
       amount,
       currency: 'THB',
-      return_uri: this.configService.get<string>('app.url') + '/payment/success',
     };
 
     if (isCreditCard) {
@@ -80,6 +79,7 @@ export class OmiseService {
 
     if (!isCreditCard) {
       data.source = sourceIdOrTokenId;
+      data.return_uri = this.configService.get<string>('app.url') + '/payment/success';
     }
 
     try {

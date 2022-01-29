@@ -154,7 +154,7 @@ export type Basket = {
 export type ChargeRequest = {
   amount: number;
   currency: 'THB';
-  return_uri: string;
+  return_uri?: string;
   source?: string;
   card?: string;
 };

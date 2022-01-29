@@ -13,6 +13,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PoliciesGuard } from 'src/casl/policies.guard';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
 import { PaymentType } from 'src/common/enums/shop';
+import { OmiseCharge } from 'src/common/types/payment';
 import { OmiseWebhookDto } from './dto/omise-webhook.dto';
 import { OrderDto } from './dto/order.dto';
 import { PaymentDto } from './dto/payment.dto';
@@ -74,7 +75,13 @@ export class ShopController {
   @Post('checkout/credit-card')
   @Public()
   async checkoutCreditCard(@Body() paymentDto: PaymentDto, @Res() res: Response) {
-    await this.paymentService.checkout(paymentDto, PaymentType.CREDIT_CARD);
+    const charge = await this.paymentService.checkout(paymentDto, PaymentType.CREDIT_CARD);
+
+    const omiseWebhookDto: OmiseWebhookDto = new OmiseWebhookDto({
+      data: charge as OmiseCharge,
+    });
+
+    await this.paymentService.sendReciept(omiseWebhookDto);
     res
       .status(HttpStatus.MOVED_PERMANENTLY)
       .redirect(this.configService.get<string>('app.url') + '/payment/success');
@@ -83,7 +90,7 @@ export class ShopController {
   @Post('omise/callback')
   @Public()
   async callback(@Body() omiseWebhookDto: OmiseWebhookDto, @Res() res: Response) {
-    if (omiseWebhookDto.data.status === 'successful') {
+    if (omiseWebhookDto.data.status === 'successful' && omiseWebhookDto.data.source) {
       this.paymentService.sendReciept(omiseWebhookDto);
     }
     return res.status(HttpStatus.OK).json(omiseWebhookDto);

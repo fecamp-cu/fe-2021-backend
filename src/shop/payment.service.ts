@@ -145,14 +145,8 @@ export class PaymentService {
     const items = await this.itemService.findMulti(ids);
     const customer = await this.createCustomer(paymentDto);
 
-    let sourceId: string = paymentDto.source.id;
-    if (charge.card) {
-      paymentDto.source.type = PaymentType.CREDIT_CARD;
-      sourceId = paymentDto.source.id;
-    }
-
     const orderDto = new OrderDto({
-      sourceId,
+      sourceId: paymentDto.source.id,
       amount: paymentDto.source.amount,
       paymentMethod: paymentDto.source.type,
       customer,
