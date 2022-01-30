@@ -22,14 +22,14 @@ export class Order {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'source_id', nullable: true })
+  @Column({ name: 'source_id', nullable: true, select: false })
   sourceId: string;
 
   @Index()
-  @Column({ name: 'charge_id', nullable: true })
+  @Column({ name: 'charge_id', nullable: true, select: false })
   chargeId: string;
 
-  @Column({ name: 'transaction_id', nullable: true })
+  @Column({ name: 'transaction_id', nullable: true, select: false })
   transactionId: string;
 
   @Column({ name: 'payment_method', nullable: true })

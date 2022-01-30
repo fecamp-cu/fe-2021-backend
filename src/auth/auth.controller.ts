@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseBoolPipe,
   Post,
   Query,
   Req,
@@ -99,8 +100,19 @@ export class AuthController {
 
   @ApiOkResponse({ description: "Return user's information", type: UserDto })
   @Get('me')
-  async profile(@Req() req: RequestWithUserId, @Res() res: Response): Promise<Response> {
-    const user: UserDto = await this.userService.findOne(req.user.id, ['profile']);
+  async profile(
+    @Req() req: RequestWithUserId,
+    @Query('order', ParseBoolPipe) withOrder: boolean,
+    @Res() res: Response,
+  ): Promise<Response> {
+    let user: UserDto;
+
+    if (withOrder) {
+      user = await this.userService.findWithOrderAndOrderItem(req.user.id);
+    } else {
+      user = await this.userService.findOne(req.user.id, ['profile']);
+    }
+
     return res.status(HttpStatus.OK).json(user);
   }
 
