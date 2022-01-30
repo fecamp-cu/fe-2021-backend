@@ -64,10 +64,6 @@ export class ItemIndexService {
       text: itemIndex.text,
     });
 
-    if (itemIndex.item) {
-      result.item = itemIndex.item;
-    }
-
     return result;
   }
 }
