@@ -26,6 +26,8 @@ export class CustomerDto {
 
   postcode: string;
 
+  point: number;
+
   orders: OrderDto[];
 
   user: UserDto;
