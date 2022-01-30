@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeORMException } from 'src/common/exceptions/typeorm.exception';
 import { ItemDto } from 'src/item/dto/item.dto';
-import { Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { OrderItemDto } from './dto/order-item.dto';
 import { OrderDto } from './dto/order.dto';
 import { OrderItem } from './entities/order-item.entity';
@@ -56,20 +56,16 @@ export class OrderService {
   }
 
   async update(id: number, orderDto: OrderDto, relations: string[] = []): Promise<OrderDto> {
-    const update: UpdateResult = await this.orderRepository.update(id, orderDto);
+    const order: OrderDto = await this.findOne(id, relations);
+    await this.orderRepository.update(id, orderDto);
 
-    if (update.affected === 0) {
-      throw new NotFoundException({
-        reason: 'NOT_FOUND',
-        message: 'user not found',
-      });
-    }
-
-    return await this.findOne(id, relations);
+    return order;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+  async remove(id: number) {
+    const order: OrderDto = await this.findOne(id);
+    await this.orderRepository.softDelete(id);
+    return order;
   }
 
   async createMultiOrderItems(
