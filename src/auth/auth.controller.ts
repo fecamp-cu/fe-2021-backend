@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseBoolPipe,
   Post,
   Query,
   Req,
@@ -101,12 +102,16 @@ export class AuthController {
   @Get('me')
   async profile(
     @Req() req: RequestWithUserId,
-    @Query('order') withOrder: boolean,
+    @Query('order', ParseBoolPipe) withOrder: boolean,
     @Res() res: Response,
   ): Promise<Response> {
-    const user: UserDto = withOrder
-      ? await this.userService.findWithOrderAndOrderItem(req.user.id)
-      : await this.userService.findOne(req.user.id, ['profile']);
+    let user: UserDto;
+
+    if (withOrder) {
+      user = await this.userService.findWithOrderAndOrderItem(req.user.id);
+    } else {
+      user = await this.userService.findOne(req.user.id, ['profile']);
+    }
 
     return res.status(HttpStatus.OK).json(user);
   }
