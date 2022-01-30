@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Customer } from './entities/customer.entity';
 
 @Injectable()
@@ -22,29 +22,16 @@ export class CustomerService {
   }
 
   async update(id: number, Customer: Customer): Promise<Customer> {
-    const update: UpdateResult = await this.customerRepository.update(id, Customer);
-
-    if (update.affected === 0) {
-      throw new NotFoundException({
-        reason: 'NOT_FOUND',
-        message: 'customer not found',
-      });
-    }
-
     const customer: Customer = await this.findOne(id);
+    await this.customerRepository.update(id, Customer);
+
     return customer;
   }
+
   async remove(id: number): Promise<Customer> {
-    const deleted: UpdateResult = await this.customerRepository.softDelete(id);
-
-    if (deleted.affected === 0) {
-      throw new NotFoundException({
-        reason: 'NOT_FOUND',
-        message: 'customer not found',
-      });
-    }
-
     const customer = await this.findOne(id);
+    await this.customerRepository.softDelete(id);
+
     return customer;
   }
 }
