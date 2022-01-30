@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { ItemIndexDto } from './dto/item-index.dto';
 import { ItemIndex } from './entities/item-index.entity';
 
@@ -33,28 +33,17 @@ export class ItemIndexService {
   }
 
   async update(id: number, itemItemDto: ItemIndexDto): Promise<ItemIndexDto> {
-    const update: UpdateResult = await this.itemIndexRepository.update(id, itemItemDto);
+    const itemIndex: ItemIndexDto = await this.findOne(id);
+    await this.itemIndexRepository.update(id, itemItemDto);
 
-    if (update.affected === 0) {
-      throw new NotFoundException({
-        reason: 'NOT_FOUND',
-        message: 'Not found item',
-      });
-    }
-    return await this.findOne(id);
+    return itemIndex;
   }
 
   async remove(id: number) {
-    const deleted: UpdateResult = await this.itemIndexRepository.softDelete(id);
+    const itemIndex: ItemIndexDto = await this.findOne(id);
+    await this.itemIndexRepository.softDelete(id);
 
-    if (deleted.affected === 0) {
-      throw new NotFoundException({
-        reason: 'NOT_FOUND',
-        message: 'Not found item',
-      });
-    }
-
-    return await this.findOne(id);
+    return itemIndex;
   }
 
   public rawToDTO(itemIndex: ItemIndex) {

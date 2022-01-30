@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SettingException } from 'src/common/exceptions/settting.exception';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { QualificationPreviewDto } from './dto/qualificationPreview.dto';
 import { QualificationPreview } from './entities/qualificationPreview.entity';
 import { Setting } from './entities/setting.entity';
@@ -63,27 +63,16 @@ export class QualificationPreviewService {
     qualificationPreviewDto: QualificationPreviewDto,
     relations: string[] = [],
   ): Promise<QualificationPreviewDto> {
-    const update: UpdateResult = await this.qualificationPreviewRepository.update(
-      id,
-      qualificationPreviewDto,
-    );
-    if (update.affected === 0) {
-      throw new NotFoundException({
-        reason: 'NOT_FOUND',
-        message: 'Not found timeline_event',
-      });
-    }
-    return await this.findOne(id, relations);
+    const qualificationPreview: QualificationPreviewDto = await this.findOne(id, relations);
+    await this.qualificationPreviewRepository.update(id, qualificationPreviewDto);
+
+    return qualificationPreview;
   }
 
   async remove(id: number): Promise<QualificationPreviewDto> {
-    const deleted: DeleteResult = await this.qualificationPreviewRepository.softDelete(id);
-    if (deleted.affected === 0) {
-      throw new NotFoundException({
-        reason: 'NOT_FOUND',
-        message: 'Not found timeline_event',
-      });
-    }
-    return await this.findOne(id);
+    const qualificationPreview: QualificationPreviewDto = await this.findOne(id);
+    await this.qualificationPreviewRepository.softDelete(id);
+
+    return qualificationPreview;
   }
 }

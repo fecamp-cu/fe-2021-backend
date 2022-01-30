@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SettingException } from 'src/common/exceptions/settting.exception';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { PhotoPreviewDto } from './dto/photoPreview.dto';
 import { PhotoPreview } from './entities/photoPreview.entity';
 import { Setting } from './entities/setting.entity';
@@ -56,24 +56,16 @@ export class PhotoPreviewService {
     photoPreviewDto: PhotoPreviewDto,
     relations: string[] = [],
   ): Promise<PhotoPreviewDto> {
-    const update: UpdateResult = await this.photoPreviewRepository.update(id, photoPreviewDto);
-    if (update.affected === 0) {
-      throw new NotFoundException({
-        reason: 'NOT_FOUND',
-        message: 'Not found preview photo',
-      });
-    }
-    return await this.findOne(id, relations);
+    const photoPreview: PhotoPreviewDto = await this.findOne(id, relations);
+    await this.photoPreviewRepository.update(id, photoPreviewDto);
+
+    return photoPreview;
   }
 
   async remove(id: number): Promise<PhotoPreviewDto> {
-    const deleted: DeleteResult = await this.photoPreviewRepository.softDelete(id);
-    if (deleted.affected === 0) {
-      throw new NotFoundException({
-        reason: 'NOT_FOUND',
-        message: 'Not found preview photo',
-      });
-    }
-    return await this.findOne(id);
+    const photoPreview: PhotoPreviewDto = await this.findOne(id);
+    await this.photoPreviewRepository.softDelete(id);
+
+    return photoPreview;
   }
 }
