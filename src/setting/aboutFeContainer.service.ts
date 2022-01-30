@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SettingException } from 'src/common/exceptions/settting.exception';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { AboutFeContainerDto } from './dto/aboutFeContainer.dto';
 import { AboutFeContainer } from './entities/aboutFeContainer.entity';
 import { Setting } from './entities/setting.entity';
@@ -46,7 +46,7 @@ export class AboutFeContainerService {
     if (!AboutFeContainer) {
       throw new NotFoundException({
         reason: 'NOT_FOUND_ENTITY',
-        message: 'Not found timeline_event',
+        message: 'Not found about fe container',
       });
     }
     return new AboutFeContainerDto({
@@ -61,27 +61,16 @@ export class AboutFeContainerService {
     aboutFeContainerDto: AboutFeContainerDto,
     relations: string[] = [],
   ): Promise<AboutFeContainerDto> {
-    const update: UpdateResult = await this.aboutFeContainerRepository.update(
-      id,
-      aboutFeContainerDto,
-    );
-    if (update.affected === 0) {
-      throw new NotFoundException({
-        reason: 'NOT_FOUND',
-        message: 'Not found timeline_event',
-      });
-    }
-    return await this.findOne(id, relations);
+    const aboutFeContainer: AboutFeContainerDto = await this.findOne(id, relations);
+    await this.aboutFeContainerRepository.update(id, aboutFeContainerDto);
+
+    return aboutFeContainer;
   }
 
   async remove(id: number): Promise<AboutFeContainerDto> {
-    const deleted: DeleteResult = await this.aboutFeContainerRepository.softDelete(id);
-    if (deleted.affected === 0) {
-      throw new NotFoundException({
-        reason: 'NOT_FOUND',
-        message: 'Not found timeline_event',
-      });
-    }
-    return await this.findOne(id);
+    const aboutFeContainer: AboutFeContainerDto = await this.findOne(id);
+    await this.aboutFeContainerRepository.softDelete(id);
+
+    return aboutFeContainer;
   }
 }

@@ -10,7 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from 'src/auth/dto/login.dto';
 import { FindUser } from 'src/common/types/user';
 import { Profile } from 'src/profile/entities/profile.entity';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
@@ -133,27 +133,16 @@ export class UserService {
       userDto.password = await bcrypt.hash(userDto.password, SALTROUND);
     }
 
-    const update: UpdateResult = await this.userRepository.update(id, userDto);
+    const user: UserDto = await this.findOne(id, relations);
+    await this.userRepository.update(id, userDto);
 
-    if (update.affected === 0) {
-      throw new NotFoundException({
-        reason: 'NOT_FOUND',
-        message: 'user not found',
-      });
-    }
-
-    return await this.findOne(id, relations);
+    return user;
   }
 
   async remove(id: number): Promise<UserDto> {
-    const deleted: DeleteResult = await this.userRepository.softDelete(id);
-    if (deleted.affected === 0) {
-      throw new NotFoundException({
-        reason: 'NOT_FOUND',
-        message: 'user not found',
-      });
-    }
-    const user = await this.findOne(id);
+    const user: UserDto = await this.findOne(id);
+    await this.userRepository.softDelete(id);
+
     return user;
   }
 
