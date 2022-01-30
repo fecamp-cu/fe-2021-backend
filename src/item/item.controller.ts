@@ -1,10 +1,23 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiHeaders, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/auth/auth.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PoliciesGuard } from 'src/casl/policies.guard';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
+import { ItemIndexDto } from './dto/item-index.dto';
 import { ItemDto } from './dto/item.dto';
+import { ItemIndexService } from './item-index.service';
 import { ItemService } from './item.service';
 
 @ApiTags('Item')
@@ -13,7 +26,10 @@ import { ItemService } from './item.service';
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('item')
 export class ItemController {
-  constructor(private readonly itemService: ItemService) {}
+  constructor(
+    private readonly itemService: ItemService,
+    private readonly itemIndexService: ItemIndexService,
+  ) {}
 
   @CheckPolicies(new ManagePolicyHandler())
   @Post()
@@ -23,25 +39,58 @@ export class ItemController {
 
   @Get()
   @Public()
-  findAll() {
-    return this.itemService.findAll();
+  findAll(@Query('index') withIndex: boolean = false) {
+    let relations: string[] = [];
+    if (withIndex) {
+      relations = ['indexes'];
+    }
+    return this.itemService.findAll(relations);
   }
 
   @Get(':id')
   @Public()
-  findOne(@Param('id') id: string) {
-    return this.itemService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.itemService.findOne(id);
   }
 
   @CheckPolicies(new ManagePolicyHandler())
   @Patch(':id')
-  update(@Param('id') id: string, @Body() itemDto: ItemDto) {
-    return this.itemService.update(+id, itemDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() itemDto: ItemDto) {
+    return this.itemService.update(id, itemDto);
   }
 
   @CheckPolicies(new ManagePolicyHandler())
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.itemService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.itemService.remove(id);
+  }
+
+  @CheckPolicies(new ManagePolicyHandler())
+  @Post(':id/index')
+  createindex(@Param('id', ParseIntPipe) id: number, @Body() itemIndexDto: ItemIndexDto) {
+    itemIndexDto.item = new ItemDto({ id });
+    return this.itemIndexService.create(itemIndexDto);
+  }
+
+  @Get('index')
+  findAllIndex() {
+    return this.itemIndexService.findAll();
+  }
+
+  @Get('index/:id')
+  findOneIndex(@Param('id', ParseIntPipe) id: number) {
+    return this.itemIndexService.findOne(id);
+  }
+
+  @CheckPolicies(new ManagePolicyHandler())
+  @Patch('index/:id')
+  updateIndex(@Param('id', ParseIntPipe) id: number, @Body() itemIndexDto: ItemIndexDto) {
+    return this.itemIndexService.update(id, itemIndexDto);
+  }
+
+  @CheckPolicies(new ManagePolicyHandler())
+  @Delete('index/:id')
+  removeIndex(@Param('id', ParseIntPipe) id: number) {
+    return this.itemIndexService.remove(id);
   }
 }

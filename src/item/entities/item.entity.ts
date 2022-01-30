@@ -30,6 +30,9 @@ export class Item {
   @Column({ type: 'smallint' })
   price: number;
 
+  @Column({ name: 'quantity_in_stock', type: 'smallint', default: 0 })
+  quantityInStock: number;
+
   @Column()
   title: string;
 
