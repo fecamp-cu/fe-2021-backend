@@ -13,7 +13,6 @@ export class ItemIndexDto {
   @IsString()
   text: string;
 
-  @ApiProperty({ type: ItemDto })
   item: ItemDto;
 
   constructor(partial: Partial<ItemIndexDto>) {

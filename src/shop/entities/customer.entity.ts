@@ -51,6 +51,9 @@ export class Customer {
   @Column({ nullable: true })
   postcode: string;
 
+  @Column({ default: 0 })
+  point: number;
+
   @OneToMany(() => Order, order => order.customer, { persistence: false, cascade: true })
   orders: Order[];
 

@@ -24,6 +24,10 @@ export class ItemDto {
   @IsInt()
   price: number;
 
+  @ApiProperty({ example: 50 })
+  @IsInt()
+  quantityInStock: number;
+
   @ApiProperty({ example: 'Fe Camp Book' })
   @IsString()
   title: string;
