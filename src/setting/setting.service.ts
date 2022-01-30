@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SettingException } from 'src/common/exceptions/settting.exception';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { SettingDto } from './dto/setting.dto';
 import { Setting } from './entities/setting.entity';
 
@@ -86,14 +86,9 @@ export class SettingService {
   }
 
   async update(id: number, settingDto: SettingDto): Promise<SettingDto> {
-    const update: UpdateResult = await this.settingRepository.update(id, settingDto);
-    if (update.affected === 0) {
-      throw new NotFoundException({
-        reason: 'NOT_FOUND',
-        message: 'Not found setting',
-      });
-    }
     const setting = await this.findOne(id);
+    await this.settingRepository.update(id, settingDto);
+
     return new SettingDto({
       id: setting.id,
       title: setting.title,
@@ -116,14 +111,9 @@ export class SettingService {
   }
 
   async remove(id: number): Promise<SettingDto> {
-    const deleted: DeleteResult = await this.settingRepository.softDelete(id);
-    if (deleted.affected === 0) {
-      throw new NotFoundException({
-        reason: 'NOT_FOUND',
-        message: 'Not found setting',
-      });
-    }
     const setting = await this.findOne(id);
+    await this.settingRepository.softDelete(id);
+
     return new SettingDto({
       id: setting.id,
       title: setting.title,

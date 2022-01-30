@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SettingException } from 'src/common/exceptions/settting.exception';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { TimelineEventDto } from './dto/timelineEvent.dto';
 import { Setting } from './entities/setting.entity';
 import { TimelineEvent } from './entities/timelineEvent.entity';
@@ -58,24 +58,16 @@ export class TimelineEventService {
     timelineEventDto: TimelineEventDto,
     relations: string[] = [],
   ): Promise<TimelineEventDto> {
-    const update: UpdateResult = await this.timelineEventRepository.update(id, timelineEventDto);
-    if (update.affected === 0) {
-      throw new NotFoundException({
-        reason: 'NOT_FOUND',
-        message: 'Not found timeline_event',
-      });
-    }
-    return await this.findOne(id, relations);
+    const timelineEvent: TimelineEventDto = await this.findOne(id, relations);
+    await this.timelineEventRepository.update(id, timelineEventDto);
+
+    return timelineEvent;
   }
 
   async remove(id: number): Promise<TimelineEventDto> {
-    const deleted: DeleteResult = await this.timelineEventRepository.softDelete(id);
-    if (deleted.affected === 0) {
-      throw new NotFoundException({
-        reason: 'NOT_FOUND',
-        message: 'Not found timeline_event',
-      });
-    }
-    return await this.findOne(id);
+    const timelineEvent: TimelineEventDto = await this.findOne(id);
+    await this.timelineEventRepository.softDelete(id);
+
+    return timelineEvent;
   }
 }

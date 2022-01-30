@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SettingException } from 'src/common/exceptions/settting.exception';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { SponcerContainerDto } from './dto/sponcerContainer.dto';
 import { Setting } from './entities/setting.entity';
 import { SponcerContainer } from './entities/sponcerContainer.entity';
@@ -60,27 +60,16 @@ export class SponcerContainerService {
     sponcerContainerDto: SponcerContainerDto,
     relations: string[] = [],
   ): Promise<SponcerContainerDto> {
-    const update: UpdateResult = await this.sponcerContainerRepository.update(
-      id,
-      sponcerContainerDto,
-    );
-    if (update.affected === 0) {
-      throw new NotFoundException({
-        reason: 'NOT_FOUND',
-        message: 'Not found sponcer_container',
-      });
-    }
-    return await this.findOne(id, relations);
+    const sponsorContainer: SponcerContainerDto = await this.findOne(id, relations);
+    await this.sponcerContainerRepository.update(id, sponcerContainerDto);
+
+    return sponsorContainer;
   }
 
   async remove(id: number): Promise<SponcerContainerDto> {
-    const deleted: DeleteResult = await this.sponcerContainerRepository.softDelete(id);
-    if (deleted.affected === 0) {
-      throw new NotFoundException({
-        reason: 'NOT_FOUND',
-        message: 'Not found sponcer_container',
-      });
-    }
-    return await this.findOne(id);
+    const sponsorContainer: SponcerContainerDto = await this.findOne(id);
+    await this.sponcerContainerRepository.softDelete(id);
+
+    return sponsorContainer;
   }
 }
