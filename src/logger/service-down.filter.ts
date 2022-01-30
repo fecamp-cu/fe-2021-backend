@@ -3,9 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { Request, Response } from 'express';
 import { Discord } from 'src/common/enums/third-party';
 import { CustomException } from 'src/common/exceptions/custom.exception';
+import { GoogleException } from 'src/common/exceptions/google.exception';
+import { OmiseException } from 'src/common/exceptions/omise.exception';
+import { TypeORMException } from 'src/common/exceptions/typeorm.exception';
 import { DiscordService } from 'src/third-party/discord/discord.service';
 
-@Catch(CustomException)
+@Catch(CustomException, GoogleException, OmiseException, TypeORMException)
 export class ServiceDownFilter implements ExceptionFilter {
   private discordService: DiscordService;
   constructor(private configService: ConfigService) {
