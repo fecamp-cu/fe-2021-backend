@@ -5,7 +5,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseBoolPipe,
   Post,
   Query,
   Req,
@@ -102,12 +101,12 @@ export class AuthController {
   @Get('me')
   async profile(
     @Req() req: RequestWithUserId,
-    @Query('order', ParseBoolPipe) withOrder: boolean,
+    @Query('order') withOrder: string,
     @Res() res: Response,
   ): Promise<Response> {
     let user: UserDto;
 
-    if (withOrder) {
+    if (withOrder === 'true') {
       user = await this.userService.findWithOrderAndOrderItem(req.user.id);
     } else {
       user = await this.userService.findOne(req.user.id, ['profile']);
