@@ -154,6 +154,7 @@ export class UserService {
     const user: User = await this.userRepository
       .createQueryBuilder('user')
       .where('user.id = :id', { id })
+      .leftJoinAndSelect('user.profile', 'profile')
       .leftJoinAndSelect('user.customer', 'customer')
       .leftJoinAndSelect('customer.orders', 'order')
       .leftJoinAndSelect('order.items', 'items')
