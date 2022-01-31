@@ -154,12 +154,15 @@ export class UserService {
     const user: User = await this.userRepository
       .createQueryBuilder('user')
       .where('user.id = :id', { id })
-      .andWhere('order.status = :status', { status: 'successful' })
       .leftJoinAndSelect('user.customer', 'customer')
       .leftJoinAndSelect('customer.orders', 'order')
       .leftJoinAndSelect('order.items', 'items')
       .leftJoinAndSelect('items.item', 'item')
       .getOne();
+
+    if (user.customer) {
+      user.customer.orders = user.customer.orders.filter(order => order.status === 'successful');
+    }
 
     return user;
   }
