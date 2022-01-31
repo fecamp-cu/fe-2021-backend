@@ -90,10 +90,6 @@ export class PaymentService {
     return orderDto;
   }
 
-  async getAllCharges(): Promise<OmiseCharge[]> {
-    return this.omiseService.getAllCharages();
-  }
-
   private async createCustomer(paymentDto: PaymentDto): Promise<CustomerDto> {
     const customer: Customer = await this.customerRepository.findOne({ email: paymentDto.email });
 
