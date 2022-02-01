@@ -27,18 +27,6 @@ export class OrderController {
     return this.omiseService.getCharge(id);
   }
 
-  @Get('source')
-  @CheckPolicies(new ManagePolicyHandler())
-  getAllSource(@Param('id') id: string) {
-    return this.omiseService.getSource(id);
-  }
-
-  @Get('source/:id')
-  @CheckPolicies(new ManagePolicyHandler())
-  getSource(@Param('id') id: string) {
-    return this.omiseService.getCharge(id);
-  }
-
   @Get('transaction')
   @CheckPolicies(new ManagePolicyHandler())
   getAllTransaction() {
