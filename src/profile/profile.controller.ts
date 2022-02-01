@@ -91,7 +91,7 @@ export class ProfileController {
     type: ProfileDto,
   })
   @Put('upload')
-  @CheckPolicies(new ManagePolicyHandler())
+  @CheckPolicies(new UpdateProfilePolicyHandler())
   @UseInterceptors(FileInterceptor('avatar'))
   async uploadImage(
     @Req() req: RequestWithUserId,
