@@ -58,7 +58,6 @@ export class PaymentService {
       throw new OmiseException(err.message, 'Webhook Error');
     }
 
-    order.chargeId = omiseWebhookDto.data.id;
     order.transactionId = omiseWebhookDto.data.transaction;
     order.paidAt = omiseWebhookDto.data.paid_at;
     order.status = PaymentStatus.SUCCESS;
@@ -89,10 +88,6 @@ export class PaymentService {
     );
 
     return orderDto;
-  }
-
-  async getAllCharges(): Promise<OmiseCharge[]> {
-    return this.omiseService.getAllCharages();
   }
 
   private async createCustomer(paymentDto: PaymentDto): Promise<CustomerDto> {

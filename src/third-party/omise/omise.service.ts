@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { PaymentType } from 'src/common/enums/shop';
 import { OmiseException } from 'src/common/exceptions/omise.exception';
 import { ChargeRequest, OmiseCharge, OmiseSource } from 'src/common/types/payment';
 
 @Injectable()
 export class OmiseService {
-  private client;
+  private client: AxiosInstance;
   constructor(private configService: ConfigService) {
     this.client = axios.create({
       baseURL: 'https://api.omise.co',
@@ -29,9 +29,29 @@ export class OmiseService {
     }
   }
 
+  public async getAllTransaction(): Promise<OmiseCharge[]> {
+    try {
+      const res: AxiosResponse = await this.client.get('/transactions');
+      return res.data;
+    } catch (err) {
+      console.log(err.response.data);
+      throw new OmiseException(err.response.data.message);
+    }
+  }
+
   public async getCharge(id: string): Promise<OmiseCharge> {
     try {
       const res: AxiosResponse = await this.client.get(`/charges/${id}`);
+      return res.data;
+    } catch (err) {
+      console.log(err.response.data);
+      throw new OmiseException(err.response.data.message);
+    }
+  }
+
+  public async getTransaction(id: string): Promise<OmiseCharge> {
+    try {
+      const res: AxiosResponse = await this.client.get(`/transactions/${id}`);
       return res.data;
     } catch (err) {
       console.log(err.response.data);
