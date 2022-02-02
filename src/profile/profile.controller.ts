@@ -98,8 +98,23 @@ export class ProfileController {
     @UploadedFile() avatar: Express.Multer.File,
     @Res() res: Response,
   ): Promise<Response> {
-    const user = await this.userService.findOne(req.user.id, ['profile']);
     const { buffer } = avatar;
+
+    if (avatar.size > 20000000) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        reason: 'INVALID_INPUT',
+        message: 'Image size is too large',
+      });
+    }
+
+    if (avatar.mimetype !== 'image/png' && avatar.mimetype !== 'image/jpeg') {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        reason: 'INVALID_INPUT',
+        message: 'Must be a png or jpeg image',
+      });
+    }
+
+    const user = await this.userService.findOne(req.user.id, ['profile']);
     const profile: Profile = await this.profileService.uploadImage(user, buffer);
     return res
       .status(HttpStatus.CREATED)
