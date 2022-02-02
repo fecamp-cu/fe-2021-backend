@@ -90,7 +90,7 @@ export class ProfileController {
     description: "Successfully upload user's profile avatar",
     type: ProfileDto,
   })
-  @Put('upload')
+  @Put(':id/upload')
   @CheckPolicies(new UpdateProfilePolicyHandler())
   @UseInterceptors(FileInterceptor('avatar'))
   async uploadImage(
