@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ThirdPartyAuthService } from 'src/auth/third-party-auth.service';
-import { DiscordShopMessage } from 'src/common/constants/discord-message.constant';
+import {
+  DiscordShopEmbed,
+  DiscordShopMessage,
+} from 'src/common/constants/discord-message.constant';
 import { receiptMessage } from 'src/common/constants/email-message.constant';
 import { ServiceType } from 'src/common/enums/service-type';
 import { PaymentMessage, PaymentStatus, PaymentType } from 'src/common/enums/shop';
@@ -78,13 +81,22 @@ export class PaymentService {
       receiptMessage(emailRef.firstname, emailRef.lastname, orderDto),
     );
 
+    const author = this.discordService.createAuthor(
+      orderDto.customer.firstname + ' ' + orderDto.customer.lastname,
+      orderDto.customer.user
+        ? orderDto.customer.user.profile.imageUrl
+        : Discord.CUSTOMER_ANOYMOUS_AVATAR_URL,
+    );
+
+    const embed = DiscordShopEmbed;
+    embed.description = DiscordShopMessage(orderDto);
+    embed.author = author;
+
     await this.discordService.sendMessage(
       Discord.SHOP_USERNAME,
       Discord.SHOP_AVATAR_URL,
-      Discord.SHOP_TITLE_SOLD,
-      DiscordShopMessage(orderDto),
-      Discord.SHOP_COLOR,
       Discord.TAG_ADMIN,
+      embed,
     );
 
     return orderDto;
