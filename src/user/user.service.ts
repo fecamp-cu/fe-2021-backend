@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from 'src/auth/dto/login.dto';
 import { FindUser } from 'src/common/types/user';
+import { Customer } from 'src/shop/entities/customer.entity';
 import { Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
@@ -16,7 +17,10 @@ import { User } from './entities/user.entity';
 const SALTROUND = 10;
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(User) private userRepository: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(Customer) private customerRepository: Repository<Customer>,
+  ) {}
 
   async create(userDto: UserDto): Promise<UserDto> {
     const count = await this.userRepository
@@ -28,10 +32,17 @@ export class UserService {
       userDto.username = userDto.username + '#' + (count + 1);
     }
 
+    const customer = await this.customerRepository.findOne({ email: userDto.email });
+
+    if (customer) {
+      userDto.customer = customer;
+    }
+
     userDto.password = await bcrypt.hash(userDto.password, SALTROUND);
 
     try {
       const createdUser = await this.userRepository.save(userDto);
+
       return this.rawToDTO(createdUser);
     } catch (err) {
       throw new UnprocessableEntityException({
