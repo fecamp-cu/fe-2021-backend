@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,8 +7,6 @@ import * as moment from 'moment';
 import { ServiceType } from 'src/common/enums/service-type';
 import { TokenQuery } from 'src/common/types/auth';
 import { ProfileDto } from 'src/profile/dto/profile.dto';
-import { Profile } from 'src/profile/entities/profile.entity';
-import { ProfileService } from 'src/profile/profile.service';
 import { UserDto } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
@@ -27,7 +20,6 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     private userService: UserService,
-    private profileService: ProfileService,
     private configService: ConfigService,
     @InjectRepository(Token) private tokenRepository: Repository<Token>,
   ) {}
@@ -105,14 +97,6 @@ export class AuthService {
   }
 
   public async createUser(registerDto: RegisterDto, isVerified: boolean = false): Promise<UserDto> {
-    const nFindUserByEmail = await this.userService.count({ email: registerDto.email });
-    if (nFindUserByEmail) {
-      throw new UnprocessableEntityException({
-        reason: 'INVALID_INPUT',
-        message: 'Email already existed',
-      });
-    }
-
     const profileDto = new ProfileDto({
       firstName: registerDto.firstName,
       lastName: registerDto.lastName,
@@ -131,10 +115,11 @@ export class AuthService {
       email: registerDto.email,
       username: registerDto.username,
       password: registerDto.password,
+      profile: profileDto,
+      isEmailVerified: isVerified,
     });
 
-    const profile: Profile = await this.profileService.create(profileDto);
-    const user = await this.userService.create(userDto, profile, isVerified);
+    const user = await this.userService.create(userDto);
 
     return user;
   }

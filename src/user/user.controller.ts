@@ -10,7 +10,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiHeaders, ApiTags } from '@nestjs/swagger';
-import { RegisterDto } from 'src/auth/dto/register.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PoliciesGuard } from 'src/casl/policies.guard';
 import {
@@ -32,12 +31,7 @@ export class UserController {
 
   @Post()
   @CheckPolicies(new ManagePolicyHandler())
-  create(@Body() registerDto: RegisterDto) {
-    const userDto = new UserDto({
-      email: registerDto.email,
-      username: registerDto.username,
-      password: registerDto.password,
-    });
+  create(@Body() userDto: UserDto) {
     return this.userService.create(userDto);
   }
 

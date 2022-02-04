@@ -14,8 +14,7 @@ export class ProfileService {
     @InjectRepository(Profile) private profileRepository: Repository<Profile>,
   ) {}
   async create(profileDto: ProfileDto): Promise<Profile> {
-    const profile: Profile = await this.profileRepository.create(profileDto);
-    return await this.profileRepository.save(profile);
+    return await this.profileRepository.save(profileDto);
   }
 
   async findAll(): Promise<ProfileDto[]> {

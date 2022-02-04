@@ -236,6 +236,8 @@ export class AuthController {
       });
 
       user = await this.authService.createUser(registerDto, true);
+      user = await this.thirdPartyAuthService.storeGoogleToken(tokens, user, userInfo.id);
+
       this.sendEmail(
         user,
         EmailMessage.ACCOUNT_PASSWORD_SUBJECT,
@@ -244,8 +246,8 @@ export class AuthController {
     }
 
     user = await this.thirdPartyAuthService.storeGoogleToken(tokens, user, userInfo.id);
-
     const credentials: CredentialDto = await this.signToken(user);
+
     res
       .status(HttpStatus.OK)
       .json({ ...credentials, redirectUrl: this.configService.get<string>('app.url') });

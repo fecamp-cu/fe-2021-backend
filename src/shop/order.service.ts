@@ -16,9 +16,8 @@ export class OrderService {
   ) {}
 
   async create(orderDto: OrderDto): Promise<OrderDto> {
-    const order = await this.orderRepository.create(orderDto);
     try {
-      const savedOrder = await this.orderRepository.save(order);
+      const savedOrder = await this.orderRepository.save(orderDto);
       return this.rawToDTO(savedOrder);
     } catch (err) {
       throw new TypeORMException(err, 'Create Order');
@@ -97,6 +96,8 @@ export class OrderService {
       .where('order.id = :orderId', { orderId })
       .leftJoinAndSelect('order.items', 'order_item')
       .leftJoinAndSelect('order.customer', 'customer')
+      .leftJoinAndSelect('customer.user', 'user')
+      .leftJoinAndSelect('user.profile', 'profile')
       .leftJoinAndSelect('order_item.item', 'item')
       .getOne();
     return order;
