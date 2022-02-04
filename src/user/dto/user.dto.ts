@@ -5,6 +5,7 @@ import { ValidateCodeDto } from 'src/auth/dto/validate-code.dto';
 import { Role } from 'src/common/enums/role';
 import { ProfileDto } from 'src/profile/dto/profile.dto';
 import { Profile } from 'src/profile/entities/profile.entity';
+import { CustomerDto } from 'src/shop/dto/customer.dto';
 
 export class UserDto {
   id: number;
@@ -31,6 +32,8 @@ export class UserDto {
 
   @ApiProperty({ type: Profile })
   profile?: ProfileDto;
+
+  customer?: CustomerDto;
 
   tokens?: TokenDto[];
 
