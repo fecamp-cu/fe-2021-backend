@@ -17,9 +17,31 @@ export enum Discord {
   SHOP_TITLE_SOLD = 'Sold',
   SHOP_COLOR = 0x0099ff,
 
+  CUSTOMER_ANOYMOUS_AVATAR_URL = 'https://storage.googleapis.com/fe-camp/Annonymous-Icon.png',
+
   ALERT_USERNAME = 'FE Alert',
   ALERT_AVATAR_URL = 'https://storage.googleapis.com/fe-camp/FE-Camp-Alerting-Icon.png',
   ALERT_COLOR = 0xff2b5e,
 
+  OMISE_USERNAME = 'Omise',
+  OMISE_AVATAR = 'https://storage.googleapis.com/fe-camp/Omise-Icon.jpg',
+  OMISE_URL = 'https://www.omise.co/',
+
+  NO_CONTENT = '',
   TAG_ADMIN = '<@&906181495356538921>',
+}
+
+export enum DiscordMentionType {
+  ROLE = 'role',
+  USER = 'user',
+  EVERYONE = 'everyone',
+}
+
+export enum DiscordEmbedType {
+  RICH = 'rich',
+  IMAGE = 'image',
+  VIDEO = 'video',
+  GIFV = 'gifv',
+  ARTICLE = 'article',
+  LINK = 'link',
 }
