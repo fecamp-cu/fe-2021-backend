@@ -2,6 +2,7 @@ import { Bucket, Storage } from '@google-cloud/storage';
 import { Injectable, StreamableFile } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto-js';
+import * as moment from 'moment';
 import { MetaData } from 'src/common/types/google/google-cloud-storage';
 
 @Injectable()
@@ -53,6 +54,21 @@ export class GoogleCloudStorage {
 
   private getFileName(fileName: string): string {
     const secret = this.configService.get<string>('google.gcs.secret');
-    return 'file-' + `${crypto.SHA256(fileName + secret)}` + '-' + fileName;
+
+    let result: string;
+
+    switch (fileName) {
+      case 'error-log.txt':
+        result =
+          'error-' +
+          `${crypto.SHA256(fileName + secret + moment().toISOString())}` +
+          '-' +
+          fileName;
+        break;
+      default:
+        result = 'file-' + `${crypto.SHA256(fileName + secret)}` + '-' + fileName;
+    }
+
+    return result;
   }
 }
