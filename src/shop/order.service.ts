@@ -16,9 +16,8 @@ export class OrderService {
   ) {}
 
   async create(orderDto: OrderDto): Promise<OrderDto> {
-    const order = await this.orderRepository.create(orderDto);
     try {
-      const savedOrder = await this.orderRepository.save(order);
+      const savedOrder = await this.orderRepository.save(orderDto);
       return this.rawToDTO(savedOrder);
     } catch (err) {
       throw new TypeORMException(err, 'Create Order');
