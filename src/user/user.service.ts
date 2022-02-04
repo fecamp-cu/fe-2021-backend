@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -9,7 +8,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from 'src/auth/dto/login.dto';
 import { FindUser } from 'src/common/types/user';
-import { Profile } from 'src/profile/entities/profile.entity';
 import { Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
@@ -20,18 +18,7 @@ const SALTROUND = 10;
 export class UserService {
   constructor(@InjectRepository(User) private userRepository: Repository<User>) {}
 
-  async create(
-    userDto: UserDto,
-    profile?: Profile,
-    isEmailVerified: boolean = false,
-  ): Promise<UserDto> {
-    if (userDto.role) {
-      throw new BadRequestException({
-        reason: 'INVALID_INPUT',
-        message: 'Role must be empty',
-      });
-    }
-
+  async create(userDto: UserDto): Promise<UserDto> {
     const count = await this.userRepository
       .createQueryBuilder('user')
       .where('"user"."username" like :username', { username: `${userDto.username}%` })
@@ -41,26 +28,17 @@ export class UserService {
       userDto.username = userDto.username + '#' + (count + 1);
     }
 
-    const nFindUserByEmail = await this.count({ email: userDto.email });
-    if (nFindUserByEmail) {
+    userDto.password = await bcrypt.hash(userDto.password, SALTROUND);
+
+    try {
+      const createdUser = await this.userRepository.save(userDto);
+      return this.rawToDTO(createdUser);
+    } catch (err) {
       throw new UnprocessableEntityException({
         reason: 'INVALID_INPUT',
         message: 'Email already existed',
       });
     }
-    userDto.password = await bcrypt.hash(userDto.password, SALTROUND);
-
-    const user = this.userRepository.create(userDto);
-
-    user.isEmailVerified = isEmailVerified;
-
-    if (profile) {
-      user.profile = profile;
-    }
-
-    const createdUser = await this.userRepository.save(user);
-
-    return this.rawToDTO(createdUser);
   }
 
   async findAll(): Promise<UserDto[]> {
