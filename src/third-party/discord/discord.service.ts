@@ -48,6 +48,7 @@ export class DiscordService {
     title: string,
     description: string,
     color: number,
+    url?: string,
     author?: DiscordEmbedAuthor,
     footer?: DiscordEmbedFooter,
   ): DiscordEmbed {
@@ -56,6 +57,10 @@ export class DiscordService {
       description,
       color,
     };
+
+    if (url) {
+      embed.url = url;
+    }
 
     if (author) {
       embed.author = author;
