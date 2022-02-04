@@ -96,6 +96,8 @@ export class OrderService {
       .where('order.id = :orderId', { orderId })
       .leftJoinAndSelect('order.items', 'order_item')
       .leftJoinAndSelect('order.customer', 'customer')
+      .leftJoinAndSelect('customer.user', 'user')
+      .leftJoinAndSelect('user.profile', 'profile')
       .leftJoinAndSelect('order_item.item', 'item')
       .getOne();
     return order;
