@@ -2,9 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
-import * as csurf from 'csurf';
 import { AppModule } from './app.module';
 import { ServiceDownFilter } from './logger/service-down.filter';
 
@@ -23,10 +21,10 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
-  if (!configService.get<boolean>('app.devMode')) {
-    app.use(bodyParser.urlencoded({ extended: false }));
-    app.use(csurf({ cookie: { key: '_csrf', sameSite: true, httpOnly: true } }));
-  }
+  // if (!configService.get<boolean>('app.devMode')) {
+  //   app.use(bodyParser.urlencoded({ extended: false }));
+  //   app.use(csurf({ cookie: { key: '_csrf', sameSite: true, httpOnly: true } }));
+  // }
 
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new ServiceDownFilter(configService));
