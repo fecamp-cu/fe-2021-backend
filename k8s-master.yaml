@@ -84,6 +84,11 @@ spec:
                 configMapKeyRef:
                   name: fecamp-config
                   key: url
+            - name: API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: api_url
             - name: DEBUG
               valueFrom:
                 configMapKeyRef:

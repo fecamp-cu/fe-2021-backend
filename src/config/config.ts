@@ -8,7 +8,7 @@ export default () => ({
   app: {
     port: parseInt(process.env.PORT) || 8000,
     url: process.env.URL,
-    apiUrl: process.env.URL + '/api',
+    apiUrl: process.env.API_URL,
     devMode: process.env.DEBUG === 'true',
     origin: true,
   },

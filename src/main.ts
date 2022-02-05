@@ -31,28 +31,30 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new ServiceDownFilter(configService));
 
-  const config = new DocumentBuilder()
-    .setTitle('FE Camp API')
-    .setDescription('FE API Docs since 2022')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .addTag('Auth')
-    .addTag('User')
-    .addTag('Profile')
-    .addTag('Shop')
-    .addTag('Item')
-    .addTag('Customer')
-    .addTag('Order')
-    .addTag('Setting')
-    .addTag('AboutFeContainer')
-    .addTag('PhotoPreview')
-    .addTag('QualificationPreview')
-    .addTag('SponcerContainer')
-    .addTag('TimelineEvent')
-    .build();
+  if (configService.get<boolean>('app.devMode')) {
+    const config = new DocumentBuilder()
+      .setTitle('FE Camp API')
+      .setDescription('FE API Docs since 2022')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .addTag('Auth')
+      .addTag('User')
+      .addTag('Profile')
+      .addTag('Shop')
+      .addTag('Item')
+      .addTag('Customer')
+      .addTag('Order')
+      .addTag('Setting')
+      .addTag('AboutFeContainer')
+      .addTag('PhotoPreview')
+      .addTag('QualificationPreview')
+      .addTag('SponcerContainer')
+      .addTag('TimelineEvent')
+      .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api/docs', app, document);
+  }
 
   await app.listen(configService.get<number>('app.port'));
 }
