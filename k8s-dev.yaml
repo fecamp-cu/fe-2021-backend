@@ -1,0 +1,244 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fecamp-2021-backend
+  namespace: dev
+  labels:
+    app: fecamp-2021-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fecamp-2021-backend
+  template:
+    metadata:
+      labels:
+        app: fecamp-2021-backend
+    spec:
+      containers:
+        - name: fecamp-2021-backend
+          image: ghcr.io/fecamp-cu/fe-2021-backend:dev
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          env:
+            # Database
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: postgres-username
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: postgres-password
+            - name: DATABASE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: database_name
+            - name: DATABASE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: database_port
+            - name: DATABASE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: database_host
+            # Application
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: port
+            - name: SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: fecamp-secret
+                  key: secret
+            - name: ENCRYPT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: fecamp-secret
+                  key: encrypt_key
+            - name: CHECK_POLICIES_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: fecamp-secret
+                  key: check_policy_key
+            - name: TOKEN_DURATION
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: token_duration
+            - name: ADMIN_EMAIL
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: admin_email
+            - name: URL
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: url
+            - name: DEBUG
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: debug
+            - name: DISCORD_WEBHOOK_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: discord_webhook_url
+            - name: ENCRYPT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: fecamp-secret
+                  key: encrypt_key
+            - name: ENTITY_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: entity_path
+            - name: MIGRATION_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: migration_path
+            # Google Cloud Storage
+            - name: GCS_BUCKET_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: gcs_bucket_name
+            - name: GCS_PUBLIC_IMAGE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: gcs_public_img_url
+            - name: IMAGE_FILE_NAME_SECERT
+              valueFrom:
+                secretKeyRef:
+                  name: fecamp-secret
+                  key: img_file_name_secret
+            # Google Credentials
+            - name: GOOGLE_CREDENTIALS_TYPE
+              valueFrom:
+                secretKeyRef:
+                  name: google-credentials
+                  key: type
+            - name: GOOGLE_CREDENTIALS_PROJECT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: google-credentials
+                  key: project_id
+            - name: GOOGLE_CREDENTIALS_PRIVATE_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: google-credentials
+                  key: private_key_id
+            - name: GOOGLE_CREDENTIALS_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: google-credentials
+                  key: private_key
+            - name: GOOGLE_CREDENTIALS_CLIENT_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: google-credentials
+                  key: client_email
+            - name: GOOGLE_CREDENTIALS_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: google-credentials
+                  key: client_id
+            - name: GOOGLE_CREDENTIALS_AUTH_URI
+              valueFrom:
+                secretKeyRef:
+                  name: google-credentials
+                  key: auth_uri
+            - name: GOOGLE_CREDENTIALS_TOKEN_URI
+              valueFrom:
+                secretKeyRef:
+                  name: google-credentials
+                  key: token_uri
+            - name: GOOGLE_CREDENTIALS_AUTH_PROVIDER_X509_CERT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: google-credentials
+                  key: auth_cert_uri
+            - name: GOOGLE_CREDENTIALS_CLIENT_X509_CERT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: google-credentials
+                  key: client_cert_uri
+            # Google Authentication
+            - name: GOOGLE_OAUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: google-secret
+                  key: client_id
+            - name: GOOGLE_OAUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: google-secret
+                  key: client_secret
+            - name: GOOGLE_OAUTH_REDIRECT_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: google_oauth_redirect_uri
+            - name: GOOGLE_OAUTH_SCOPE
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: google_oauth_scope
+            # Facebook Authentication
+            - name: FACEBOOK_APP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: facebook-secret
+                  key: client_id
+            - name: FACEBOOK_APP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: facebook-secret
+                  key: client_secret
+            - name: FACEBOOK_REDIRECT_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: facebook_redirect_uri
+            - name: FACEBOOK_SCOPE
+              valueFrom:
+                configMapKeyRef:
+                  name: fecamp-config
+                  key: facebook_scope
+            - name: OMISE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: omise-secret
+                  key: secret_key
+          livenessProbe:
+            httpGet:
+              path: /api
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /api
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 70m
+              memory: 150Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
