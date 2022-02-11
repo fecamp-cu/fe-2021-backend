@@ -45,7 +45,12 @@ export class GoogleCloudStorage {
 
   private getImageFileName(ownerName: string): string {
     const secret = this.configService.get<string>('google.gcs.secret');
-    return 'profile-' + ownerName + '-' + `${crypto.SHA256(ownerName + secret)}.jpg`;
+    return (
+      'profile-' +
+      ownerName +
+      '-' +
+      `${crypto.SHA256(ownerName + secret + moment().toISOString())}.jpg`
+    );
   }
 
   private getFileURL(fileName: string): string {
@@ -66,7 +71,8 @@ export class GoogleCloudStorage {
           fileName;
         break;
       default:
-        result = 'file-' + `${crypto.SHA256(fileName + secret)}` + '-' + fileName;
+        result =
+          'file-' + `${crypto.SHA256(fileName + secret + moment().toISOString())}` + '-' + fileName;
     }
 
     return result;
