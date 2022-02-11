@@ -107,7 +107,11 @@ export class ProfileController {
       });
     }
 
-    if (avatar.mimetype !== 'image/png' && avatar.mimetype !== 'image/jpeg') {
+    if (
+      avatar.mimetype !== 'image/png' &&
+      avatar.mimetype !== 'image/jpeg' &&
+      avatar.mimetype !== 'image/gif'
+    ) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         reason: 'INVALID_INPUT',
         message: 'Must be a png or jpeg image',
