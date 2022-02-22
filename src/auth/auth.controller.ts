@@ -211,7 +211,7 @@ export class AuthController {
     const url: string = this.googleClient.getUrl(
       this.configService.get<string[]>('google.oauth.scope'),
     );
-    res.status(HttpStatus.MOVED_PERMANENTLY).redirect(url);
+    res.status(HttpStatus.OK).json(url);
   }
 
   @Get('google/callback')
@@ -259,7 +259,7 @@ export class AuthController {
     const url: string = this.facebookClient.getUrl(
       this.configService.get<string[]>('facebook.scope'),
     );
-    res.status(HttpStatus.MOVED_PERMANENTLY).redirect(url);
+    res.status(HttpStatus.OK).json(url);
   }
 
   @Get('facebook/callback')
