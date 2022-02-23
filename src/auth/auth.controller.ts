@@ -247,10 +247,12 @@ export class AuthController {
 
     user = await this.thirdPartyAuthService.storeGoogleToken(tokens, user, userInfo.id);
     const credentials: CredentialDto = await this.signToken(user);
+    const url = encodeURI(
+      this.configService.get<string>('app.url') +
+        `?accessToken=${credentials.accessToken}&refreshToken=${credentials.refreshToken}&expiresIn=${credentials.expiresIn}`,
+    );
 
-    res
-      .status(HttpStatus.OK)
-      .json({ ...credentials, redirectUrl: this.configService.get<string>('app.url') });
+    res.status(HttpStatus.MOVED_PERMANENTLY).redirect(url);
   }
 
   @Get('facebook')
@@ -302,9 +304,14 @@ export class AuthController {
     user = await this.thirdPartyAuthService.storeFacebookToken(tokens, user, userInfo.id);
 
     const credentials: CredentialDto = await this.signToken(user);
-    res
-      .status(HttpStatus.OK)
-      .json({ ...credentials, redirectUrl: this.configService.get<string>('app.url') });
+    const url = encodeURI(
+      this.configService.get<string>('app.url') +
+        `?accessToken=${credentials.accessToken}&refreshToken=${credentials.refreshToken}&expiresIn=${credentials.expiresIn}`,
+    );
+
+    console.log(url);
+
+    res.status(HttpStatus.MOVED_PERMANENTLY).redirect(url);
   }
 
   private async signToken(user: UserDto): Promise<CredentialDto> {
