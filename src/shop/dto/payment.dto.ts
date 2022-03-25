@@ -1,18 +1,25 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsPhoneNumber,
   IsPostalCode,
   IsString,
 } from 'class-validator';
+import { Bank } from 'src/common/enums/shop';
 import { Basket, OmiseSource } from 'src/common/types/payment';
 
 export class PaymentDto {
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   source: OmiseSource;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEnum(Bank)
+  bank: Bank;
 
   @ApiProperty({ example: 'admin@fecamp.in.th' })
   @IsEmail()
@@ -60,8 +67,8 @@ export class PaymentDto {
 
   @ApiProperty({
     example: [
-      { productId: 1, quantity: 1 },
-      { productId: 2, quantity: 1 },
+      { price: 100, productId: 1, quantity: 1 },
+      { price: 200, productId: 2, quantity: 1 },
     ],
   })
   @IsNotEmpty()
