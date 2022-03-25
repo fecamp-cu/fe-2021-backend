@@ -7,7 +7,7 @@ import {
 } from 'src/common/constants/discord-message.constant';
 import { receiptMessage } from 'src/common/constants/email-message.constant';
 import { ServiceType } from 'src/common/enums/service-type';
-import { PaymentMessage, PaymentStatus, PaymentType } from 'src/common/enums/shop';
+import { PaymentMessage, PaymentMethod, PaymentStatus, PaymentType } from 'src/common/enums/shop';
 import { Discord } from 'src/common/enums/third-party';
 import { OmiseException } from 'src/common/exceptions/omise.exception';
 import { GoogleEmailRef } from 'src/common/types/google/google-gmail';
@@ -42,6 +42,13 @@ export class PaymentService {
   ) {}
 
   async checkout(paymentDto: PaymentDto, paymentType: PaymentType): Promise<string | OmiseCharge> {
+    const totalPrice =
+      paymentDto.basket.reduce((acc, item) => acc + item.price * item.quantity, 0) * 100;
+
+    if (paymentType !== PaymentMethod.CREDIT_CARD) {
+      paymentDto.source = await this.omiseService.createSource(totalPrice, paymentType);
+    }
+
     const charge: OmiseCharge = await this.omiseService.createCharge(
       paymentDto.source.amount,
       paymentDto.source.id,
@@ -54,7 +61,7 @@ export class PaymentService {
   }
 
   async sendReciept(omiseWebhookDto: OmiseWebhookDto): Promise<OrderDto> {
-    let order;
+    let order: OrderDto;
     try {
       order = await this.orderService.findByChargeId(omiseWebhookDto.data.id);
     } catch (err) {
@@ -136,11 +143,17 @@ export class PaymentService {
 
   private getPaymentResult(res: OmiseCharge, paymentType: PaymentType): string | OmiseCharge {
     switch (paymentType) {
-      case PaymentType.CREDIT_CARD:
+      case PaymentMethod.CREDIT_CARD:
         return res;
-      case PaymentType.INTERNET_BANKING:
+      case `${PaymentMethod.INTERNET_BANKING}_scb`:
         return res.authorize_uri;
-      case PaymentType.PROMPT_PAY:
+      case `${PaymentMethod.INTERNET_BANKING}_bbl`:
+        return res.authorize_uri;
+      case `${PaymentMethod.INTERNET_BANKING}_bay`:
+        return res.authorize_uri;
+      case `${PaymentMethod.INTERNET_BANKING}_ktb`:
+        return res.authorize_uri;
+      case PaymentMethod.PROMPT_PAY:
         return res.source.scannable_code.image.download_uri;
       default:
         return null;

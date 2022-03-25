@@ -1,3 +1,5 @@
+import { PaymentType } from '../enums/shop';
+
 export type OmiseSource = {
   object: 'source';
   id: string;
@@ -147,6 +149,7 @@ export type Image = {
 };
 
 export type Basket = {
+  price: number;
   productId: number;
   quantity: number;
 };
@@ -157,4 +160,21 @@ export type ChargeRequest = {
   return_uri?: string;
   source?: string;
   card?: string;
+};
+
+export type SourceRequest = {
+  amount: number;
+  currency: 'THB' | 'USD';
+  type?: PaymentType;
+  bank?: string;
+  barcode?: string;
+  email?: string;
+  installmentTerm?: number;
+  mobileNumber?: string;
+  name?: string;
+  platformType?: string;
+  storeId?: string;
+  storeName?: string;
+  terminalId?: string;
+  zeroInterestInstallments?: boolean;
 };

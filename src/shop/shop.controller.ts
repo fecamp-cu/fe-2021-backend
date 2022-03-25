@@ -12,7 +12,7 @@ import { Public } from 'src/auth/auth.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PoliciesGuard } from 'src/casl/policies.guard';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
-import { PaymentType } from 'src/common/enums/shop';
+import { PaymentMethod } from 'src/common/enums/shop';
 import { OmiseCharge } from 'src/common/types/payment';
 import { OmiseWebhookDto } from './dto/omise-webhook.dto';
 import { OrderDto } from './dto/order.dto';
@@ -51,7 +51,7 @@ export class ShopController {
   async checkoutInternetBanking(@Body() paymentDto: PaymentDto, @Res() res: Response) {
     const authorize_uri: string = (await this.paymentService.checkout(
       paymentDto,
-      PaymentType.INTERNET_BANKING,
+      `${PaymentMethod.INTERNET_BANKING}_${paymentDto.bank}`,
     )) as string;
     return res.status(HttpStatus.OK).json({ authorize_uri });
   }
@@ -67,7 +67,7 @@ export class ShopController {
   async checkoutPromptPay(@Body() paymentDto: PaymentDto, @Res() res: Response) {
     const download_uri: string = (await this.paymentService.checkout(
       paymentDto,
-      PaymentType.PROMPT_PAY,
+      PaymentMethod.PROMPT_PAY,
     )) as string;
     return res.status(HttpStatus.OK).json({ download_uri });
   }
@@ -75,7 +75,7 @@ export class ShopController {
   @Post('checkout/credit-card')
   @Public()
   async checkoutCreditCard(@Body() paymentDto: PaymentDto, @Res() res: Response) {
-    const charge = await this.paymentService.checkout(paymentDto, PaymentType.CREDIT_CARD);
+    const charge = await this.paymentService.checkout(paymentDto, PaymentMethod.CREDIT_CARD);
 
     const omiseWebhookDto: OmiseWebhookDto = new OmiseWebhookDto({
       data: charge as OmiseCharge,
