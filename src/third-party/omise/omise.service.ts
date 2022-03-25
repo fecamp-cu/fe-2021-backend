@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { PaymentType } from 'src/common/enums/shop';
+import { PaymentMethod, PaymentType } from 'src/common/enums/shop';
 import { OmiseException } from 'src/common/exceptions/omise.exception';
-import { ChargeRequest, OmiseCharge, OmiseSource } from 'src/common/types/payment';
+import { ChargeRequest, OmiseCharge, OmiseSource, SourceRequest } from 'src/common/types/payment';
 
 @Injectable()
 export class OmiseService {
@@ -69,17 +69,37 @@ export class OmiseService {
     }
   }
 
+  public async createSource(amount: number, paymentType: PaymentType): Promise<OmiseSource> {
+    try {
+      const res = await this.sendSource(amount, paymentType);
+      return res.data as OmiseSource;
+    } catch (err) {
+      throw new OmiseException(err.response.data.message, 'Omise Source Error');
+    }
+  }
+
   public async createCharge(
     amount: number,
     source: string,
     paymentType: PaymentType,
   ): Promise<OmiseCharge> {
     let isCreditCard = false;
-    if (paymentType === PaymentType.CREDIT_CARD) {
+    if (paymentType === PaymentMethod.CREDIT_CARD) {
       isCreditCard = true;
     }
     const res: OmiseCharge = await this.sendCharge(amount, source, isCreditCard);
 
+    return res;
+  }
+
+  async sendSource(amount: number, paymentType: PaymentType): Promise<AxiosResponse> {
+    const data: SourceRequest = {
+      amount,
+      currency: 'THB',
+      type: paymentType,
+    };
+
+    const res: AxiosResponse = await this.client.post('/sources', data);
     return res;
   }
 
