@@ -27,7 +27,7 @@ export class Item {
   @Column({ name: 'file_url' })
   fileURL: string;
 
-  @Column({ type: 'smallint' })
+  @Column({ default: 0 })
   price: number;
 
   @Column({ name: 'quantity_in_stock', type: 'smallint', default: 0 })
