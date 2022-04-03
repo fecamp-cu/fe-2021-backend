@@ -1,27 +1,31 @@
+import { ContactType } from 'src/common/enums/contact-type';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  OneToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Contact } from './contact.entity';
+import { Project } from './project.entity';
 
 @Entity()
-export class Project {
+export class Contact {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
   name: string;
 
-  @Column({ name: 'publish_date' })
-  publishDate: Date;
+  @Column({ nullable: true })
+  email: string;
 
-  @Column({ name: 'end_date' })
-  endDate: Date;
+  @Column({ nullable: true })
+  tel: string;
+
+  @Column({ name: 'contact_type' })
+  contactType: ContactType;
 
   @CreateDateColumn({ name: 'created_date', select: false })
   createdDate: Date;
@@ -32,6 +36,9 @@ export class Project {
   @DeleteDateColumn({ name: 'deleted_date', select: false })
   deletedDate: Date;
 
-  @OneToMany(() => Contact, contact => contact.project, { cascade: true })
-  contacts: Contact[];
+  @ManyToOne(() => Project, project => project.contacts)
+  project: Project;
+
+  // @ManyToOne(() => Setting, setting => setting.aboutFeContainers)
+  // setting: Setting;
 }

@@ -1,6 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { CreateProjectDto } from './dto/create-project.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
+import { ProjectDto } from './dto/project.dto';
 import { ProjectService } from './project.service';
 
 @Controller('project')
@@ -8,8 +7,8 @@ export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
   @Post()
-  create(@Body() createProjectDto: CreateProjectDto) {
-    return this.projectService.create(createProjectDto);
+  create(@Body() projectDto: ProjectDto) {
+    return this.projectService.create(projectDto);
   }
 
   @Get()
@@ -23,8 +22,8 @@ export class ProjectController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
-    return this.projectService.update(+id, updateProjectDto);
+  update(@Param('id') id: string, @Body() projectDto: ProjectDto) {
+    return this.projectService.update(+id, projectDto);
   }
 
   @Delete(':id')
