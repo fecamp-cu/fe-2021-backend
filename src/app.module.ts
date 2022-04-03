@@ -8,6 +8,7 @@ import { CaslModule } from './casl/casl.module';
 import config from './config/config';
 import { ItemModule } from './item/item.module';
 import { ProfileModule } from './profile/profile.module';
+import { ProjectModule } from './project/project.module';
 import { SettingModule } from './setting/setting.module';
 import { ShopModule } from './shop/shop.module';
 import { UserModule } from './user/user.module';
@@ -39,6 +40,7 @@ import { UserModule } from './user/user.module';
     SettingModule,
     ShopModule,
     ItemModule,
+    ProjectModule,
   ],
   controllers: [AppController],
   providers: [AppService],
