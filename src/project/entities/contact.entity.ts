@@ -39,6 +39,7 @@ export class Contact {
   @ManyToOne(() => Project, project => project.contacts)
   project: Project;
 
-  // @ManyToOne(() => Setting, setting => setting.aboutFeContainers)
-  // setting: Setting;
+  constructor(partial: Partial<Contact>) {
+    Object.assign(this, partial);
+  }
 }

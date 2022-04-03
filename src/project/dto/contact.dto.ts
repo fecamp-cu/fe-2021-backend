@@ -17,4 +17,8 @@ export class ContactDto {
   @IsOptional()
   @IsPhoneNumber()
   tel: string;
+
+  constructor(partial: Partial<ContactDto>) {
+    Object.assign(this, partial);
+  }
 }
