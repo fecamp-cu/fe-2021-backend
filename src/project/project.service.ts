@@ -1,14 +1,32 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { SettingException } from 'src/common/exceptions/settting.exception';
+import { Repository } from 'typeorm';
 import { ProjectDto } from './dto/project.dto';
+import { Project } from './entities/project.entity';
 
 @Injectable()
 export class ProjectService {
-  create(projectDto: ProjectDto) {
-    return 'This action adds a new project';
+  constructor(@InjectRepository(Project) private projectRepository: Repository<Project>) {}
+
+  async create(projectDto: ProjectDto): Promise<ProjectDto> {
+    const project: Project = this.projectRepository.create(projectDto);
+
+    const createdProject = await this.projectRepository.save(project);
+    return new ProjectDto({
+      id: createdProject.id,
+      name: createdProject.name,
+      publishDate: createdProject.publishDate,
+      endDate: createdProject.endDate,
+    });
   }
 
-  findAll() {
-    return `This action returns all project`;
+  async findAll(): Promise<ProjectDto[]> {
+    try {
+      return await this.projectRepository.find();
+    } catch (err) {
+      throw new SettingException('Project Query Error', err.response);
+    }
   }
 
   findOne(id: number) {
