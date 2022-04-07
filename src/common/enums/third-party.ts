@@ -45,3 +45,10 @@ export enum DiscordEmbedType {
   ARTICLE = 'article',
   LINK = 'link',
 }
+
+export enum FileType {
+  PROFILE = 'profile',
+  ITEM_THUMBNAIL = 'item',
+  PREVIEW = 'preview',
+  ERROR = 'error',
+}
