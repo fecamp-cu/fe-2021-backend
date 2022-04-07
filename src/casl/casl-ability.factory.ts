@@ -36,7 +36,7 @@ export class CaslAbilityFactory {
           'school',
           'grade',
         ],
-        { id: user.profile.id },
+        { id: user.id },
       );
       can(Action.UPDATE, User, ['username', 'password'], { id: user.id });
     }
