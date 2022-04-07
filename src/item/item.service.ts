@@ -1,12 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { FileType } from 'src/common/enums/third-party';
+import { GoogleCloudStorage } from 'src/third-party/google-cloud/google-storage.service';
 import { Repository } from 'typeorm';
 import { ItemDto } from './dto/item.dto';
 import { Item } from './entities/item.entity';
 
 @Injectable()
 export class ItemService {
-  constructor(@InjectRepository(Item) private itemRepository: Repository<Item>) {}
+  constructor(
+    @InjectRepository(Item) private itemRepository: Repository<Item>,
+    private googleStorage: GoogleCloudStorage,
+  ) {}
 
   async create(itemDto: ItemDto): Promise<ItemDto> {
     const item: Item = this.itemRepository.create(itemDto);
@@ -48,6 +53,23 @@ export class ItemService {
     const item: ItemDto = await this.findOne(id);
     await this.itemRepository.softDelete(id);
 
+    return item;
+  }
+
+  async uploadThumbnail(item: ItemDto, img: Buffer): Promise<ItemDto> {
+    const imgName = this.googleStorage.getImageFileName(item.title, FileType.ITEM_THUMBNAIL);
+    const imageURL = await this.googleStorage.uploadImage(imgName, img);
+
+    item.thumbnail = imageURL;
+    this.itemRepository.save(item);
+    return item;
+  }
+
+  async uploadFile(item: ItemDto, filename: string, file: Buffer): Promise<ItemDto> {
+    const fileUrl = await this.googleStorage.uploadFile(filename, file);
+
+    item.fileURL = fileUrl;
+    this.itemRepository.save(item);
     return item;
   }
 
