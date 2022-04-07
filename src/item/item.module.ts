@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CaslAbilityFactory } from 'src/casl/casl-ability.factory';
+import { ThirdPartyModule } from 'src/third-party/third-party.module';
 import { UserModule } from 'src/user/user.module';
 import { ItemIndex } from './entities/item-index.entity';
 import { Item } from './entities/item.entity';
@@ -9,7 +10,7 @@ import { ItemController } from './item.controller';
 import { ItemService } from './item.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Item, ItemIndex]), UserModule],
+  imports: [TypeOrmModule.forFeature([Item, ItemIndex]), UserModule, ThirdPartyModule],
   controllers: [ItemController],
   providers: [ItemService, ItemIndexService, CaslAbilityFactory],
   exports: [ItemService],

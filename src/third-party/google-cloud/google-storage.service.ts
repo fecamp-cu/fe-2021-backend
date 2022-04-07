@@ -3,6 +3,7 @@ import { Injectable, StreamableFile } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto-js';
 import * as moment from 'moment';
+import { FileType } from 'src/common/enums/third-party';
 import { MetaData } from 'src/common/types/google/google-cloud-storage';
 
 @Injectable()
@@ -23,9 +24,8 @@ export class GoogleCloudStorage {
     return metadata;
   }
 
-  public async uploadImage(firstName: string, lastName: string, img: Buffer): Promise<string> {
+  public async uploadImage(imgName: string, img: Buffer): Promise<string> {
     const imgStream = new StreamableFile(img);
-    const imgName = this.getImageFileName(firstName + '-' + lastName);
     const file = this.bucket.file(imgName);
     await imgStream.getStream().pipe(file.createWriteStream());
     return await this.getImageURL(imgName);
@@ -39,42 +39,30 @@ export class GoogleCloudStorage {
     return this.getFileURL(fileNameHashed);
   }
 
-  private getImageURL(imgName: string): string {
+  getImageURL(imgName: string): string {
     return this.configService.get<string>('google.gcs.publicURL') + '/' + imgName;
   }
 
-  private getImageFileName(ownerName: string): string {
+  getImageFileName(ownerName: string, type: FileType): string {
     const secret = this.configService.get<string>('google.gcs.secret');
-    return (
-      'profile-' +
-      ownerName +
-      '-' +
-      `${crypto.SHA256(ownerName + secret + moment().toISOString())}.jpg`
-    );
+    return `${type}-${ownerName}-${crypto.SHA256(ownerName + secret + moment().toISOString())}.jpg`;
   }
 
-  private getFileURL(fileName: string): string {
+  getFileURL(fileName: string): string {
     return encodeURI(this.configService.get<string>('google.gcs.publicURL') + '/' + fileName);
   }
 
-  private getFileName(fileName: string): string {
+  getFileName(fileName: string): string {
     const secret = this.configService.get<string>('google.gcs.secret');
-
     let result: string;
 
     switch (fileName) {
       case 'error-log.txt':
-        result =
-          'error-' +
-          `${crypto.SHA256(fileName + secret + moment().toISOString())}` +
-          '-' +
-          fileName;
+        result = `error-${crypto.SHA256(fileName + secret + moment().toISOString())}-${fileName}`;
         break;
       default:
-        result =
-          'file-' + `${crypto.SHA256(fileName + secret + moment().toISOString())}` + '-' + fileName;
+        result = `file-${crypto.SHA256(fileName + secret + moment().toISOString())}-${fileName}`;
     }
-
     return result;
   }
 }

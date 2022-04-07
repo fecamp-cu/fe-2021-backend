@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmpty, IsIn, IsInt, IsString, IsUrl, ValidateNested } from 'class-validator';
+import { IsEmpty, IsIn, IsInt, IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator';
 import { ItemType } from 'src/common/enums/item-type';
 import { OrderItemDto } from 'src/shop/dto/order-item.dto';
 import { UserDto } from 'src/user/dto/user.dto';
@@ -14,10 +14,12 @@ export class ItemDto {
 
   @ApiProperty({ example: 'https://www.imgurl.com/img.png' })
   @IsUrl()
+  @IsOptional()
   thumbnail: string;
 
   @ApiProperty({ example: 'https://www.imgurl.com/img.png' })
   @IsUrl()
+  @IsOptional()
   fileURL: string;
 
   @ApiProperty({ example: 300 })

@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
+import { FileType } from 'src/common/enums/third-party';
 import { GoogleCloudStorage } from 'src/third-party/google-cloud/google-storage.service';
 import { UserDto } from 'src/user/dto/user.dto';
 import { Repository } from 'typeorm';
@@ -12,6 +13,7 @@ export class ProfileService {
   constructor(
     private configService: ConfigService,
     @InjectRepository(Profile) private profileRepository: Repository<Profile>,
+    private imageStorage: GoogleCloudStorage,
   ) {}
   async create(profileDto: ProfileDto): Promise<Profile> {
     return await this.profileRepository.save(profileDto);
@@ -56,12 +58,11 @@ export class ProfileService {
   }
 
   async uploadImage(user: UserDto, avatar: Buffer): Promise<Profile> {
-    const imageStorage = new GoogleCloudStorage(this.configService);
-    const imageURL = await imageStorage.uploadImage(
-      user.profile.firstName,
-      user.profile.lastName,
-      avatar,
+    const imgName = this.imageStorage.getImageFileName(
+      `${user.profile.firstName}-${user.profile.lastName}`,
+      FileType.PROFILE,
     );
+    const imageURL = await this.imageStorage.uploadImage(imgName, avatar);
     const profile = user.profile;
     profile.imageUrl = imageURL;
     return await this.profileRepository.save(profile);
