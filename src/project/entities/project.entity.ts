@@ -1,12 +1,9 @@
-import { Setting } from 'src/setting/entities/setting.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinColumn,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -37,10 +34,6 @@ export class Project {
 
   @OneToMany(() => Contact, contact => contact.project, { cascade: true })
   contacts: Contact[];
-
-  @OneToOne(() => Setting, { persistence: false, cascade: true })
-  @JoinColumn()
-  setting: Setting;
 
   constructor(partial: Partial<Project>) {
     Object.assign(this, partial);

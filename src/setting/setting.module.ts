@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CaslAbilityFactory } from 'src/casl/casl-ability.factory';
+import { Project } from 'src/project/entities/project.entity';
 import { UserModule } from 'src/user/user.module';
 import { AboutFeContainerController } from './aboutFeContainer.controller';
 import { AboutFeContainerService } from './aboutFeContainer.service';
@@ -30,6 +31,7 @@ import { TimelineEventService } from './timelineEvent.service';
       QualificationPreview,
       PhotoPreview,
       AboutFeContainer,
+      Project,
     ]),
     UserModule,
   ],

@@ -1,15 +1,21 @@
 import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SettingException } from 'src/common/exceptions/settting.exception';
+import { Project } from 'src/project/entities/project.entity';
 import { Repository } from 'typeorm';
 import { SettingDto } from './dto/setting.dto';
 import { Setting } from './entities/setting.entity';
 
 export class SettingService {
-  constructor(@InjectRepository(Setting) private settingRepository: Repository<Setting>) {}
+  constructor(
+    @InjectRepository(Setting) private settingRepository: Repository<Setting>,
+    @InjectRepository(Project) private projectRepository: Repository<Project>,
+  ) {}
 
-  async createSetting(settingDto: SettingDto): Promise<SettingDto> {
+  async createSetting(settingDto: SettingDto, projectid: number): Promise<SettingDto> {
     const setting: Setting = this.settingRepository.create(settingDto);
+    const project: Project = await this.projectRepository.findOne(projectid);
+    setting.project = project;
 
     setting.isActive = false;
 

@@ -1,10 +1,13 @@
 import { IsBoolean, IsUrl } from 'class-validator';
+import { Project } from 'src/project/entities/project.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -57,4 +60,8 @@ export class Setting {
 
   @DeleteDateColumn({ name: 'deleted_date', select: false })
   deletedDate: Date;
+
+  @OneToOne(() => Project, { persistence: false, cascade: true })
+  @JoinColumn()
+  project: Project;
 }
