@@ -2,6 +2,7 @@ import * as bcrypt from 'bcrypt';
 import Faker from 'faker';
 import { Token } from 'src/auth/entities/token.entity';
 import { Role } from 'src/common/enums/role';
+import { Profile } from 'src/profile/entities/profile.entity';
 import { User } from 'src/user/entities/user.entity';
 import { define } from 'typeorm-seeding';
 
@@ -9,6 +10,7 @@ type UserContext = {
   username?: string;
   password?: string;
   email?: string;
+  profile: Profile;
   role: Role;
   tokens?: Token[];
 };
@@ -26,6 +28,7 @@ define(User, (faker: typeof Faker, context: UserContext) => {
     email,
     role: context.role,
     isEmailVerified,
+    profile: context.profile,
   });
 
   user.tokens = context?.tokens ? context.tokens : [];
