@@ -1,3 +1,4 @@
+import { Setting } from 'src/setting/entities/setting.entity';
 import {
   Column,
   CreateDateColumn,
@@ -34,6 +35,9 @@ export class Project {
 
   @OneToMany(() => Contact, contact => contact.project, { cascade: true })
   contacts: Contact[];
+
+  @OneToMany(() => Setting, setting => setting.project)
+  settings: Setting[];
 
   constructor(partial: Partial<Project>) {
     Object.assign(this, partial);

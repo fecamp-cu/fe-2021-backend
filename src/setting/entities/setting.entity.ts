@@ -5,9 +5,8 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinColumn,
+  ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -61,7 +60,6 @@ export class Setting {
   @DeleteDateColumn({ name: 'deleted_date', select: false })
   deletedDate: Date;
 
-  @OneToOne(() => Project, { persistence: false, cascade: true })
-  @JoinColumn()
+  @ManyToOne(() => Project, project => project.settings)
   project: Project;
 }
