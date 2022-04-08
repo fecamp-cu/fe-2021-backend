@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { FileType } from 'src/common/enums/third-party';
 import { GoogleCloudStorage } from 'src/third-party/google-cloud/google-storage.service';
 import { Repository } from 'typeorm';
@@ -19,7 +20,18 @@ export class ItemService {
     return this.rawToDTO(createdItem);
   }
 
-  async findAll(relations: string[] = ['indexes']): Promise<ItemDto[]> {
+  async findWithPaginate(
+    options: IPaginationOptions,
+    relations: string[],
+  ): Promise<Pagination<ItemDto>> {
+    const query = this.itemRepository.createQueryBuilder('item');
+    if (relations.length > 0) {
+      query.leftJoinAndSelect('item.indexes', 'index');
+    }
+    return paginate<Item>(query, options);
+  }
+
+  async findAll(relations: string[]): Promise<ItemDto[]> {
     const items = await this.itemRepository.find({ relations });
     return items.map(item => this.rawToDTO(item));
   }
