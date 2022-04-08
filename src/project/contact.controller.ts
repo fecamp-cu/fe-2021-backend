@@ -11,7 +11,7 @@ import { ContactDto } from './dto/contact.dto';
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('project/contact')
-export class contactController {
+export class ContactController {
   constructor(private readonly contactService: ContactService) {}
 
   @Post(':projectid')

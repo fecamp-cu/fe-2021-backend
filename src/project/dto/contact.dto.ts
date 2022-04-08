@@ -15,7 +15,7 @@ export class ContactDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsPhoneNumber()
+  @IsPhoneNumber('TH')
   tel: string;
 
   @ApiProperty()
