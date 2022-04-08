@@ -2,6 +2,7 @@ import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SettingException } from 'src/common/exceptions/settting.exception';
 import { Project } from 'src/project/entities/project.entity';
+import { ProjectService } from 'src/project/project.service';
 import { Repository } from 'typeorm';
 import { SettingDto } from './dto/setting.dto';
 import { Setting } from './entities/setting.entity';
@@ -9,12 +10,12 @@ import { Setting } from './entities/setting.entity';
 export class SettingService {
   constructor(
     @InjectRepository(Setting) private settingRepository: Repository<Setting>,
-    @InjectRepository(Project) private projectRepository: Repository<Project>,
+    private readonly projectService: ProjectService,
   ) {}
 
   async createSetting(settingDto: SettingDto, projectid: number): Promise<SettingDto> {
     const setting: Setting = this.settingRepository.create(settingDto);
-    const project: Project = await this.projectRepository.findOne(projectid);
+    const project: Project = await this.projectService.findOne(projectid);
     setting.project = project;
 
     setting.isActive = false;
