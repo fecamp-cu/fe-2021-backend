@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsOptional, IsPhoneNumber } from 'class-validator';
+import { IsBoolean, IsEmail, IsOptional, IsPhoneNumber } from 'class-validator';
 
 export class ContactDto {
   id: number;
@@ -17,6 +17,11 @@ export class ContactDto {
   @IsOptional()
   @IsPhoneNumber()
   tel: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsBoolean()
+  isLeader: boolean;
 
   constructor(partial: Partial<ContactDto>) {
     Object.assign(this, partial);

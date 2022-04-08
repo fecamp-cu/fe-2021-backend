@@ -1,4 +1,3 @@
-import { ContactType } from 'src/common/enums/contact-type';
 import {
   Column,
   CreateDateColumn,
@@ -24,8 +23,8 @@ export class Contact {
   @Column({ nullable: true })
   tel: string;
 
-  @Column({ name: 'contact_type' })
-  contactType: ContactType;
+  @Column()
+  isLeader: boolean;
 
   @CreateDateColumn({ name: 'created_date', select: false })
   createdDate: Date;
