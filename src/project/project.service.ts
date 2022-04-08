@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SettingException } from 'src/common/exceptions/settting.exception';
 import { Repository } from 'typeorm';
@@ -23,21 +23,46 @@ export class ProjectService {
 
   async findAll(): Promise<ProjectDto[]> {
     try {
-      return await this.projectRepository.find();
+      return await this.findAll();
     } catch (err) {
       throw new SettingException('Project Query Error', err.response);
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} project`;
+  async findOne(id: number): Promise<Project> {
+    try {
+      const project: Project = await this.findOne(id);
+
+      if (!project) {
+        throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found project' });
+      }
+      return project;
+    } catch (err) {
+      throw new SettingException('Project Query Error', err.response);
+    }
   }
 
-  update(id: number, projectDto: ProjectDto) {
-    return `This action updates a #${id} project`;
+  async update(id: number, projectDto: ProjectDto): Promise<ProjectDto> {
+    const project = await this.findOne(id);
+    await this.projectRepository.update(id, projectDto);
+
+    return new ProjectDto({
+      id: project.id,
+      name: project.name,
+      publishDate: project.publishDate,
+      endDate: project.endDate,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} project`;
+  async remove(id: number): Promise<ProjectDto> {
+    const project = await this.findOne(id);
+    await this.projectRepository.softDelete(id);
+
+    return new ProjectDto({
+      id: project.id,
+      name: project.name,
+      publishDate: project.publishDate,
+      endDate: project.endDate,
+    });
   }
 }
