@@ -10,7 +10,7 @@ type UserContext = {
   password?: string;
   email?: string;
   role: Role;
-  tokens: Token[];
+  tokens?: Token[];
 };
 
 define(User, (faker: typeof Faker, context: UserContext) => {
@@ -25,8 +25,10 @@ define(User, (faker: typeof Faker, context: UserContext) => {
     password,
     email,
     role: context.role,
-    tokens: context.tokens,
     isEmailVerified,
   });
+
+  user.tokens = context?.tokens ? context.tokens : [];
+
   return user;
 });
