@@ -23,7 +23,7 @@ export class ProjectService {
 
   async findAll(): Promise<ProjectDto[]> {
     try {
-      return await this.findAll();
+      return await this.projectRepository.find();
     } catch (err) {
       throw new SettingException('Project Query Error', err.response);
     }
@@ -31,7 +31,7 @@ export class ProjectService {
 
   async findOne(id: number): Promise<Project> {
     try {
-      const project: Project = await this.findOne(id);
+      const project: Project = await this.projectRepository.findOne(id);
 
       if (!project) {
         throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found project' });
