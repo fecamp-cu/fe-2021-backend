@@ -19,13 +19,13 @@ define(Item, (faker: typeof Faker, context: ItemContext) => {
   const type = context?.type
     ? context.type
     : types[faker.random.number({ min: 0, max: types.length - 1 })];
-  const thumbnail = context?.thumbnail ? context.thumbnail : faker.lorem.text();
-  const fileURL = context?.fileURL ? context.fileURL : faker.lorem.text();
+  const thumbnail = context?.thumbnail ? context.thumbnail : faker.internet.avatar();
+  const fileURL = context?.fileURL ? context.fileURL : faker.internet.avatar();
   const price = context?.price ? context.price : faker.random.number({ min: 2000, max: 100000 });
   const quantityInStock = context?.quantityInStock
     ? context.quantityInStock
     : faker.random.number({ min: 1, max: 100 });
-  const title = context?.title ? context.title : faker.lorem.text();
+  const title = context?.title ? context.title : faker.commerce.productName();
   const summary = context?.summary ? context.summary : faker.lorem.sentence();
   const author = context?.author ? context.author : faker.name.firstName();
 
