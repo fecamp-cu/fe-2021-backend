@@ -29,7 +29,7 @@
     "typeorm:prod": "node ./node_modules/typeorm/cli.js --config dist/config/typeorm.js migration:run",
     "seed": "ts-node ./node_modules/typeorm-seeding/dist/cli.js",
     "seed:config": "ts-node ./node_modules/typeorm-seeding/dist/cli.js config --configName src/config/typeorm.ts",
-    "seed:run": "ts-node ./node_modules/typeorm-seeding/dist/cli.js seed --configName src/config/typeorm.ts",
+    "seed:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm-seeding/dist/cli.js seed --configName src/config/typeorm.ts",
     "prepare": "husky install"
   },
   "dependencies": {
