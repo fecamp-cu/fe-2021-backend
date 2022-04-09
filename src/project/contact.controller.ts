@@ -10,7 +10,7 @@ import { ContactDto } from './dto/contact.dto';
 @ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PoliciesGuard)
-@Controller('contact')
+@Controller('project/contact')
 export class ContactController {
   constructor(private readonly contactService: ContactService) {}
 
