@@ -31,8 +31,8 @@ export class ContactService {
   async findAll(): Promise<ContactDto[]> {
     try {
       return await this.contactRepository.find();
-    } catch (error) {
-      throw new SettingException('Failed to find all contact', error.response.status);
+    } catch (err) {
+      throw new SettingException('Contact Query Error', err.response);
     }
   }
   async findOne(id: number, relations: string[] = []): Promise<ContactDto> {

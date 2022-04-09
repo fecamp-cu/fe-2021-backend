@@ -33,7 +33,7 @@ export class Project {
   @DeleteDateColumn({ name: 'deleted_date', select: false })
   deletedDate: Date;
 
-  @OneToMany(() => Contact, contact => contact.project, { cascade: true })
+  @OneToMany(() => Contact, contact => contact.project)
   contacts: Contact[];
 
   @OneToMany(() => Setting, setting => setting.project)
