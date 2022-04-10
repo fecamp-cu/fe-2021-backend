@@ -11,6 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { AboutFeContainer } from './aboutFeContainer.entity';
+import { Announcement } from './announcement.entity';
 import { PhotoPreview } from './photoPreview.entity';
 import { QualificationPreview } from './qualificationPreview.entity';
 import { SponcerContainer } from './sponcerContainer.entity';
@@ -50,6 +51,9 @@ export class Setting {
 
   @OneToMany(() => AboutFeContainer, aboutFeContainer => aboutFeContainer.setting)
   aboutFeContainers: AboutFeContainer[];
+
+  @OneToMany(() => Announcement, announcement => announcement.setting)
+  announcements: Announcement[];
 
   @CreateDateColumn({ name: 'created_date', select: false })
   createdDate: Date;

@@ -6,7 +6,10 @@ import { ProjectService } from 'src/project/project.service';
 import { UserModule } from 'src/user/user.module';
 import { AboutFeContainerController } from './aboutFeContainer.controller';
 import { AboutFeContainerService } from './aboutFeContainer.service';
+import { AnnouncementController } from './announcement.controller';
+import { AnnouncementService } from './announcement.service';
 import { AboutFeContainer } from './entities/aboutFeContainer.entity';
+import { Announcement } from './entities/announcement.entity';
 import { PhotoPreview } from './entities/photoPreview.entity';
 import { QualificationPreview } from './entities/qualificationPreview.entity';
 import { Setting } from './entities/setting.entity';
@@ -33,6 +36,7 @@ import { TimelineEventService } from './timelineEvent.service';
       PhotoPreview,
       AboutFeContainer,
       Project,
+      Announcement,
     ]),
     UserModule,
   ],
@@ -43,6 +47,7 @@ import { TimelineEventService } from './timelineEvent.service';
     AboutFeContainerController,
     PhotoPreviewController,
     SponcerContainerController,
+    AnnouncementController,
   ],
   providers: [
     SettingService,
@@ -53,6 +58,7 @@ import { TimelineEventService } from './timelineEvent.service';
     QualificationPreviewService,
     CaslAbilityFactory,
     ProjectService,
+    AnnouncementService,
   ],
 })
 export class SettingModule {}
