@@ -42,14 +42,13 @@ async function bootstrap() {
       .addTag('Item')
       .addTag('Customer')
       .addTag('Order')
-      .addTag('Project')
-      .addTag('Contact')
       .addTag('Setting')
       .addTag('AboutFeContainer')
       .addTag('PhotoPreview')
       .addTag('QualificationPreview')
       .addTag('SponcerContainer')
       .addTag('TimelineEvent')
+      .addTag('Announcement')
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
