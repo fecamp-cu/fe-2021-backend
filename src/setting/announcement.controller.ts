@@ -1,16 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiHeaders, ApiTags } from "@nestjs/swagger";
-import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
-import { PoliciesGuard } from "src/casl/policies.guard";
-import { CheckPolicies, ManagePolicyHandler } from "src/casl/policyhandler";
-import { AnnouncementService } from "./announcement.service";
-import { AnnouncementDto } from "./dto/announcement.dto";
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiHeaders, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { PoliciesGuard } from 'src/casl/policies.guard';
+import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
+import { AnnouncementService } from './announcement.service';
+import { AnnouncementDto } from './dto/announcement.dto';
 
 @ApiTags('Announcement')
 @ApiHeaders([{ name: 'XSRF-TOKEN', description: 'CSRF Token' }])
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PoliciesGuard)
-@Controller('setting/about')
+@Controller('setting/announcement')
 export class AnnouncementController {
   constructor(private readonly announcementService: AnnouncementService) {}
 
@@ -37,10 +37,7 @@ export class AnnouncementController {
 
   @Patch(':id')
   @CheckPolicies(new ManagePolicyHandler())
-  updateAnnouncement(
-    @Param('id') id: string,
-    @Body() announcementDto: AnnouncementDto,
-  ) {
+  updateAnnouncement(@Param('id') id: string, @Body() announcementDto: AnnouncementDto) {
     return this.announcementService.update(+id, announcementDto);
   }
 

@@ -1,11 +1,9 @@
 import { IsBoolean, IsUrl } from 'class-validator';
-import { Project } from 'src/project/entities/project.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -63,7 +61,4 @@ export class Setting {
 
   @DeleteDateColumn({ name: 'deleted_date', select: false })
   deletedDate: Date;
-
-  @ManyToOne(() => Project, project => project.settings)
-  project: Project;
 }

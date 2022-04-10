@@ -1,11 +1,11 @@
-import { NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { SettingException } from "src/common/exceptions/settting.exception";
-import { Repository } from "typeorm";
-import { AnnouncementDto } from "./dto/announcement.dto";
-import { Announcement } from "./entities/announcement.entity";
-import { Setting } from "./entities/setting.entity";
-import { SettingService } from "./setting.service";
+import { NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { SettingException } from 'src/common/exceptions/settting.exception';
+import { Repository } from 'typeorm';
+import { AnnouncementDto } from './dto/announcement.dto';
+import { Announcement } from './entities/announcement.entity';
+import { Setting } from './entities/setting.entity';
+import { SettingService } from './setting.service';
 
 export class AnnouncementService {
   constructor(
@@ -13,13 +13,8 @@ export class AnnouncementService {
     private announcementRepository: Repository<Announcement>,
     private readonly settingService: SettingService,
   ) {}
-  async create(
-    announcementDto: AnnouncementDto,
-    settingid: number,
-  ): Promise<AnnouncementDto> {
-    const announcement: Announcement = await this.announcementRepository.create(
-        announcementDto,
-    );
+  async create(announcementDto: AnnouncementDto, settingid: number): Promise<AnnouncementDto> {
+    const announcement: Announcement = await this.announcementRepository.create(announcementDto);
     const setting: Setting = await this.settingService.findOne(settingid);
     announcement.setting = setting;
     const createdAnnouncement = await this.announcementRepository.save(announcement);
@@ -35,7 +30,7 @@ export class AnnouncementService {
 
   async findAll(): Promise<AnnouncementDto[]> {
     try {
-      return  await this.announcementRepository.find();
+      return await this.announcementRepository.find();
     } catch (error) {
       throw new SettingException('Failed to find all about fe container', error.response.status);
     }
@@ -78,4 +73,3 @@ export class AnnouncementService {
     return announcement;
   }
 }
-

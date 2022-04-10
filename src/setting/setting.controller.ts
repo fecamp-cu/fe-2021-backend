@@ -15,10 +15,10 @@ import { SettingService } from './setting.service';
 export class SettingController {
   constructor(private readonly settingService: SettingService) {}
 
-  @Post(':projectid')
+  @Post()
   @CheckPolicies(new ManagePolicyHandler())
-  create(@Body() settingDto: SettingDto, @Param('projectid') projectid: string) {
-    return this.settingService.createSetting(settingDto, +projectid);
+  create(@Body() settingDto: SettingDto) {
+    return this.settingService.createSetting(settingDto);
   }
 
   @Get()

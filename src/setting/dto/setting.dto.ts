@@ -8,12 +8,12 @@ export class SettingDto {
   @IsOptional()
   title: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'youtube.com' })
   @IsUrl()
   @IsOptional()
   youtubeUrl: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'google.com' })
   @IsUrl()
   @IsOptional()
   registerFormUrl: string;
