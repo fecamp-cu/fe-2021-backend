@@ -58,8 +58,7 @@ export class AuthService {
   }
 
   async createTokenEntity(tokenDto: TokenDto): Promise<TokenDto> {
-    const token: Token = await this.tokenRepository.create(tokenDto);
-    const createdToken: Token = await this.tokenRepository.save(token);
+    const createdToken: Token = await this.tokenRepository.save(tokenDto);
     return this.rawToDTO(createdToken);
   }
 
