@@ -1,4 +1,5 @@
 import { InjectRepository } from '@nestjs/typeorm';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { SettingException } from 'src/common/exceptions/settting.exception';
 import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -22,6 +23,7 @@ export class SettingService {
       isActive: createdSetting.isActive,
     });
   }
+
   async findAll(): Promise<SettingDto[]> {
     try {
       return await this.settingRepository.find();
@@ -29,6 +31,13 @@ export class SettingService {
       throw new SettingException('Setting Query Error', err.response);
     }
   }
+
+  async findWithPaginate(options: IPaginationOptions): Promise<Pagination<Setting>> {
+    const query = this.settingRepository.createQueryBuilder('setting');
+
+    return paginate<Setting>(query, options);
+  }
+
   async findAllActive(): Promise<SettingDto> {
     try {
       const setting: Setting = await this.settingRepository

@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -36,8 +37,8 @@ export class SettingController {
 
   @Get()
   @CheckPolicies(new ManagePolicyHandler())
-  findAll() {
-    return this.settingService.findAll();
+  findAll(@Query('limit') limit: number = 10, @Query('page') page: number = 1) {
+    return this.settingService.findWithPaginate({ limit, page });
   }
 
   @Get('active')
