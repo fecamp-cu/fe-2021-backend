@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { CaslModule } from './casl/casl.module';
 import config from './config/config';
+import { CronService } from './cron/corn.service';
 import { ItemModule } from './item/item.module';
 import { ProfileModule } from './profile/profile.module';
 import { SettingModule } from './setting/setting.module';
@@ -32,6 +34,7 @@ import { UserModule } from './user/user.module';
       }),
       inject: [ConfigService],
     }),
+    ScheduleModule.forRoot(),
     UserModule,
     AuthModule,
     ProfileModule,
@@ -41,6 +44,6 @@ import { UserModule } from './user/user.module';
     ItemModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, CronService],
 })
 export class AppModule {}
