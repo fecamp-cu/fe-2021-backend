@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiHeaders, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PoliciesGuard } from 'src/casl/policies.guard';
@@ -41,8 +41,11 @@ export class OrderController {
 
   @Get()
   @CheckPolicies(new ManagePolicyHandler())
-  async findAll() {
-    return await this.orderService.findAll();
+  async findAll(@Query('limit') limit: number = 10, @Query('page') page: number = 1) {
+    return await this.orderService.findWithPaginate({
+      limit,
+      page,
+    });
   }
 
   @Get(':id')

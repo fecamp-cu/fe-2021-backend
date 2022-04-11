@@ -5,6 +5,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  ParseBoolPipe,
   ParseIntPipe,
   Patch,
   Post,
@@ -46,12 +47,21 @@ export class ItemController {
 
   @Get()
   @Public()
-  findAll(@Query('index') withIndex: boolean = false) {
-    let relations: string[] = [];
-    if (withIndex) {
-      relations = ['indexes'];
-    }
-    return this.itemService.findAll(relations);
+  findAll(
+    @Query('index', ParseBoolPipe) withIndex: boolean = false,
+    @Query('limit') limit: number = 10,
+    @Query('page') page: number = 1,
+  ) {
+    limit = limit > 100 ? 100 : limit;
+    const relations = withIndex ? ['indexes'] : [];
+    return this.itemService.findWithPaginate(
+      {
+        page,
+        limit,
+      },
+      relations,
+    );
+    // return this.itemService.findAll(relations);
   }
 
   @Get(':id')

@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { Repository } from 'typeorm';
 import { Customer } from './entities/customer.entity';
 
@@ -9,6 +10,12 @@ export class CustomerService {
 
   async findAll(): Promise<Customer[]> {
     return await this.customerRepository.find();
+  }
+
+  async findWithPaginate(options: IPaginationOptions): Promise<Pagination<Customer>> {
+    const query = this.customerRepository.createQueryBuilder('customer');
+
+    return paginate<Customer>(query, options);
   }
 
   async findOne(id: number): Promise<Customer> {

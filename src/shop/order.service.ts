@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { TypeORMException } from 'src/common/exceptions/typeorm.exception';
 import { ItemDto } from 'src/item/dto/item.dto';
 import { Repository } from 'typeorm';
@@ -26,6 +27,13 @@ export class OrderService {
 
   async findAll() {
     return await this.orderRepository.find({ relations: ['customer'] });
+  }
+
+  async findWithPaginate(options: IPaginationOptions): Promise<Pagination<Order>> {
+    const query = this.orderRepository.createQueryBuilder('order');
+    query.leftJoinAndSelect('order.customer', 'customer');
+
+    return paginate<Order>(query, options);
   }
 
   async findOne(id: number, relations: string[] = []): Promise<OrderDto> {

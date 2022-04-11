@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiHeaders, ApiTags } from '@nestjs/swagger';
@@ -37,8 +38,8 @@ export class UserController {
 
   @Get()
   @CheckPolicies(new ManagePolicyHandler())
-  findAll() {
-    return this.userService.findAll();
+  findAll(@Query('limit') limit: number = 10, @Query('page') page: number = 1) {
+    return this.userService.findWithPaginate({ limit, page });
   }
 
   @Get(':id')

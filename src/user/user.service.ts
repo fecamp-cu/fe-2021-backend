@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { LoginDto } from 'src/auth/dto/login.dto';
 import { FindUser } from 'src/common/types/user';
 import { Customer } from 'src/shop/entities/customer.entity';
@@ -54,6 +55,12 @@ export class UserService {
 
   async findAll(): Promise<UserDto[]> {
     return await this.userRepository.find();
+  }
+
+  async findWithPaginate(options: IPaginationOptions): Promise<Pagination<User>> {
+    const query = this.userRepository.createQueryBuilder('user');
+
+    return paginate<User>(query, options);
   }
 
   async Login(loginDto: LoginDto): Promise<UserDto> {
