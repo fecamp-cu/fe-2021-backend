@@ -48,6 +48,7 @@ async function bootstrap() {
       .addTag('QualificationPreview')
       .addTag('SponcerContainer')
       .addTag('TimelineEvent')
+      .addTag('Announcement')
       .build();
 
     const document = SwaggerModule.createDocument(app, config);

@@ -3,6 +3,7 @@ import { ValidateCode } from 'src/auth/entities/validate-code.entity';
 import { Role } from 'src/common/enums/role';
 import { Item } from 'src/item/entities/item.entity';
 import { Profile } from 'src/profile/entities/profile.entity';
+import { Setting } from 'src/setting/entities/setting.entity';
 import { Customer } from 'src/shop/entities/customer.entity';
 import {
   Column,
@@ -76,4 +77,7 @@ export class User {
   @OneToOne(() => Profile, { persistence: false, cascade: true })
   @JoinColumn()
   profile: Profile;
+
+  @OneToMany(() => Setting, setting => setting.user)
+  settings: Setting[];
 }

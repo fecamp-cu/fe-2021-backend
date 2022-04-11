@@ -1,14 +1,17 @@
 import { IsBoolean, IsUrl } from 'class-validator';
+import { User } from 'src/user/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { AboutFeContainer } from './aboutFeContainer.entity';
+import { Announcement } from './announcement.entity';
 import { PhotoPreview } from './photoPreview.entity';
 import { QualificationPreview } from './qualificationPreview.entity';
 import { SponcerContainer } from './sponcerContainer.entity';
@@ -34,6 +37,12 @@ export class Setting {
   @IsBoolean()
   isActive: boolean;
 
+  @Column({ name: 'publish_date' })
+  publishDate: Date;
+
+  @Column({ name: 'end_date' })
+  endDate: Date;
+
   @OneToMany(() => TimelineEvent, timelineEvent => timelineEvent.setting)
   timelineEvents: TimelineEvent[];
 
@@ -48,6 +57,12 @@ export class Setting {
 
   @OneToMany(() => AboutFeContainer, aboutFeContainer => aboutFeContainer.setting)
   aboutFeContainers: AboutFeContainer[];
+
+  @OneToMany(() => Announcement, announcement => announcement.setting)
+  announcements: Announcement[];
+
+  @ManyToOne(() => User, user => user.settings)
+  user: User;
 
   @CreateDateColumn({ name: 'created_date', select: false })
   createdDate: Date;
