@@ -32,7 +32,7 @@ export class AnnouncementService {
     try {
       return await this.announcementRepository.find();
     } catch (error) {
-      throw new SettingException('Failed to find all about fe container', error.response.status);
+      throw new SettingException('Failed to find announcement', error.response.status);
     }
   }
 
