@@ -61,7 +61,6 @@ export class ItemController {
       },
       relations,
     );
-    // return this.itemService.findAll(relations);
   }
 
   @Get(':id')
