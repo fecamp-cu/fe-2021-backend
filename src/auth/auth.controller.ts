@@ -217,6 +217,7 @@ export class AuthController {
   @Get('google/callback')
   @Public()
   async OAuthCallbackGoogle(@Query('code') code: string, @Res() res: Response): Promise<void> {
+    let isRegister = false;
     const tokens: GoogleAuthData = await this.googleClient.getTokens(code);
     this.googleClient.setCredentials(tokens);
     const userInfo: GoogleUserInfo = await this.googleClient.getUserInfo();
@@ -243,9 +244,14 @@ export class AuthController {
         EmailMessage.ACCOUNT_PASSWORD_SUBJECT,
         accountPasswordMessage(user, password),
       );
+
+      isRegister = true;
     }
 
-    user = await this.thirdPartyAuthService.storeGoogleToken(tokens, user, userInfo.id);
+    if (!isRegister) {
+      user = await this.thirdPartyAuthService.storeGoogleToken(tokens, user, userInfo.id);
+    }
+
     const credentials: CredentialDto = await this.signToken(user);
     const url = encodeURI(
       this.configService.get<string>('app.url') +
