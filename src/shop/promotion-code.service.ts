@@ -8,9 +8,11 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as crypto from 'crypto-js';
 import * as faker from 'faker';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { PromotionCodeType } from 'src/common/enums/promotion-code';
 import { Repository } from 'typeorm';
-import { PromotionCodeDto } from './dto/promotion-code.dto';
+import { CreatePromotionCodeDto } from './dto/create-promotion-code.dto';
+import { UpdatePromotionCodeDto } from './dto/update-promotion-code.dto';
 import { PromotionCode } from './entities/promotion-code.entity';
 
 @Injectable()
@@ -19,6 +21,41 @@ export class PromotionCodeService {
     @InjectRepository(PromotionCode) private promotionCodeRepository: Repository<PromotionCode>,
     private configService: ConfigService,
   ) {}
+
+  async findWithPaginate(options: IPaginationOptions): Promise<Pagination<PromotionCode>> {
+    const query = this.promotionCodeRepository.createQueryBuilder('code');
+    return paginate<PromotionCode>(query, options);
+  }
+
+  async findOne(id: number) {
+    const code = await this.promotionCodeRepository.findOne(id);
+    if (!code) {
+      throw new NotFoundException({
+        reason: 'NOT_FOUND',
+        message: `Promotion code, ${id}, not match with any code`,
+      });
+    }
+    return this.rawToDTO(code);
+  }
+
+  async update(id: number, updateDto: UpdatePromotionCodeDto) {
+    const code = await this.findOne(id);
+    await this.promotionCodeRepository.update(id, updateDto);
+
+    code.code = updateDto.code;
+    code.type = updateDto.type;
+    code.value = updateDto.value;
+    code.isReuseable = updateDto.isReuseable;
+    code.expiresDate = updateDto.expiresDate;
+
+    return code;
+  }
+
+  async delete(id: number) {
+    const promotionCode = await this.findOne(id);
+    await this.promotionCodeRepository.softDelete(id);
+    return promotionCode;
+  }
 
   async generate(
     type: PromotionCodeType,

@@ -1,4 +1,16 @@
-import { Body, Controller, HttpStatus, Param, Post, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   ApiBearerAuth,
@@ -113,6 +125,49 @@ export class ShopController {
       promotionCodeDto.value,
     );
     return res.status(HttpStatus.CREATED).json(promotionCode);
+  }
+
+  @ApiBearerAuth()
+  @Get('/code')
+  @CheckPolicies(new ManagePolicyHandler())
+  async findAll(
+    @Query('limit') limit: number = 10,
+    @Query('page') page: number = 1,
+    @Res() res: Response,
+  ) {
+    const promotionCode = await this.promotionCodeService.findWithPaginate({
+      page,
+      limit,
+    });
+    return res.status(HttpStatus.OK).json(promotionCode);
+  }
+
+  @ApiBearerAuth()
+  @Get('/code/:id')
+  @CheckPolicies(new ManagePolicyHandler())
+  async findOne(@Param('id') id: string, @Res() res: Response) {
+    const promotionCode = await this.promotionCodeService.findOne(+id);
+    return res.status(HttpStatus.OK).json(promotionCode);
+  }
+
+  @ApiBearerAuth()
+  @Patch('/code/:id')
+  @CheckPolicies(new ManagePolicyHandler())
+  async update(
+    @Param('id') id: string,
+    @Body() promotionCodeDto: UpdatePromotionCodeDto,
+    @Res() res: Response,
+  ) {
+    const promotionCode = await this.promotionCodeService.update(+id, promotionCodeDto);
+    return res.status(HttpStatus.OK).json(promotionCode);
+  }
+
+  @ApiBearerAuth()
+  @Delete('/code/:id')
+  @CheckPolicies(new ManagePolicyHandler())
+  async delete(@Param('id') id: string, @Res() res: Response) {
+    const promotionCode = await this.promotionCodeService.delete(+id);
+    return res.status(HttpStatus.OK).json(promotionCode);
   }
 
   @ApiOkResponse({
