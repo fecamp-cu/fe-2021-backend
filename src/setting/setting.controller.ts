@@ -46,7 +46,11 @@ export class SettingController {
   async findAllActive() {
     const setting = await this.settingService.findAllActive();
     if (!setting) {
-      throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found setting' });
+      throw new NotFoundException({
+        StatusCode: 404,
+        reason: 'NOT_FOUND_ENTITY',
+        message: 'Not found setting',
+      });
     }
     return this.settingService.findAllActive();
   }
@@ -56,7 +60,11 @@ export class SettingController {
   async findOne(@Param('id') id: string) {
     const setting = await this.settingService.findOne(+id);
     if (!setting) {
-      throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found setting' });
+      throw new NotFoundException({
+        StatusCode: 404,
+        reason: 'NOT_FOUND_ENTITY',
+        message: 'Not found setting',
+      });
     }
 
     return setting;

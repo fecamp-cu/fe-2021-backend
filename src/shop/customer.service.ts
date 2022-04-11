@@ -22,7 +22,11 @@ export class CustomerService {
     const customer: Customer = await this.customerRepository.findOne(id);
 
     if (!customer) {
-      throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found customer' });
+      throw new NotFoundException({
+        StatusCode: 404,
+        reason: 'NOT_FOUND_ENTITY',
+        message: 'Not found customer',
+      });
     }
 
     return customer;

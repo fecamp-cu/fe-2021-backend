@@ -47,6 +47,7 @@ export class UserService {
       return this.rawToDTO(createdUser);
     } catch (err) {
       throw new UnprocessableEntityException({
+        StatusCode: 422,
         reason: 'INVALID_INPUT',
         message: 'Email already existed',
       });
@@ -72,6 +73,7 @@ export class UserService {
 
     if (!user) {
       throw new UnauthorizedException({
+        StatusCode: 401,
         reason: 'INVALID_INPUT',
         message: 'username or password wrong',
       });
@@ -81,6 +83,7 @@ export class UserService {
 
     if (!passwordcompare) {
       throw new UnauthorizedException({
+        StatusCode: 401,
         reason: 'INVALID_INPUT',
         message: 'username or password wrong',
       });
@@ -88,6 +91,7 @@ export class UserService {
 
     if (!user.isEmailVerified) {
       throw new UnauthorizedException({
+        StatusCode: 401,
         reason: 'NOT_VERIFY_EMAIL',
         message: 'The email must be verify before login',
       });
@@ -101,6 +105,7 @@ export class UserService {
 
     if (!user) {
       throw new NotFoundException({
+        StatusCode: 404,
         reason: 'NOT_FOUND_ENTITY',
         message: 'Not found user',
       });

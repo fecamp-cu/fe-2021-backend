@@ -44,6 +44,7 @@ export class SponcerContainerService {
     });
     if (!SponcerContainer) {
       throw new NotFoundException({
+        StatusCode: 404,
         reason: 'NOT_FOUND_ENTITY',
         message: 'Not found sponcer_container',
       });

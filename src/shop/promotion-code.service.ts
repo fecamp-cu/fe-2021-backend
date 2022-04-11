@@ -1,8 +1,8 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -31,6 +31,7 @@ export class PromotionCodeService {
     const code = await this.promotionCodeRepository.findOne(id);
     if (!code) {
       throw new NotFoundException({
+        StatusCode: 404,
         reason: 'NOT_FOUND',
         message: `Promotion code, ${id}, not match with any code`,
       });
@@ -98,6 +99,7 @@ export class PromotionCodeService {
   async use(code: string): Promise<CreatePromotionCodeDto> {
     if (!code) {
       throw new BadRequestException({
+        StatusCode: 400,
         reason: 'MALFORM_INPUT',
         message: 'You must included a code',
       });
@@ -107,20 +109,23 @@ export class PromotionCodeService {
 
     if (!promotionCode) {
       throw new NotFoundException({
+        StatusCode: 404,
         reason: 'NOT_FOUND',
         message: `Promotion code, ${code}, not match with any code`,
       });
     }
 
     if (promotionCode.expiresDate && promotionCode.expiresDate.getTime() < Date.now()) {
-      throw new UnauthorizedException({
+      throw new ForbiddenException({
+        StatusCode: 403,
         reason: 'CODE_EXPIRE',
         message: 'The promotion code is expired',
       });
     }
 
     if (promotionCode.isActived) {
-      throw new UnauthorizedException({
+      throw new ForbiddenException({
+        StatusCode: 403,
         reason: 'CODE_ALREADY_USED',
         message: 'The promotion code is already activated',
       });
@@ -137,6 +142,7 @@ export class PromotionCodeService {
   async getPromotionCode(code: string): Promise<CreatePromotionCodeDto> {
     if (!code) {
       throw new BadRequestException({
+        StatusCode: 400,
         reason: 'MALFORM_INPUT',
         message: 'You must included a code',
       });
@@ -146,6 +152,7 @@ export class PromotionCodeService {
 
     if (!promotionCode) {
       throw new NotFoundException({
+        StatusCode: 404,
         reason: 'NOT_FOUND',
         message: `Promotion code, ${code}, not match with any code`,
       });

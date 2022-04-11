@@ -88,6 +88,7 @@ export class AuthService {
       ).toString(crypto.enc.Utf8);
     } catch (err) {
       throw new BadRequestException({
+        StatusCode: 400,
         reason: 'INVALID_INPUT',
         message: 'Invalid refresh token',
       });

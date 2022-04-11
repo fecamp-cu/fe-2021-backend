@@ -46,6 +46,7 @@ export class QualificationPreviewService {
       });
     if (!QualificationPreview) {
       throw new NotFoundException({
+        StatusCode: 404,
         reason: 'NOT_FOUND_ENTITY',
         message: 'Not found timeline_event',
       });

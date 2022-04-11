@@ -42,6 +42,7 @@ export class AnnouncementService {
     });
     if (!Announcement) {
       throw new NotFoundException({
+        StatusCode: 404,
         reason: 'NOT_FOUND_ENTITY',
         message: 'Not found announce',
       });

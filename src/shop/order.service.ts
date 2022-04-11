@@ -41,6 +41,7 @@ export class OrderService {
 
     if (!order) {
       throw new NotFoundException({
+        statusCode: 404,
         reason: 'NOT_FOUND',
         message: `Not found order`,
       });
@@ -54,6 +55,7 @@ export class OrderService {
 
     if (!order) {
       throw new NotFoundException({
+        statusCode: 404,
         reason: 'NOT_FOUND',
         message: `Not found order`,
       });

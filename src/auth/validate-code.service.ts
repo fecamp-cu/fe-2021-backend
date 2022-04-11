@@ -40,6 +40,7 @@ export class ValidateCodeService {
   async use(uid: number, codeType: CodeType, token: string): Promise<boolean> {
     if (!token) {
       throw new BadRequestException({
+        StatusCode: 400,
         reason: 'MALFORM_INPUT',
         message: 'You must included a token',
       });
@@ -55,6 +56,7 @@ export class ValidateCodeService {
 
     if (!queriedCode) {
       throw new NotFoundException({
+        StatusCode: 404,
         reason: 'NOT_FOUND',
         message: 'Token not match with any code',
       });
@@ -62,6 +64,7 @@ export class ValidateCodeService {
 
     if (queriedCode.user.id !== uid) {
       throw new UnauthorizedException({
+        StatusCode: 401,
         reason: 'INVALID_USER',
         message: 'Only owner of the token can active it',
       });
@@ -69,6 +72,7 @@ export class ValidateCodeService {
 
     if (queriedCode.expiredDate && queriedCode.expiredDate.getTime() < Date.now()) {
       throw new UnauthorizedException({
+        StatusCode: 401,
         reason: 'TOKEN_EXPIRE',
         message: 'The token is expired',
       });
@@ -76,6 +80,7 @@ export class ValidateCodeService {
 
     if (queriedCode.isUsed) {
       throw new UnauthorizedException({
+        StatusCode: 401,
         reason: 'TOKEN_ALREADY_USED',
         message: 'The token is already used',
       });
