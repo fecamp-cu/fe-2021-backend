@@ -22,7 +22,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Response } from 'express';
-import * as faker from 'faker';
 import * as moment from 'moment';
 import {
   accountPasswordMessage,
@@ -32,6 +31,7 @@ import {
 import { ServiceType } from 'src/common/enums/service-type';
 import { EmailMessage } from 'src/common/enums/third-party';
 import { CodeType } from 'src/common/enums/validate-code-type';
+import { createRandomSha256Text } from 'src/common/function/random-text';
 import { GoogleAuthData, RequestWithUserId } from 'src/common/types/auth';
 import { FacebookUserInfo } from 'src/common/types/facebook/facebook';
 import { GoogleUserInfo } from 'src/common/types/google/google-api';
@@ -223,7 +223,9 @@ export class AuthController {
 
     let user: UserDto = await this.userService.findByEmail(userInfo.email, ['profile', 'tokens']);
 
-    const password = faker.datatype.string(16);
+    const password = createRandomSha256Text(
+      this.configService.get<string>('secret.encryptionKey'),
+    ).substring(0, 8);
 
     if (!user) {
       const registerDto = new RegisterDto({
@@ -248,8 +250,9 @@ export class AuthController {
     user = await this.thirdPartyAuthService.storeGoogleToken(tokens, user, userInfo.id);
     const credentials: CredentialDto = await this.signToken(user);
     const url = encodeURI(
-      this.configService.get<string>('app.url') +
-        `?accessToken=${credentials.accessToken}&refreshToken=${credentials.refreshToken}&expiresIn=${credentials.expiresIn}`,
+      `${this.configService.get<string>('app.url')}?accessToken=${
+        credentials.accessToken
+      }&refreshToken=${credentials.refreshToken}&expiresIn=${credentials.expiresIn}`,
     );
 
     res.status(HttpStatus.MOVED_PERMANENTLY).redirect(url);
@@ -281,7 +284,9 @@ export class AuthController {
       const name = userInfo.name.split(' ');
       const firstname = name[0];
       const lastname = name[1];
-      const password = faker.datatype.string(16);
+      const password = createRandomSha256Text(
+        this.configService.get<string>('secret.encryptionKey'),
+      ).substring(0, 7);
 
       const registerDto = new RegisterDto({
         username: firstname,
@@ -305,11 +310,10 @@ export class AuthController {
 
     const credentials: CredentialDto = await this.signToken(user);
     const url = encodeURI(
-      this.configService.get<string>('app.url') +
-        `?accessToken=${credentials.accessToken}&refreshToken=${credentials.refreshToken}&expiresIn=${credentials.expiresIn}`,
+      `${this.configService.get<string>('app.url')}?accessToken=${
+        credentials.accessToken
+      }&refreshToken=${credentials.refreshToken}&expiresIn=${credentials.expiresIn}`,
     );
-
-    console.log(url);
 
     res.status(HttpStatus.MOVED_PERMANENTLY).redirect(url);
   }
