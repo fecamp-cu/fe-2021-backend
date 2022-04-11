@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsOptional, IsUrl } from 'class-validator';
+import { IsBoolean, IsISO8601, IsOptional, IsUrl } from 'class-validator';
 
 export class SettingDto {
   id: number;
@@ -22,6 +22,16 @@ export class SettingDto {
   @IsBoolean()
   @IsOptional()
   isActive: boolean;
+
+  @ApiProperty()
+  @IsISO8601()
+  @IsOptional()
+  publishDate: Date;
+
+  @ApiProperty()
+  @IsISO8601()
+  @IsOptional()
+  endDate: Date;
 
   constructor(partial: Partial<SettingDto>) {
     Object.assign(this, partial);
