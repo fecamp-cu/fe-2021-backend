@@ -1,9 +1,22 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiHeaders, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/auth/auth.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PoliciesGuard } from 'src/casl/policies.guard';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
+import { RequestWithUserId } from 'src/common/types/auth';
+import { User } from 'src/user/entities/user.entity';
 import { SettingDto } from './dto/setting.dto';
 import { SettingService } from './setting.service';
 
@@ -17,8 +30,8 @@ export class SettingController {
 
   @Post()
   @CheckPolicies(new ManagePolicyHandler())
-  create(@Body() settingDto: SettingDto) {
-    return this.settingService.createSetting(settingDto);
+  create(@Body() settingDto: SettingDto, @Req() req: RequestWithUserId) {
+    return this.settingService.createSetting(settingDto, req.user as User);
   }
 
   @Get()
@@ -29,14 +42,23 @@ export class SettingController {
 
   @Get('active')
   @Public()
-  findAllActive() {
+  async findAllActive() {
+    const setting = await this.settingService.findAllActive();
+    if (!setting) {
+      throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found setting' });
+    }
     return this.settingService.findAllActive();
   }
 
   @Get(':id')
   @CheckPolicies(new ManagePolicyHandler())
-  findOne(@Param('id') id: string) {
-    return this.settingService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const setting = await this.settingService.findOne(+id);
+    if (!setting) {
+      throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found setting' });
+    }
+
+    return setting;
   }
 
   @Patch(':id')

@@ -22,6 +22,7 @@ export class ServiceDownFilter implements ExceptionFilter {
 
   async catch(exception: CustomException, host: ArgumentsHost) {
     const status = exception.status || HttpStatus.INTERNAL_SERVER_ERROR;
+
     const context = host.switchToHttp();
     const request = context.getRequest<Request>();
     const response = context.getResponse<Response>();

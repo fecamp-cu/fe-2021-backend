@@ -1,6 +1,6 @@
-import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SettingException } from 'src/common/exceptions/settting.exception';
+import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { SettingDto } from './dto/setting.dto';
 import { Setting } from './entities/setting.entity';
@@ -8,9 +8,9 @@ import { Setting } from './entities/setting.entity';
 export class SettingService {
   constructor(@InjectRepository(Setting) private settingRepository: Repository<Setting>) {}
 
-  async createSetting(settingDto: SettingDto): Promise<SettingDto> {
+  async createSetting(settingDto: SettingDto, user: User): Promise<SettingDto> {
     const setting: Setting = this.settingRepository.create(settingDto);
-
+    setting.user = user;
     setting.isActive = false;
 
     const createdSetting = await this.settingRepository.save(setting);
@@ -39,21 +39,18 @@ export class SettingService {
         .leftJoinAndSelect('setting.sponcerContainers', 'sponcer_container')
         .leftJoinAndSelect('setting.qualificationPreviews', 'qualification_preview')
         .leftJoinAndSelect('setting.aboutFeContainers', 'about_fe_container')
+        .leftJoinAndSelect('setting.announcements', 'announcement')
         .orderBy('event_start_date', 'ASC')
         .addOrderBy('"photo_preview"."order"', 'ASC')
         .addOrderBy('"sponcer_container"."order"', 'ASC')
         .addOrderBy('"qualification_preview"."order"', 'ASC')
         .addOrderBy('"about_fe_container"."order"', 'ASC')
+        .addOrderBy('"announcement"."order"', 'ASC')
         .cache(true)
         .getOne();
 
-      if (!setting) {
-        throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found setting' });
-      }
-
       return setting as SettingDto;
     } catch (error) {
-      console.error(error);
       throw new SettingException('Failed to find activated setting', error.response);
     }
   }
@@ -68,17 +65,17 @@ export class SettingService {
         .leftJoinAndSelect('setting.sponcerContainers', 'sponcer_container')
         .leftJoinAndSelect('setting.qualificationPreviews', 'qualification_preview')
         .leftJoinAndSelect('setting.aboutFeContainers', 'about_fe_container')
+        .leftJoinAndSelect('setting.announcements', 'announcement')
         .orderBy('event_start_date', 'ASC')
         .addOrderBy('"photo_preview"."order"', 'ASC')
         .addOrderBy('"sponcer_container"."order"', 'ASC')
         .addOrderBy('"qualification_preview"."order"', 'ASC')
         .addOrderBy('"about_fe_container"."order"', 'ASC')
+        .addOrderBy('"announcement"."order"', 'ASC')
+
         .cache(true)
         .getOne();
 
-      if (!setting) {
-        throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found setting' });
-      }
       return setting;
     } catch (err) {
       throw new SettingException('Setting Query Error', err.response);
