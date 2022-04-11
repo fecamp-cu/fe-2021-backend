@@ -7,6 +7,7 @@ import {
   Param,
   ParseIntPipe,
   Patch,
+  Query,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -34,8 +35,8 @@ export class CustomerController {
 
   @Get()
   @CheckPolicies(new ManagePolicyHandler())
-  async findAll(@Res() res) {
-    const customer: Customer[] = await this.customerService.findAll();
+  async findAll(@Query('limit') limit: number = 10, @Query('page') page: number = 1, @Res() res) {
+    const customer = await this.customerService.findWithPaginate({ limit, page });
     return res.status(HttpStatus.OK).json(customer);
   }
 
@@ -46,7 +47,7 @@ export class CustomerController {
     return this.customerService.findOne(+id);
   }
 
-  @ApiOperation({ description: "Update user's customer (can only update your customer)" })
+  @ApiOperation({ description: "Update user's customer profile" })
   @ApiOkResponse({ description: "Successfully updated user's customer", type: Customer })
   @Patch(':id')
   @CheckPolicies(new ManagePolicyHandler())
