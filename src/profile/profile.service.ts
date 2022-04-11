@@ -26,7 +26,11 @@ export class ProfileService {
     const profile: Profile = await this.profileRepository.findOne(id);
 
     if (!profile) {
-      throw new NotFoundException({ reason: 'NOT_FOUND_ENTITY', message: 'Not found profile' });
+      throw new NotFoundException({
+        StatusCode: 404,
+        reason: 'NOT_FOUND_ENTITY',
+        message: 'Not found profile',
+      });
     }
     return new ProfileDto({
       id: profile.id,

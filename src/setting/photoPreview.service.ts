@@ -39,6 +39,7 @@ export class PhotoPreviewService {
     });
     if (!PhotoPreview) {
       throw new NotFoundException({
+        StatusCode: 404,
         reason: 'NOT_FOUND_ENTITY',
         message: 'Not found preview photo',
       });
