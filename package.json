@@ -55,6 +55,7 @@
     "faker": "^5.5.3",
     "googleapis": "^92.0.0",
     "moment": "^2.29.1",
+    "nestjs-typeorm-paginate": "^3.2.0-alpha",
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
     "pg": "^8.7.1",
