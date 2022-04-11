@@ -8,9 +8,11 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as crypto from 'crypto-js';
 import * as faker from 'faker';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { PromotionCodeType } from 'src/common/enums/promotion-code';
 import { Repository } from 'typeorm';
-import { PromotionCodeDto } from './dto/promotion-code.dto';
+import { CreatePromotionCodeDto } from './dto/create-promotion-code.dto';
+import { UpdatePromotionCodeDto } from './dto/update-promotion-code.dto';
 import { PromotionCode } from './entities/promotion-code.entity';
 
 @Injectable()
@@ -19,6 +21,41 @@ export class PromotionCodeService {
     @InjectRepository(PromotionCode) private promotionCodeRepository: Repository<PromotionCode>,
     private configService: ConfigService,
   ) {}
+
+  async findWithPaginate(options: IPaginationOptions): Promise<Pagination<PromotionCode>> {
+    const query = this.promotionCodeRepository.createQueryBuilder('code');
+    return paginate<PromotionCode>(query, options);
+  }
+
+  async findOne(id: number) {
+    const code = await this.promotionCodeRepository.findOne(id);
+    if (!code) {
+      throw new NotFoundException({
+        reason: 'NOT_FOUND',
+        message: `Promotion code, ${id}, not match with any code`,
+      });
+    }
+    return this.rawToDTO(code);
+  }
+
+  async update(id: number, updateDto: UpdatePromotionCodeDto) {
+    const code = await this.findOne(id);
+    await this.promotionCodeRepository.update(id, updateDto);
+
+    code.code = updateDto.code;
+    code.type = updateDto.type;
+    code.value = updateDto.value;
+    code.isReuseable = updateDto.isReuseable;
+    code.expiresDate = updateDto.expiresDate;
+
+    return code;
+  }
+
+  async delete(id: number) {
+    const promotionCode = await this.findOne(id);
+    await this.promotionCodeRepository.softDelete(id);
+    return promotionCode;
+  }
 
   async generate(
     type: PromotionCodeType,
@@ -33,7 +70,7 @@ export class PromotionCodeService {
       .toString()
       .substring(0, 10),
     value: number = faker.datatype.number(50),
-  ): Promise<PromotionCodeDto> {
+  ): Promise<CreatePromotionCodeDto> {
     if (isReuseable && !expiresDate) {
       throw new BadRequestException({
         reason: 'MALFORM_INPUT',
@@ -41,7 +78,7 @@ export class PromotionCodeService {
       });
     }
 
-    const promotionCodeDto = new PromotionCodeDto({
+    const promotionCodeDto = new CreatePromotionCodeDto({
       code,
       type,
       isReuseable,
@@ -58,7 +95,7 @@ export class PromotionCodeService {
     return this.rawToDTO(promotionCode);
   }
 
-  async use(code: string): Promise<PromotionCodeDto> {
+  async use(code: string): Promise<CreatePromotionCodeDto> {
     if (!code) {
       throw new BadRequestException({
         reason: 'MALFORM_INPUT',
@@ -97,7 +134,7 @@ export class PromotionCodeService {
     return this.rawToDTO(promotionCode);
   }
 
-  async getPromotionCode(code: string): Promise<PromotionCodeDto> {
+  async getPromotionCode(code: string): Promise<CreatePromotionCodeDto> {
     if (!code) {
       throw new BadRequestException({
         reason: 'MALFORM_INPUT',
@@ -118,7 +155,7 @@ export class PromotionCodeService {
   }
 
   private rawToDTO(promotionCode: PromotionCode) {
-    return new PromotionCodeDto({
+    return new CreatePromotionCodeDto({
       code: promotionCode.code,
       type: promotionCode.type,
       value: promotionCode.value,
