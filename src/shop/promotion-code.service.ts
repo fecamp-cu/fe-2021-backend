@@ -33,7 +33,7 @@ export class PromotionCodeService {
       .toString()
       .substring(0, 10),
     value: number = faker.datatype.number(50),
-  ): Promise<PromotionCodeDto> {
+  ): Promise<CreatePromotionCodeDto> {
     if (isReuseable && !expiresDate) {
       throw new BadRequestException({
         reason: 'MALFORM_INPUT',
@@ -41,7 +41,7 @@ export class PromotionCodeService {
       });
     }
 
-    const promotionCodeDto = new PromotionCodeDto({
+    const promotionCodeDto = new CreatePromotionCodeDto({
       code,
       type,
       isReuseable,
@@ -58,7 +58,7 @@ export class PromotionCodeService {
     return this.rawToDTO(promotionCode);
   }
 
-  async use(code: string): Promise<PromotionCodeDto> {
+  async use(code: string): Promise<CreatePromotionCodeDto> {
     if (!code) {
       throw new BadRequestException({
         reason: 'MALFORM_INPUT',
@@ -97,7 +97,7 @@ export class PromotionCodeService {
     return this.rawToDTO(promotionCode);
   }
 
-  async getPromotionCode(code: string): Promise<PromotionCodeDto> {
+  async getPromotionCode(code: string): Promise<CreatePromotionCodeDto> {
     if (!code) {
       throw new BadRequestException({
         reason: 'MALFORM_INPUT',
@@ -118,7 +118,7 @@ export class PromotionCodeService {
   }
 
   private rawToDTO(promotionCode: PromotionCode) {
-    return new PromotionCodeDto({
+    return new CreatePromotionCodeDto({
       code: promotionCode.code,
       type: promotionCode.type,
       value: promotionCode.value,

@@ -1,7 +1,7 @@
 import { PaymentStatus } from 'src/common/enums/shop';
+import { CreatePromotionCodeDto } from './create-promotion-code.dto';
 import { CustomerDto } from './customer.dto';
 import { OrderItemDto } from './order-item.dto';
-import { PromotionCodeDto } from './promotion-code.dto';
 
 export class OrderDto {
   id: number;
@@ -24,7 +24,7 @@ export class OrderDto {
 
   items: OrderItemDto[];
 
-  code?: PromotionCodeDto;
+  code?: CreatePromotionCodeDto;
 
   constructor(partial: Partial<OrderDto>) {
     Object.assign(this, partial);

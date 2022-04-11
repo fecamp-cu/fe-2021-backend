@@ -3,7 +3,7 @@ import { IsBoolean, IsEmpty, IsIn, IsInt, IsISO8601, IsOptional, IsString } from
 import { PromotionCodeType } from 'src/common/enums/promotion-code';
 import { OrderDto } from './order.dto';
 
-export class PromotionCodeDto {
+export class CreatePromotionCodeDto {
   id: number;
 
   @ApiProperty({ example: PromotionCodeType.AMOUNT })
@@ -36,7 +36,7 @@ export class PromotionCodeDto {
   @IsEmpty()
   order: OrderDto;
 
-  constructor(partial: Partial<PromotionCodeDto>) {
+  constructor(partial: Partial<CreatePromotionCodeDto>) {
     Object.assign(this, partial);
   }
 }
