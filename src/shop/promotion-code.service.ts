@@ -6,10 +6,10 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as crypto from 'crypto-js';
 import * as faker from 'faker';
 import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { PromotionCodeType } from 'src/common/enums/promotion-code';
+import { createRandomSha256Text } from 'src/common/function/random-text';
 import { Repository } from 'typeorm';
 import { CreatePromotionCodeDto } from './dto/create-promotion-code.dto';
 import { UpdatePromotionCodeDto } from './dto/update-promotion-code.dto';
@@ -62,14 +62,9 @@ export class PromotionCodeService {
     type: PromotionCodeType,
     expiresDate: Date,
     isReuseable: boolean = false,
-    code: string = crypto
-      .SHA256(
-        faker.datatype.string(faker.datatype.number(100)) +
-          this.configService.get<string>('secret.encryptionKey') +
-          Date.now(),
-      )
-      .toString()
-      .substring(0, 10),
+    code: string = createRandomSha256Text(
+      this.configService.get<string>('secret.encryptionKey'),
+    ).substring(0, 10),
     value: number = faker.datatype.number(50),
   ): Promise<CreatePromotionCodeDto> {
     if (isReuseable && !expiresDate) {
