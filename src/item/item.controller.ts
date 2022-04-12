@@ -25,6 +25,7 @@ import { PoliciesGuard } from 'src/casl/policies.guard';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
 import { ItemIndexDto } from './dto/item-index.dto';
 import { ItemDto } from './dto/item.dto';
+import { UpdateItemDto } from './dto/update-item.dto';
 import { ItemIndexService } from './item-index.service';
 import { ItemService } from './item.service';
 
@@ -71,7 +72,7 @@ export class ItemController {
 
   @CheckPolicies(new ManagePolicyHandler())
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() itemDto: ItemDto) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() itemDto: UpdateItemDto) {
     return this.itemService.update(id, itemDto);
   }
 

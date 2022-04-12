@@ -9,8 +9,15 @@ export class ItemIndexService {
   constructor(@InjectRepository(ItemIndex) private itemIndexRepository: Repository<ItemIndex>) {}
 
   async create(itemIndexDto: ItemIndexDto): Promise<ItemIndexDto> {
-    const index: ItemIndex = this.itemIndexRepository.create(itemIndexDto);
-    const createdIndex: ItemIndex = await this.itemIndexRepository.save(index);
+    const indexes = await this.itemIndexRepository
+      .createQueryBuilder('item_index')
+      .leftJoinAndSelect('item_index.item', 'item')
+      .where('item.id = :id', { id: itemIndexDto.item.id })
+      .getMany();
+    await this.reArrange(indexes, itemIndexDto.order);
+
+    const createdIndex = await this.itemIndexRepository.save(itemIndexDto);
+
     return this.rawToDTO(createdIndex);
   }
 
@@ -55,5 +62,15 @@ export class ItemIndexService {
     });
 
     return result;
+  }
+
+  async reArrange(indexes: ItemIndex[], newOrder: number) {
+    const newIndexes = indexes.map(index => {
+      if (index.order >= newOrder) {
+        index.order = index.order + 1;
+      }
+      return index;
+    });
+    await this.itemIndexRepository.save(newIndexes);
   }
 }

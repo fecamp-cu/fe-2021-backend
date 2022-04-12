@@ -5,6 +5,7 @@ import { FileType } from 'src/common/enums/third-party';
 import { GoogleCloudStorage } from 'src/third-party/google-cloud/google-storage.service';
 import { Repository } from 'typeorm';
 import { ItemDto } from './dto/item.dto';
+import { UpdateItemDto } from './dto/update-item.dto';
 import { Item } from './entities/item.entity';
 
 @Injectable()
@@ -36,8 +37,13 @@ export class ItemService {
     return items.map(item => this.rawToDTO(item));
   }
 
-  async findOne(id: number, relations: string[] = ['indexes']): Promise<ItemDto> {
-    const item = await this.itemRepository.findOne(id, { relations });
+  async findOne(id: number): Promise<ItemDto> {
+    const item = await this.itemRepository
+      .createQueryBuilder('item')
+      .leftJoinAndSelect('item.indexes', 'index')
+      .where('item.id = :id', { id })
+      .orderBy('index.order', 'ASC')
+      .getOne();
 
     if (!item) {
       throw new NotFoundException({
@@ -55,10 +61,19 @@ export class ItemService {
     return items.map(item => this.rawToDTO(item));
   }
 
-  async update(id: number, itemDto: ItemDto, relations: string[] = []): Promise<ItemDto> {
-    const item: ItemDto = await this.findOne(id, relations);
-    await this.itemRepository.update(id, itemDto);
+  async update(id: number, itemDto: UpdateItemDto): Promise<ItemDto> {
+    const item = await this.findOne(id);
+    item.title = itemDto.title ? itemDto.title : item.title;
+    item.summary = itemDto.summary ? itemDto.summary : item.summary;
+    item.price = itemDto.price ? itemDto.price : item.price;
+    item.quantityInStock = itemDto.quantityInStock ? itemDto.quantityInStock : item.quantityInStock;
+    item.author = itemDto.author ? itemDto.author : item.author;
+    item.type = itemDto.type ? itemDto.type : item.type;
+    item.thumbnail = itemDto.thumbnail ? itemDto.thumbnail : item.thumbnail;
+    item.fileURL = itemDto.fileURL ? itemDto.fileURL : item.fileURL;
+    item.indexes = itemDto.indexes ? itemDto.indexes : item.indexes;
 
+    await this.itemRepository.save(item);
     return item;
   }
 
