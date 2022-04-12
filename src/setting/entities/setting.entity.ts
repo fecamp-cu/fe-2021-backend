@@ -37,10 +37,10 @@ export class Setting {
   @IsBoolean()
   isActive: boolean;
 
-  @Column({ name: 'publish_date' })
+  @Column({ name: 'publish_date', default: () => 'CURRENT_TIMESTAMP' })
   publishDate: Date;
 
-  @Column({ name: 'end_date' })
+  @Column({ name: 'end_date', nullable: true })
   endDate: Date;
 
   @OneToMany(() => TimelineEvent, timelineEvent => timelineEvent.setting)
