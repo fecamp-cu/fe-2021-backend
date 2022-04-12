@@ -42,7 +42,7 @@ export class ItemDto {
   @IsString()
   author: string;
 
-  @ApiProperty({})
+  @ApiProperty()
   @ValidateNested()
   indexes?: ItemIndexDto[];
 
