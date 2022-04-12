@@ -27,7 +27,7 @@ export class PromotionCodeService {
     return paginate<PromotionCode>(query, options);
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<PromotionCode> {
     const code = await this.promotionCodeRepository.findOne(id);
     if (!code) {
       throw new NotFoundException({
@@ -36,10 +36,10 @@ export class PromotionCodeService {
         message: `Promotion code, ${id}, not match with any code`,
       });
     }
-    return this.rawToDTO(code);
+    return code;
   }
 
-  async update(id: number, updateDto: UpdatePromotionCodeDto) {
+  async update(id: number, updateDto: UpdatePromotionCodeDto): Promise<PromotionCode> {
     const code = await this.findOne(id);
     await this.promotionCodeRepository.update(id, updateDto);
 
@@ -131,10 +131,10 @@ export class PromotionCodeService {
       await this.promotionCodeRepository.save(promotionCode);
     }
 
-    return this.rawToDTO(promotionCode);
+    return promotionCode;
   }
 
-  async getPromotionCode(code: string): Promise<CreatePromotionCodeDto> {
+  async getPromotionCode(code: string): Promise<PromotionCode> {
     if (!code) {
       throw new BadRequestException({
         StatusCode: 400,
@@ -153,16 +153,6 @@ export class PromotionCodeService {
       });
     }
 
-    return this.rawToDTO(promotionCode);
-  }
-
-  private rawToDTO(promotionCode: PromotionCode) {
-    return new CreatePromotionCodeDto({
-      code: promotionCode.code,
-      type: promotionCode.type,
-      value: promotionCode.value,
-      isReuseable: promotionCode.isReuseable,
-      expiresDate: promotionCode.expiresDate,
-    });
+    return promotionCode;
   }
 }
