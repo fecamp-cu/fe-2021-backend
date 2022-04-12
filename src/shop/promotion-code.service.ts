@@ -58,37 +58,37 @@ export class PromotionCodeService {
     return promotionCode;
   }
 
-  async generate(
-    type: PromotionCodeType,
-    expiresDate: Date,
-    isReuseable: boolean = false,
-    code: string = createRandomSha256Text(
-      this.configService.get<string>('secret.encryptionKey'),
-    ).substring(0, 10),
-    value: number = faker.datatype.number(50),
-  ): Promise<CreatePromotionCodeDto> {
-    if (isReuseable && !expiresDate) {
+  async generate(promotionCodeDto: CreatePromotionCodeDto): Promise<PromotionCode> {
+    if (promotionCodeDto.isReuseable && !promotionCodeDto.expiresDate) {
       throw new BadRequestException({
         reason: 'MALFORM_INPUT',
         message: 'You must included expiresDate when isReuseable is true',
       });
     }
 
-    const promotionCodeDto = new CreatePromotionCodeDto({
-      code,
-      type,
-      isReuseable,
-      value,
+    promotionCodeDto.code = promotionCodeDto.code
+      ? promotionCodeDto.code
+      : createRandomSha256Text(this.configService.get<string>('secret.encryptionKey')).substring(
+          0,
+          10,
+        );
+
+    promotionCodeDto.value = promotionCodeDto.value
+      ? promotionCodeDto.value
+      : faker.datatype.number(50);
+
+    const code = await this.promotionCodeRepository.save(promotionCodeDto);
+
+    return new PromotionCode({
+      id: code.id,
+      type: code.type,
+      code: code.code,
+      value: code.value,
+      isReuseable: code.isReuseable,
+      startDate: code.startDate,
+      expiresDate: code.expiresDate,
+      isActived: code.isActived,
     });
-
-    if (expiresDate) {
-      promotionCodeDto.expiresDate = expiresDate;
-    }
-
-    const promotionCode = await this.promotionCodeRepository.create(promotionCodeDto);
-    await this.promotionCodeRepository.save(promotionCode);
-
-    return this.rawToDTO(promotionCode);
   }
 
   async use(code: string): Promise<CreatePromotionCodeDto> {
