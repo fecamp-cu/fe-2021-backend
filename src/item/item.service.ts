@@ -37,8 +37,13 @@ export class ItemService {
     return items.map(item => this.rawToDTO(item));
   }
 
-  async findOne(id: number, relations: string[] = ['indexes']): Promise<ItemDto> {
-    const item = await this.itemRepository.findOne(id, { relations });
+  async findOne(id: number): Promise<ItemDto> {
+    const item = await this.itemRepository
+      .createQueryBuilder('item')
+      .leftJoinAndSelect('item.indexes', 'index')
+      .where('item.id = :id', { id })
+      .orderBy('index.order', 'ASC')
+      .getOne();
 
     if (!item) {
       throw new NotFoundException({
@@ -56,8 +61,8 @@ export class ItemService {
     return items.map(item => this.rawToDTO(item));
   }
 
-  async update(id: number, itemDto: UpdateItemDto, relations: string[] = []): Promise<ItemDto> {
-    const item = await this.findOne(id, relations);
+  async update(id: number, itemDto: UpdateItemDto): Promise<ItemDto> {
+    const item = await this.findOne(id);
     item.title = itemDto.title ? itemDto.title : item.title;
     item.summary = itemDto.summary ? itemDto.summary : item.summary;
     item.price = itemDto.price ? itemDto.price : item.price;
