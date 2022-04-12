@@ -7,8 +7,8 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as faker from 'faker';
+import * as moment from 'moment';
 import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
-import { PromotionCodeType } from 'src/common/enums/promotion-code';
 import { createRandomSha256Text } from 'src/common/function/random-text';
 import { Repository } from 'typeorm';
 import { CreatePromotionCodeDto } from './dto/create-promotion-code.dto';
@@ -110,7 +110,15 @@ export class PromotionCodeService {
       });
     }
 
-    if (promotionCode.expiresDate && promotionCode.expiresDate.getTime() < Date.now()) {
+    if (moment(promotionCode.startDate).isAfter(moment())) {
+      throw new ForbiddenException({
+        StatusCode: 403,
+        reason: 'FORBIDDEN',
+        message: `Promotion code, ${code}, not yet start`,
+      });
+    }
+
+    if (promotionCode.expiresDate && moment(promotionCode.expiresDate).isBefore(moment())) {
       throw new ForbiddenException({
         StatusCode: 403,
         reason: 'CODE_EXPIRE',
