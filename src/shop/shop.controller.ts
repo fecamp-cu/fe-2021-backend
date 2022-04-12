@@ -117,13 +117,7 @@ export class ShopController {
   @Post('/generate-code')
   @CheckPolicies(new ManagePolicyHandler())
   async generateCode(@Body() promotionCodeDto: CreatePromotionCodeDto, @Res() res: Response) {
-    const promotionCode: CreatePromotionCodeDto = await this.promotionCodeService.generate(
-      promotionCodeDto.type,
-      promotionCodeDto.expiresDate,
-      promotionCodeDto.isReuseable,
-      promotionCodeDto.code,
-      promotionCodeDto.value,
-    );
+    const promotionCode = await this.promotionCodeService.generate(promotionCodeDto);
     return res.status(HttpStatus.CREATED).json(promotionCode);
   }
 

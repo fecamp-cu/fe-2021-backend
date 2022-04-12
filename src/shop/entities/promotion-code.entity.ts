@@ -30,6 +30,9 @@ export class PromotionCode {
   @Column({ name: 'is_actived', default: false })
   isActived: boolean;
 
+  @Column({ name: 'start_date', default: () => 'CURRENT_TIMESTAMP' })
+  startDate: Date;
+
   @Column({ name: 'expires_date', nullable: true })
   expiresDate: Date;
 

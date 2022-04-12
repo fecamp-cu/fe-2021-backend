@@ -7,8 +7,8 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as faker from 'faker';
+import * as moment from 'moment';
 import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
-import { PromotionCodeType } from 'src/common/enums/promotion-code';
 import { createRandomSha256Text } from 'src/common/function/random-text';
 import { Repository } from 'typeorm';
 import { CreatePromotionCodeDto } from './dto/create-promotion-code.dto';
@@ -27,7 +27,7 @@ export class PromotionCodeService {
     return paginate<PromotionCode>(query, options);
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<PromotionCode> {
     const code = await this.promotionCodeRepository.findOne(id);
     if (!code) {
       throw new NotFoundException({
@@ -36,10 +36,10 @@ export class PromotionCodeService {
         message: `Promotion code, ${id}, not match with any code`,
       });
     }
-    return this.rawToDTO(code);
+    return code;
   }
 
-  async update(id: number, updateDto: UpdatePromotionCodeDto) {
+  async update(id: number, updateDto: UpdatePromotionCodeDto): Promise<PromotionCode> {
     const code = await this.findOne(id);
     await this.promotionCodeRepository.update(id, updateDto);
 
@@ -58,37 +58,37 @@ export class PromotionCodeService {
     return promotionCode;
   }
 
-  async generate(
-    type: PromotionCodeType,
-    expiresDate: Date,
-    isReuseable: boolean = false,
-    code: string = createRandomSha256Text(
-      this.configService.get<string>('secret.encryptionKey'),
-    ).substring(0, 10),
-    value: number = faker.datatype.number(50),
-  ): Promise<CreatePromotionCodeDto> {
-    if (isReuseable && !expiresDate) {
+  async generate(promotionCodeDto: CreatePromotionCodeDto): Promise<PromotionCode> {
+    if (promotionCodeDto.isReuseable && !promotionCodeDto.expiresDate) {
       throw new BadRequestException({
         reason: 'MALFORM_INPUT',
         message: 'You must included expiresDate when isReuseable is true',
       });
     }
 
-    const promotionCodeDto = new CreatePromotionCodeDto({
-      code,
-      type,
-      isReuseable,
-      value,
+    promotionCodeDto.code = promotionCodeDto.code
+      ? promotionCodeDto.code
+      : createRandomSha256Text(this.configService.get<string>('secret.encryptionKey')).substring(
+          0,
+          10,
+        );
+
+    promotionCodeDto.value = promotionCodeDto.value
+      ? promotionCodeDto.value
+      : faker.datatype.number(50);
+
+    const code = await this.promotionCodeRepository.save(promotionCodeDto);
+
+    return new PromotionCode({
+      id: code.id,
+      type: code.type,
+      code: code.code,
+      value: code.value,
+      isReuseable: code.isReuseable,
+      startDate: code.startDate,
+      expiresDate: code.expiresDate,
+      isActived: code.isActived,
     });
-
-    if (expiresDate) {
-      promotionCodeDto.expiresDate = expiresDate;
-    }
-
-    const promotionCode = await this.promotionCodeRepository.create(promotionCodeDto);
-    await this.promotionCodeRepository.save(promotionCode);
-
-    return this.rawToDTO(promotionCode);
   }
 
   async use(code: string): Promise<CreatePromotionCodeDto> {
@@ -110,7 +110,15 @@ export class PromotionCodeService {
       });
     }
 
-    if (promotionCode.expiresDate && promotionCode.expiresDate.getTime() < Date.now()) {
+    if (moment(promotionCode.startDate).isAfter(moment())) {
+      throw new ForbiddenException({
+        StatusCode: 403,
+        reason: 'FORBIDDEN',
+        message: `Promotion code, ${code}, not yet start`,
+      });
+    }
+
+    if (promotionCode.expiresDate && moment(promotionCode.expiresDate).isBefore(moment())) {
       throw new ForbiddenException({
         StatusCode: 403,
         reason: 'CODE_EXPIRE',
@@ -131,10 +139,10 @@ export class PromotionCodeService {
       await this.promotionCodeRepository.save(promotionCode);
     }
 
-    return this.rawToDTO(promotionCode);
+    return promotionCode;
   }
 
-  async getPromotionCode(code: string): Promise<CreatePromotionCodeDto> {
+  async getPromotionCode(code: string): Promise<PromotionCode> {
     if (!code) {
       throw new BadRequestException({
         StatusCode: 400,
@@ -153,16 +161,6 @@ export class PromotionCodeService {
       });
     }
 
-    return this.rawToDTO(promotionCode);
-  }
-
-  private rawToDTO(promotionCode: PromotionCode) {
-    return new CreatePromotionCodeDto({
-      code: promotionCode.code,
-      type: promotionCode.type,
-      value: promotionCode.value,
-      isReuseable: promotionCode.isReuseable,
-      expiresDate: promotionCode.expiresDate,
-    });
+    return promotionCode;
   }
 }

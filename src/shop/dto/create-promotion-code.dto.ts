@@ -28,6 +28,11 @@ export class CreatePromotionCodeDto {
   @IsEmpty()
   isActived: boolean;
 
+  @ApiProperty()
+  @IsOptional()
+  @IsISO8601()
+  startDate: Date;
+
   @ApiProperty({ example: new Date().toISOString() })
   @IsOptional()
   @IsISO8601()
