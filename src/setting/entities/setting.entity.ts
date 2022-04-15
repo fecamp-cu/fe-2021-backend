@@ -1,4 +1,3 @@
-import { IsBoolean, IsUrl } from 'class-validator';
 import { User } from 'src/user/entities/user.entity';
 import {
   Column,
@@ -25,19 +24,19 @@ export class Setting {
   @Column()
   title: string;
 
+  @Column({ name: 'cover_img_url', default: '' })
+  coverImgUrl: string;
+
   @Column({ name: 'youtube_url' })
-  @IsUrl()
   youtubeUrl: string;
 
   @Column({ name: 'button_text', default: '' })
   buttonText: string;
 
   @Column({ name: 'register_form_url' })
-  @IsUrl()
   registerFormUrl: string;
 
   @Column({ name: 'is_active' })
-  @IsBoolean()
   isActive: boolean;
 
   @Column({ name: 'publish_date', default: () => 'CURRENT_TIMESTAMP' })
@@ -75,4 +74,8 @@ export class Setting {
 
   @DeleteDateColumn({ name: 'deleted_date', select: false })
   deletedDate: Date;
+
+  constructor(partial: Partial<Setting>) {
+    Object.assign(this, partial);
+  }
 }
