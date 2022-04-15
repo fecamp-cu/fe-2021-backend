@@ -25,7 +25,7 @@ export class SettingService {
     });
   }
 
-  async findAll(): Promise<SettingDto[]> {
+  async findAll(): Promise<Setting[]> {
     try {
       return await this.settingRepository.find();
     } catch (err) {
@@ -39,7 +39,7 @@ export class SettingService {
     return paginate<Setting>(query, options);
   }
 
-  async findAllActive(): Promise<SettingDto> {
+  async findAllActive(): Promise<Setting> {
     try {
       const setting: Setting = await this.settingRepository
         .createQueryBuilder('setting')
@@ -59,7 +59,7 @@ export class SettingService {
         .cache(true)
         .getOne();
 
-      return setting as SettingDto;
+      return setting;
     } catch (error) {
       throw new SettingException('Failed to find activated setting', error.response);
     }
@@ -82,7 +82,6 @@ export class SettingService {
         .addOrderBy('"qualification_preview"."order"', 'ASC')
         .addOrderBy('"about_fe_container"."order"', 'ASC')
         .addOrderBy('"announcement"."order"', 'ASC')
-
         .cache(true)
         .getOne();
 
@@ -129,4 +128,6 @@ export class SettingService {
       isActive: setting.isActive,
     });
   }
+
+  // async addYoutubeConent(setting: Setting): Promise<SettingDto> {}
 }
