@@ -19,6 +19,7 @@ export class SettingService {
       id: createdSetting.id,
       title: createdSetting.title,
       youtubeUrl: createdSetting.youtubeUrl,
+      buttonText: createdSetting.buttonText,
       registerFormUrl: createdSetting.registerFormUrl,
       isActive: createdSetting.isActive,
     });

@@ -29,6 +29,9 @@ export class Setting {
   @IsUrl()
   youtubeUrl: string;
 
+  @Column({ name: 'button_text', default: '' })
+  buttonText: string;
+
   @Column({ name: 'register_form_url' })
   @IsUrl()
   registerFormUrl: string;
