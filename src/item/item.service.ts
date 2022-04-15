@@ -73,8 +73,6 @@ export class ItemService {
     item.fileURL = itemDto.fileURL !== undefined ? itemDto.fileURL : item.fileURL;
     item.indexes = itemDto.indexes ? itemDto.indexes : item.indexes;
 
-    console.log(item);
-
     await this.itemRepository.save(item);
 
     return item;
