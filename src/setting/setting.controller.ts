@@ -12,13 +12,17 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiHeaders, ApiTags } from '@nestjs/swagger';
+import { Pagination } from 'nestjs-typeorm-paginate';
 import { Public } from 'src/auth/auth.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PoliciesGuard } from 'src/casl/policies.guard';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
 import { RequestWithUserId } from 'src/common/types/auth';
 import { User } from 'src/user/entities/user.entity';
+import { CreateSettingDto } from './dto/create-setting.dto';
 import { SettingDto } from './dto/setting.dto';
+import { UpdateSettingDto } from './dto/update-setting.dto';
+import { Setting } from './entities/setting.entity';
 import { SettingService } from './setting.service';
 
 @ApiTags('Setting')
@@ -31,19 +35,22 @@ export class SettingController {
 
   @Post()
   @CheckPolicies(new ManagePolicyHandler())
-  create(@Body() settingDto: SettingDto, @Req() req: RequestWithUserId) {
+  create(@Body() settingDto: CreateSettingDto, @Req() req: RequestWithUserId): Promise<Setting> {
     return this.settingService.createSetting(settingDto, req.user as User);
   }
 
   @Get()
   @CheckPolicies(new ManagePolicyHandler())
-  findAll(@Query('limit') limit: number = 10, @Query('page') page: number = 1) {
+  findAll(
+    @Query('limit') limit: number = 10,
+    @Query('page') page: number = 1,
+  ): Promise<Pagination<Setting>> {
     return this.settingService.findWithPaginate({ limit, page });
   }
 
   @Get('active')
   @Public()
-  async findAllActive() {
+  async findAllActive(): Promise<SettingDto> {
     const setting = await this.settingService.findAllActive();
     if (!setting) {
       throw new NotFoundException({
@@ -57,7 +64,7 @@ export class SettingController {
 
   @Get(':id')
   @CheckPolicies(new ManagePolicyHandler())
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<Setting> {
     const setting = await this.settingService.findOne(+id);
     if (!setting) {
       throw new NotFoundException({
@@ -72,7 +79,7 @@ export class SettingController {
 
   @Patch(':id')
   @CheckPolicies(new ManagePolicyHandler())
-  update(@Param('id') id: string, @Body() settingDto: SettingDto) {
+  update(@Param('id') id: string, @Body() settingDto: UpdateSettingDto) {
     return this.settingService.update(+id, settingDto);
   }
 

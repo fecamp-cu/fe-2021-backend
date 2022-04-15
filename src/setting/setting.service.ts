@@ -1,23 +1,34 @@
+import { ServiceUnavailableException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AxiosError } from 'axios';
+import * as moment from 'moment';
 import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { SettingException } from 'src/common/exceptions/settting.exception';
+import { Youtube, YoutubeVideo } from 'src/common/interface/youtube';
+import { YoutubeService } from 'src/third-party/youtube/youtube.service';
 import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
+import { CreateSettingDto } from './dto/create-setting.dto';
 import { SettingDto } from './dto/setting.dto';
+import { UpdateSettingDto } from './dto/update-setting.dto';
 import { Setting } from './entities/setting.entity';
 
 export class SettingService {
-  constructor(@InjectRepository(Setting) private settingRepository: Repository<Setting>) {}
+  constructor(
+    @InjectRepository(Setting) private settingRepository: Repository<Setting>,
+    private readonly youtubeService: YoutubeService,
+  ) {}
 
-  async createSetting(settingDto: SettingDto, user: User): Promise<SettingDto> {
+  async createSetting(settingDto: CreateSettingDto, user: User): Promise<Setting> {
     const setting: Setting = this.settingRepository.create(settingDto);
     setting.user = user;
     setting.isActive = false;
 
     const createdSetting = await this.settingRepository.save(setting);
-    return new SettingDto({
+    return new Setting({
       id: createdSetting.id,
       title: createdSetting.title,
+      coverImgUrl: createdSetting.coverImgUrl,
       youtubeUrl: createdSetting.youtubeUrl,
       buttonText: createdSetting.buttonText,
       registerFormUrl: createdSetting.registerFormUrl,
@@ -39,7 +50,7 @@ export class SettingService {
     return paginate<Setting>(query, options);
   }
 
-  async findAllActive(): Promise<Setting> {
+  async findAllActive(): Promise<SettingDto> {
     try {
       const setting: Setting = await this.settingRepository
         .createQueryBuilder('setting')
@@ -59,7 +70,7 @@ export class SettingService {
         .cache(true)
         .getOne();
 
-      return setting;
+      return this.rawToDto(setting, true);
     } catch (error) {
       throw new SettingException('Failed to find activated setting', error.response);
     }
@@ -91,43 +102,62 @@ export class SettingService {
     }
   }
 
-  async update(id: number, settingDto: SettingDto): Promise<SettingDto> {
+  async update(id: number, settingDto: UpdateSettingDto): Promise<Setting> {
     const setting = await this.findOne(id);
     await this.settingRepository.update(id, settingDto);
 
-    return new SettingDto({
-      id: setting.id,
-      title: setting.title,
-      youtubeUrl: setting.youtubeUrl,
-      registerFormUrl: setting.registerFormUrl,
-      isActive: setting.isActive,
-    });
-  }
-  async activate(id: number): Promise<SettingDto> {
-    const setting: Setting = await this.findOne(id);
-    setting.isActive = true;
-    const createdSetting = await this.settingRepository.save(setting);
-    return new SettingDto({
-      id: createdSetting.id,
-      title: createdSetting.title,
-      youtubeUrl: createdSetting.youtubeUrl,
-      registerFormUrl: createdSetting.registerFormUrl,
-      isActive: createdSetting.isActive,
-    });
+    return setting;
   }
 
-  async remove(id: number): Promise<SettingDto> {
+  async remove(id: number): Promise<Setting> {
     const setting = await this.findOne(id);
     await this.settingRepository.softDelete(id);
 
+    return setting;
+  }
+
+  async rawToDto(setting: Setting, withYoutubeContent: boolean): Promise<SettingDto> {
+    let youtube: Youtube = { url: setting.youtubeUrl };
+
+    if (withYoutubeContent) {
+      const youtubeId = setting.youtubeUrl.split('?')[1].split('=')[1];
+      let youtubeVideo: YoutubeVideo;
+
+      try {
+        const res = await this.youtubeService.getVideo(youtubeId);
+        youtubeVideo = res.data;
+      } catch (err) {
+        const error: AxiosError = err;
+        console.error(error.response.data);
+        throw new ServiceUnavailableException({
+          reason: 'YOUTUBE_ERROR',
+          message: error.response.data,
+        });
+      }
+
+      const youtubeItem = youtubeVideo.items[0];
+      const contentDuration = moment.duration(youtubeItem.contentDetails.duration).asMilliseconds();
+      youtube = {
+        url: setting.youtubeUrl,
+        title: youtubeItem.snippet.title,
+        thumbnail: youtubeItem.snippet.thumbnails.high.url,
+        duration: moment.utc(contentDuration).format('HH:mm:ss'),
+        likes: youtubeItem.statistics.likeCount,
+        views: youtubeItem.statistics.viewCount,
+        publishDate: youtubeItem.snippet.publishedAt,
+      };
+    }
+
     return new SettingDto({
       id: setting.id,
       title: setting.title,
-      youtubeUrl: setting.youtubeUrl,
+      coverImgUrl: setting.coverImgUrl,
+      youtube: youtube,
+      buttonText: setting.buttonText,
       registerFormUrl: setting.registerFormUrl,
       isActive: setting.isActive,
+      publishDate: setting.publishDate,
+      endDate: setting.endDate,
     });
   }
-
-  // async addYoutubeConent(setting: Setting): Promise<SettingDto> {}
 }

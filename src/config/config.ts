@@ -55,6 +55,9 @@ export default () => ({
       callbackURI: process.env.GOOGLE_OAUTH_REDIRECT_URI,
       scope: process.env.GOOGLE_OAUTH_SCOPE.split(' '),
     },
+    apiKey: {
+      youtube: process.env.GOOGLE_API_KEY_YOUTUBE,
+    },
   },
   facebook: {
     appID: process.env.FACEBOOK_APP_ID,

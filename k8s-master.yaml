@@ -197,6 +197,12 @@ spec:
                 configMapKeyRef:
                   name: fecamp-config
                   key: google_oauth_scope
+            # Google API Key
+            - name: GOOGLE_API_KEY_YOUTUBE
+              valueFrom:
+                secretKeyRef:
+                  name: google-secret
+                  key: youtube_api_key
             # Facebook Authentication
             - name: FACEBOOK_APP_ID
               valueFrom:
