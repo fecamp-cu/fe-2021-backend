@@ -16,8 +16,7 @@ export class ItemService {
   ) {}
 
   async create(itemDto: ItemDto): Promise<ItemDto> {
-    const item: Item = this.itemRepository.create(itemDto);
-    const createdItem: Item = await this.itemRepository.save(item);
+    const createdItem = await this.itemRepository.save(itemDto);
     return this.rawToDTO(createdItem);
   }
 
@@ -63,17 +62,21 @@ export class ItemService {
 
   async update(id: number, itemDto: UpdateItemDto): Promise<ItemDto> {
     const item = await this.findOne(id);
+
     item.title = itemDto.title ? itemDto.title : item.title;
     item.summary = itemDto.summary ? itemDto.summary : item.summary;
     item.price = itemDto.price ? itemDto.price : item.price;
     item.quantityInStock = itemDto.quantityInStock ? itemDto.quantityInStock : item.quantityInStock;
     item.author = itemDto.author ? itemDto.author : item.author;
     item.type = itemDto.type ? itemDto.type : item.type;
-    item.thumbnail = itemDto.thumbnail ? itemDto.thumbnail : item.thumbnail;
-    item.fileURL = itemDto.fileURL ? itemDto.fileURL : item.fileURL;
+    item.thumbnail = itemDto.thumbnail !== undefined ? itemDto.thumbnail : item.thumbnail;
+    item.fileURL = itemDto.fileURL !== undefined ? itemDto.fileURL : item.fileURL;
     item.indexes = itemDto.indexes ? itemDto.indexes : item.indexes;
 
+    console.log(item);
+
     await this.itemRepository.save(item);
+
     return item;
   }
 
