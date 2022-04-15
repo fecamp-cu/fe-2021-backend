@@ -21,10 +21,10 @@ export class Item {
   @Column()
   type: ItemType;
 
-  @Column({ name: 'image_url' })
+  @Column({ name: 'image_url', nullable: true })
   thumbnail: string;
 
-  @Column({ name: 'file_url' })
+  @Column({ name: 'file_url', nullable: true })
   fileURL: string;
 
   @Column({ default: 0 })
