@@ -158,6 +158,12 @@ export class SettingService {
       isActive: setting.isActive,
       publishDate: setting.publishDate,
       endDate: setting.endDate,
+      aboutFeContainers: setting.aboutFeContainers,
+      sponcerContainers: setting.sponcerContainers,
+      photoPreviews: setting.photoPreviews,
+      qualificationPreviews: setting.qualificationPreviews,
+      timelineEvents: setting.timelineEvents,
+      announcements: setting.announcements,
     });
   }
 }
