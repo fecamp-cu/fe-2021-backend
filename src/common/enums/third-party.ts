@@ -47,6 +47,8 @@ export enum DiscordEmbedType {
 }
 
 export enum FileType {
+  IMAGE = 'image',
+  FILE = 'file',
   PROFILE = 'profile',
   ITEM_THUMBNAIL = 'item',
   PREVIEW = 'preview',
