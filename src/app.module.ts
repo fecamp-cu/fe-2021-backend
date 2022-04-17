@@ -8,12 +8,12 @@ import { AuthModule } from './auth/auth.module';
 import { CaslModule } from './casl/casl.module';
 import config from './config/config';
 import { CronService } from './cron/cron.service';
+import { FileModule } from './file/file.module';
 import { ItemModule } from './item/item.module';
 import { ProfileModule } from './profile/profile.module';
 import { SettingModule } from './setting/setting.module';
 import { ShopModule } from './shop/shop.module';
 import { UserModule } from './user/user.module';
-import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
