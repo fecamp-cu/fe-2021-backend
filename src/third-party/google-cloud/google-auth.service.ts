@@ -67,7 +67,7 @@ export class GoogleAuthentication {
       });
       return res.data as GoogleAuthData;
     } catch (err) {
-      throw new GoogleException('Failed to redeem refresh token', err.response.data);
+      throw new GoogleException(err.response.data, 'Failed to redeem refresh token');
     }
   }
 

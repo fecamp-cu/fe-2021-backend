@@ -1,4 +1,4 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request, Response } from 'express';
 import { errorMessage } from 'src/common/constants/discord-message.constant';
@@ -14,6 +14,7 @@ import { GoogleCloudStorage } from 'src/third-party/google-cloud/google-storage.
 export class ServiceDownFilter implements ExceptionFilter {
   private discordService: DiscordService;
   private logStorage: GoogleCloudStorage;
+  private logger = new Logger('HTTP Error');
 
   constructor(private configService: ConfigService) {
     this.discordService = new DiscordService(configService);
@@ -21,7 +22,7 @@ export class ServiceDownFilter implements ExceptionFilter {
   }
 
   async catch(exception: CustomException, host: ArgumentsHost) {
-    const status = exception.status || HttpStatus.INTERNAL_SERVER_ERROR;
+    const status = exception.getStatus() || HttpStatus.INTERNAL_SERVER_ERROR;
 
     const context = host.switchToHttp();
     const request = context.getRequest<Request>();

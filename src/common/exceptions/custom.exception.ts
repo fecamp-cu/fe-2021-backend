@@ -1,16 +1,14 @@
-import { HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
-export class CustomException extends Error {
+export class CustomException extends HttpException {
   public name: string;
-  public status: HttpStatus;
 
   constructor(
     name: string = 'Custom Exception',
     message: string = 'Something Wrong 😱',
     status: HttpStatus,
   ) {
-    super(message);
+    super(message, status);
     this.name = name;
-    this.status = status;
   }
 }

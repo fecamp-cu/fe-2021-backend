@@ -103,9 +103,7 @@ export class ThirdPartyAuthService {
     const expireTime = moment(tokenDto.expiresDate).toDate().getTime();
 
     if (expireTime < now) {
-      const tokens: GoogleAuthData = await this.googleAuth.redeemRefreshToken(
-        tokenDto.refreshToken,
-      );
+      const tokens = await this.googleAuth.redeemRefreshToken(tokenDto.refreshToken);
 
       tokens.expiry_date = moment(Date.now() + tokens.expires_in * 1000).toDate();
 
