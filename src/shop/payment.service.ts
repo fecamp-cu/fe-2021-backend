@@ -26,6 +26,7 @@ import { PaymentDto } from './dto/payment.dto';
 import { Customer } from './entities/customer.entity';
 import { OrderService } from './order.service';
 import { PromotionCodeService } from './promotion-code.service';
+import { WsNotifyService } from './ws-notify.service';
 
 @Injectable()
 export class PaymentService {
@@ -38,6 +39,7 @@ export class PaymentService {
     private promotionCodeService: PromotionCodeService,
     private omiseService: OmiseService,
     private discordService: DiscordService,
+    private wsNotifyService: WsNotifyService,
     private googleGmail: GoogleGmail,
   ) {}
 
@@ -105,6 +107,8 @@ export class PaymentService {
       Discord.TAG_ADMIN,
       embed,
     );
+
+    this.wsNotifyService.notify(orderDto.customer.email, 'success');
 
     return orderDto;
   }

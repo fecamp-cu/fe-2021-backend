@@ -15,6 +15,8 @@ import { OrderService } from './order.service';
 import { PaymentService } from './payment.service';
 import { PromotionCodeService } from './promotion-code.service';
 import { ShopController } from './shop.controller';
+import { WsNotifyService } from './ws-notify.service';
+import { WsGateway } from './ws.gateway';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { ShopController } from './shop.controller';
     PromotionCodeService,
     CaslAbilityFactory,
     CustomerService,
+    WsGateway,
+    WsNotifyService,
   ],
 })
 export class ShopModule {}
