@@ -97,27 +97,14 @@ export class AuthService {
   }
 
   public async createUser(registerDto: RegisterDto, isVerified: boolean = false): Promise<UserDto> {
-    const profileDto = new ProfileDto({
-      firstName: registerDto.firstName,
-      lastName: registerDto.lastName,
-      imageUrl: registerDto.imageUrl,
-      tel: registerDto.tel,
-      grade: registerDto.grade,
-      school: registerDto.school,
-      address: registerDto.address,
-      subdistrict: registerDto.subdistrict,
-      district: registerDto.district,
-      province: registerDto.province,
-      postcode: registerDto.postcode,
-    });
+    const profileDto = new ProfileDto({});
+    Object.assign(profileDto, registerDto);
 
     const userDto = new UserDto({
-      email: registerDto.email,
-      username: registerDto.username,
-      password: registerDto.password,
       profile: profileDto,
       isEmailVerified: isVerified,
     });
+    Object.assign(userDto, registerDto);
 
     const user = await this.userService.create(userDto);
 
