@@ -1,11 +1,12 @@
 import { Controller, HttpStatus, Put, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiCreatedResponse } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { CheckPolicies, ManagePolicyHandler } from 'src/casl/policyhandler';
 import { FileType } from 'src/common/enums/third-party';
 import { GoogleCloudStorage } from 'src/third-party/google-cloud/google-storage.service';
 
+@ApiTags('File')
 @Controller('file')
 export class FileController {
   constructor(private readonly googleStorage: GoogleCloudStorage) {}
