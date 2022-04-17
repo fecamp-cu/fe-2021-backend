@@ -13,6 +13,7 @@ import { ProfileModule } from './profile/profile.module';
 import { SettingModule } from './setting/setting.module';
 import { ShopModule } from './shop/shop.module';
 import { UserModule } from './user/user.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { UserModule } from './user/user.module';
     SettingModule,
     ShopModule,
     ItemModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService, CronService],
