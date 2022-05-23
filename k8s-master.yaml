@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: fecamp-2021-backend
-          image: ghcr.io/fecamp-cu/fe-2021-backend:latest
+          image: ghcr.io/fecamp-cu/fe-2021-backend:master
           imagePullPolicy: Always
           ports:
             - containerPort: 8000

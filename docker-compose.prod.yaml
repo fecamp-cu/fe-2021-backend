@@ -2,11 +2,11 @@ version: '3.9'
 
 services:
   backend:
-    image: ghcr.io/fecamp-cu/fe-2021-backend:latest
+    image: ghcr.io/fecamp-cu/fe-2021-backend:master
     container_name: fecamp-backend
     restart: always
     env_file:
-      - .env.prod
+      - .env.production
     networks:
       - fecamp
       - traefik-net
@@ -25,9 +25,10 @@ services:
     image: postgres:14.1
     container_name: fecamp-db
     restart: unless-stopped
-    env_file:
-      - .env.prod
     environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - ./volumes/postgres/prod:/var/lib/postgresql/data
@@ -38,6 +39,7 @@ services:
 
   reverse-proxy:
     image: traefik:2.6.1
+    container_name: reverse-proxy
     command:
       - '--api.insecure=true'
       - '--providers.docker=true'
