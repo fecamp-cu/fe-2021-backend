@@ -36,29 +36,6 @@ services:
     ports:
       - 5432:5432
 
-  portainer:
-    image: portainer/portainer-ce:2.11.1
-    restart: always
-    command: -H unix:///var/run/docker.sock
-    volumes:
-      - portainer_data:/data
-      - /var/run/docker.sock:/var/run/docker.sock
-    labels:
-      # Frontend
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend_portainer.rule=Host(`portainer.fe.in.th`)"
-      - "traefik.http.routers.frontend_portainer.entrypoints=web"
-      - "traefik.http.services.frontend_portainer.loadbalancer.server.port=9000"
-      - "traefik.http.routers.frontend_portainer.service=frontend_portainer"
-      - "traefik.http.routers.frontend_portainer.tls.certresolver=leresolver"
-
-      # Edge
-      - "traefik.http.routers.edge.rule=Host(`edge.fe.in.th`)"
-      - "traefik.http.routers.edge.entrypoints=web"
-      - "traefik.http.services.edge.loadbalancer.server.port=8000"
-      - "traefik.http.routers.edge.service=edge"
-      - "traefik.http.routers.edge.tls.certresolver=leresolver"
-
   reverse-proxy:
     image: traefik:2.6.1
     container_name: reverse-proxy
