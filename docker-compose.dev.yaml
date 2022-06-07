@@ -1,0 +1,25 @@
+services:
+  backend-dev:
+    image: ghcr.io/fecamp-cu/fe-2021-backend:dev
+    container_name: fecamp-backend-dev
+    restart: always
+    env_file:
+      - .env.dev
+    ports:
+      - ${PORT}:8000
+    networks:
+      - fecamp
+      - traefik-net
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.backend-dev.rule=Host(`dev.fe.in.th`)'
+      - 'traefik.http.routers.backend-dev.entrypoints=web'
+      - 'traefik.docker.network=traefik-net'
+
+networks:
+  fecamp:
+    external: true
+    name: fecamp
+  traefik-net:
+    external: true
+    name: traefik-net
