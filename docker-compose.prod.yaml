@@ -10,8 +10,6 @@ services:
     networks:
       - fecamp
       - traefik-net
-    ports:
-      - ${PORT}:8000
     depends_on:
       - db
     links:
@@ -19,6 +17,7 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.backend.rule=Host(`api.fe.in.th`)'
+      - 'traefik.http.services.backend.loadbalancer.server.port=8000'
       - 'traefik.http.routers.backend.entrypoints=web'
       - 'traefik.docker.network=traefik-net'
   db:
@@ -31,11 +30,9 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
-      - ./volumes/postgres/prod:/var/lib/postgresql/data
+      - database/postgres/prod:/var/lib/postgresql/data
     networks:
       - fecamp
-    ports:
-      - ${DATABASE_PORT}:5432
 
   portainer:
     image: portainer/portainer-ce:2.11.1
@@ -83,3 +80,6 @@ networks:
     name: traefik-net
 volumes:
   portainer_data:
+  database:
+
+
