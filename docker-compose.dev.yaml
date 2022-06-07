@@ -13,6 +13,7 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.backend-dev.rule=Host(`dev.fe.in.th`)'
+      - 'traefik.http.services.backend-dev.loadbalancer.server.port=8001'
       - 'traefik.http.routers.backend-dev.entrypoints=web'
       - 'traefik.docker.network=traefik-net'
 
