@@ -33,6 +33,8 @@ services:
       - database:/var/lib/postgresql/data
     networks:
       - fecamp
+    ports:
+      - 5432:5432
 
   portainer:
     image: portainer/portainer-ce:2.11.1
