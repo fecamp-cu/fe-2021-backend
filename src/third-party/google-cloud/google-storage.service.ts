@@ -33,14 +33,14 @@ export class GoogleCloudStorage {
 
   public async uploadFile(filename: string, sourceFile: Buffer): Promise<string> {
     const fileStream = new StreamableFile(sourceFile);
-    const fileNameHashed = this.getFileName(filename);
+    const fileNameHashed = this.getFileName(filename.replace(' ', '-'));
     const file = this.bucket.file(fileNameHashed);
     await fileStream.getStream().pipe(file.createWriteStream());
     return this.getFileURL(fileNameHashed);
   }
 
   getImageURL(imgName: string): string {
-    return this.configService.get<string>('google.gcs.publicURL') + '/' + imgName;
+    return this.configService.get<string>('google.gcs.publicURL') + '/' + imgName.replace(' ', '-');
   }
 
   getImageFileName(ownerName: string, type: FileType): string {
@@ -49,7 +49,9 @@ export class GoogleCloudStorage {
   }
 
   getFileURL(fileName: string): string {
-    return encodeURI(this.configService.get<string>('google.gcs.publicURL') + '/' + fileName);
+    return encodeURI(
+      this.configService.get<string>('google.gcs.publicURL') + '/' + fileName.replace(' ', '-'),
+    );
   }
 
   getFileName(fileName: string): string {

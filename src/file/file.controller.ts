@@ -41,7 +41,10 @@ export class FileController {
       });
     }
 
-    const imgName = this.googleStorage.getImageFileName(originalname, FileType.IMAGE);
+    const imgName = this.googleStorage.getImageFileName(
+      originalname.replace(' ', '-'),
+      FileType.IMAGE,
+    );
     const imageURL = await this.googleStorage.uploadImage(imgName, buffer);
 
     return res.status(HttpStatus.CREATED).json({ message: 'Successfully upload image', imageURL });
