@@ -52,13 +52,15 @@ jobs:
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max
 
-      # - uses: google-github-actions/get-gke-credentials@main
-      #   with:
-      #     cluster_name: ${{ env.GKE_CLUSTER }}
-      #     location: ${{ env.GKE_ZONE }}
-      #     credentials: ${{ secrets.GKE_SA_KEY }}
-
-      # - name: Deploy
-      #   run: |
-      #     kubectl apply -f k8s-$BRANCH.yaml -n $BRANCH
-      #     kubectl rollout restart deployment/$GKE_DEPLOYMENT_NAME -n $BRANCH
+      - name: Deploy to host
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            sudo docker pull ${{ env.IMAGE_NAME }}:master
+            cd fe-2021-backend
+            git checkout master; git pull
+            sudo docker-compose --env-file .env.production -f docker-compose.prod.yaml up -d
+            sudo docker image prune -f
