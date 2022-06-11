@@ -1,0 +1,75 @@
+version: '3.9'
+
+services:
+  backend:
+    image: ghcr.io/fecamp-cu/fe-2021-backend:master
+    container_name: fecamp-backend
+    restart: always
+    env_file:
+      - .env.production
+    networks:
+      - fecamp
+      - traefik-net
+    depends_on:
+      - db
+    links:
+      - db
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.backend.rule=Host(`api.fe.in.th`)'
+      - 'traefik.http.services.backend.loadbalancer.server.port=8000'
+      - 'traefik.http.routers.backend.entrypoints=web'
+      - 'traefik.docker.network=traefik-net'
+  db:
+    image: postgres:14.1
+    container_name: fecamp-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - database:/var/lib/postgresql/data
+    networks:
+      - fecamp
+    ports:
+      - 5432:5432
+
+  portainer:
+    container_name: portainer
+    restart: always
+    image: portainer/portainer-ce
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    ports:
+      - 8002:8000
+      - 9443:9443
+
+  reverse-proxy:
+    image: traefik:2.6.1
+    container_name: reverse-proxy
+    command:
+      - '--api.insecure=true'
+      - '--providers.docker=true'
+      - '--providers.docker.exposedbydefault=false'
+      - '--entrypoints.web.address=:80'
+    ports:
+      - '80:80'
+      - '8080:8080'
+    networks:
+      - traefik-net
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+networks:
+  fecamp:
+    name: fecamp
+  traefik-net:
+    name: traefik-net
+volumes:
+  portainer_data:
+  database:
+
+

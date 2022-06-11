@@ -37,8 +37,8 @@ lerna-debug.log*
 # ENV
 .env.development
 .env.production
-.env.dev
 .env.prod
+.env.dev
 
-# Volumes
+# Volume
 volumes
